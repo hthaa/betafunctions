@@ -1,10 +1,10 @@
 #' Compute Moments of Beta Probability Density Distributions.
 #'
+#' @description Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
 #' @param A The Alpha shape parameter of the PDD.
 #' @param B The Beta shape parameter of the PDD.
 #' @param TYPES A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
 #' @param ORDERS The number of moment-orders to be calculated for each of the moment-types.
-#' @description Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
 #' @return A list of moment types, each a list of moment orders.
 #' @export
 BetaMoments <- function(A, B, TYPES = c("raw", "central", "standardized"), ORDERS = 4) {
@@ -40,7 +40,7 @@ BetaMoments <- function(A, B, TYPES = c("raw", "central", "standardized"), ORDER
 
 #' Alpha shape parameter given mean and variance of a Standard Beta PDD.
 #'
-#' @description Calculates the Alpha value required to produce a Standard Beta probability density distribution with defined mean and variance.
+#' @description Calculates the Alpha value required to produce a Standard Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param M The mean of the target Standard Beta probability density distribution.
 #' @param VAR The variance of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Alpha shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
@@ -54,7 +54,7 @@ AMS <- function(M, VAR) {
 
 #' Beta shape parameter given mean and variance of a Standard Beta PDD.
 #'
-#' @description Calculates the Beta value required to produce a Standard Beta probability density distribution with defined mean and variance.
+#' @description Calculates the Beta value required to produce a Standard Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param M The mean of the target Standard Beta probability density distribution.
 #' @param VAR The variance of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
@@ -68,7 +68,7 @@ BMS <- function(M, VAR) {
 
 #' Probability of some specific observation under the Standard Beta PDD with specific mean and variance.
 #'
-#' @description Calculates the probability of some specific observation falling under a specified interval  ([0, x] or [x, 1]) under the Standard Beta probability density distribution with defined mean and variance.
+#' @description Calculates the probability of some specific observation falling under a specified interval  ([0, x] or [x, 1]) under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param q A specific point on the x-axis of the Standard Beta probability density distribution with a defined mean and variance.
 #' @param M The mean of the target Standard Beta probability density distribution.
 #' @param VAR The variance of the target Standard Beta probability density distribution.
@@ -86,9 +86,9 @@ pBetaMS <- function(q, M, VAR = NULL, SD = NULL, LT = TRUE) {
   pbeta(q, ((M^2 - M^3) / VAR) - M, (M * (1 - M)^2) / VAR + M - 1, lower.tail = LT)
 }
 
-#' Density under a specific point of the Standard Beta PDD with specific mean and variance.
+#' Density under a specific point of the Standard Beta PDD with specific mean and variance or standard deviation.
 #'
-#' @description Calculates the density under specific points of the Standard Beta probability density distribution with defined mean and variance.
+#' @description Calculates the density under specific points of the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param x A specific point on the x-axis of the Standard Beta PDD.
 #' @param M The mean of the target Standard Beta probability density distribution.
 #' @param VAR The variance of the target Standard Beta probability density distribution.
@@ -105,8 +105,15 @@ dBetaMS <- function(x, M, VAR = NULL, SD = NULL) {
   dbeta(x, ((M^2 - M^3) / VAR) - M, (M * (1 - M)^2) / VAR + M - 1)
 }
 
-#' TODO
-#' @description TODO
+#' Quantile containing specific proportion of the distribution, given a specific probability of the Standard Beta PDD with specific mean and variance or standard deviation.
+#'
+#' @description Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (LT = TRUE) or [x, 1] (LT = FALSE) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
+#' @param p A value of probability marking the point of the Y-axis to correspond to the X-axis.
+#' @param M The mean of the target Standard Beta probability density distribution.
+#' @param VAR The variance of the target Standard Beta probability density distribution.
+#' @param SD The standard deviation of the target Standard Beta probability density distribution.
+#' @param LT Logical. Specifies which end of the tail for which to calculate quantile. Default is TRUE (meaning, find q for lower tail.)
+#' @return A numeric value representing the quantile for which the specified proportion of observations fall within.
 #' @export
 qBetaMS <- function(p, M, VAR = NULL, SD = NULL, LT = TRUE) {
   if ((!is.null(VAR) & !is.null(SD))) {
@@ -220,7 +227,7 @@ MLB <- function(a, b, x = NULL, N = NULL) {
   }
 }
 
-#' Most likely mean of the Standard Beta PDD, given that the observation is the most likely observation of the Standard Beta PDD (i.e., mode).
+#' Most likely mean of the Standard Beta PDD, given that the observation is considered the most likely observation of the Standard Beta PDD (i.e., mode).
 #'
 #' @description Given a fitted Standard Beta Distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
 #' @param a Observed alpha value for fitted Standard Beta PDD.
