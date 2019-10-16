@@ -1,12 +1,13 @@
 Package: betafunctions
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Functions for Working with the Standard Beta Probability Density Distribution
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Haakon Haakstad
+Maintainer: Haakon Haakstad <h.t.haakstad@cemo.uio.no>
+Description: Package providing a number of functions for working with the Standard
+    Beta Probability Density Distribution (PDD), including alternative parameterizations
+    and calculation of moment properties.
+License: CC0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
