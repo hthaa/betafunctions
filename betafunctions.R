@@ -7,7 +7,19 @@
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
 #' @return A list of moment types, each a list of moment orders.
 #' @export
-betamoments <- function(a, b, types = c("raw", "central", "standardized"), orders = 4) {
+betamoments <- function(a, b, mean = NULL, var = NULL, sd = NULL, types = c("raw", "central", "standardized"), orders = 4) {
+  if (!is.null(mean) & (!is.null(var) | !is.null(sd))) {
+    if (!is.null(var) & !is.null(sd)) {
+      if (var != sd^2) {
+        warning("Nonequivalent values of VAR and SD specified. Using VAR.")
+      }
+    }
+    if (is.null(var) & !is.null(sd)) {
+      var <- sd
+    }
+    a <- AMS(mean, var)
+    b <- BMS(mean, var)
+  }
   BETAMOMENTS <- rep(list(rep(list(NULL), orders)), length(types))
   TYPE <- 1
   if (any(types == "raw")) {
