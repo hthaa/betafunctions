@@ -32,7 +32,7 @@ betamoments <- function(a, b, mean = NULL, var = NULL, sd = NULL, types = c("raw
   if (any(types == "central")) {
     Mu <- integrate(function(x) { dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dbeta(x, a, b) * (x - Mu)^i},
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dbeta(x, a, b) * (x - Mu)^i },
                                             lower = 0, upper = 1)$value
     }
     names(BETAMOMENTS)[TYPE] <- "central"
@@ -42,7 +42,7 @@ betamoments <- function(a, b, mean = NULL, var = NULL, sd = NULL, types = c("raw
     Mu <- integrate(function(x) { dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
     Sigma <- integrate(function(x) { dbeta(x, a, b) * (x - Mu)^2 }, lower = 0, upper = 1)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dbeta(x, a, b) * ((x - Mu)^i / sqrt(Sigma)^i)},
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dbeta(x, a, b) * ((x - Mu)^i / sqrt(Sigma)^i) },
                                             lower = 0, upper = 1)$value
     }
     names(BETAMOMENTS)[TYPE] <- "standardized"
