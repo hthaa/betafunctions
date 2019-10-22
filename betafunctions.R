@@ -263,7 +263,7 @@ MLB <- function(a, b, x = NULL, n = NULL) {
 #' @return The expected mean of the Standard Beta probability density distribution, for which the observed mean is the most likely value.
 #' @export
 MLM <- function(a, b, x = NULL, n = NULL) {
-  if (is.null(x) | is.null(N)) {
+  if (is.null(x) | is.null(n)) {
     n <- a + b
     A <- (a*(n - 2) + n) / n
     B <- (n - A)
