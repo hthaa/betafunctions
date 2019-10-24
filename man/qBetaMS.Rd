@@ -2,10 +2,24 @@
 % Please edit documentation in R/betafunctions.R
 \name{qBetaMS}
 \alias{qBetaMS}
-\title{TODO}
+\title{Quantile containing specific proportion of the distribution, given a specific probability of the Standard Beta PDD with specific mean and variance or standard deviation.}
 \usage{
-qBetaMS(p, M, VAR = NULL, SD = NULL, LT = TRUE)
+qBetaMS(p, mean, var = NULL, sd = NULL, lt = TRUE)
+}
+\arguments{
+\item{p}{A value of probability marking the point of the Y-axis to correspond to the X-axis.}
+
+\item{mean}{The mean of the target Standard Beta probability density distribution.}
+
+\item{var}{The variance of the target Standard Beta probability density distribution.}
+
+\item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
+
+\item{lt}{Logical. Specifies which end of the tail for which to calculate quantile. Default is TRUE (meaning, find q for lower tail.)}
+}
+\value{
+A numeric value representing the quantile for which the specified proportion of observations fall within.
 }
 \description{
-TODO
+Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (LT = TRUE) or [x, 1] (LT = FALSE) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }

@@ -4,13 +4,18 @@
 \alias{AMS}
 \title{Alpha shape parameter given mean and variance of a Standard Beta PDD.}
 \usage{
-AMS(M, VAR)
+AMS(mean, var, sd)
 }
 \arguments{
-\item{M}{The mean of the target Standard Beta probability density distribution.}
+\item{mean}{The mean of the target Standard Beta probability density distribution.}
 
-\item{VAR}{The variance of the target Standard Beta probability density distribution.}
+\item{var}{The variance of the target Standard Beta probability density distribution.}
+
+\item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
+}
+\value{
+A numeric value representing the required value for the Alpha shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 }
 \description{
-Calculates the Alpha value required to produce a Standard Beta probability density distribution with defined mean and variance.
+Calculates the Alpha value required to produce a Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }

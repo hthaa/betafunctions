@@ -4,16 +4,16 @@
 \alias{pBetaMS}
 \title{Probability of some specific observation under the Standard Beta PDD with specific mean and variance.}
 \usage{
-pBetaMS(q, M, VAR = NULL, SD = NULL, LT = TRUE)
+pBetaMS(q, mean, var = NULL, sd = NULL, lt = TRUE)
 }
 \arguments{
 \item{q}{A specific point on the x-axis of the Standard Beta probability density distribution with a defined mean and variance.}
 
-\item{M}{The mean of the target Standard Beta probability density distribution.}
+\item{mean}{The mean of the target Standard Beta probability density distribution.}
 
-\item{VAR}{The variance of the target Standard Beta probability density distribution.}
+\item{var}{The variance of the target Standard Beta probability density distribution.}
 
-\item{SD}{The standard deviation of the target Standard Beta probability density distribution.}
+\item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
 
 \item{lt}{Whether the density that should be considered is between the lower-end (i.e., [0 -> x]) or the higher-end of the distribution (i.e., [x -> 1]).}
 }
@@ -21,5 +21,5 @@ pBetaMS(q, M, VAR = NULL, SD = NULL, LT = TRUE)
 A value representing the probability of a random draw from the Standard Beta probability density distribution with a defined mean and variance being from one of two defined intervals (i.e., [0 -> x] or [x -> 1]).
 }
 \description{
-Calculates the probability of some specific observation falling under a specified interval  ([0, x] or [x, 1]) under the Standard Beta probability density distribution with defined mean and variance.
+Calculates the probability of some specific observation falling under a specified interval  ([0, x] or [x, 1]) under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }

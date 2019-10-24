@@ -283,7 +283,7 @@ MLM <- function(a, b, x = NULL, n = NULL) {
 #' @param beta The second shape parameter.
 #' @return The value for the probability density at specified values of X.
 #' @export
-d4pBeta <- function(x, l, u, alpha, beta) {
+dBeta.4P <- function(x, l, u, alpha, beta) {
   betafunc <- integrate(function(y) { y^(alpha - 1)*(1 - y)^(beta - 1) }, lower = 0, upper = 1)$value
   sapply(x, function(x) {
     if (x < l | x > u) {

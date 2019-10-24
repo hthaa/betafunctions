@@ -2,22 +2,22 @@
 % Please edit documentation in R/betafunctions.R
 \name{dBetaMS}
 \alias{dBetaMS}
-\title{Density under a specific point of the Standard Beta PDD with specific mean and variance.}
+\title{Density under a specific point of the Standard Beta PDD with specific mean and variance or standard deviation.}
 \usage{
-dBetaMS(x, M, VAR = NULL, SD = NULL)
+dBetaMS(x, mean, var = NULL, sd = NULL)
 }
 \arguments{
 \item{x}{A specific point on the x-axis of the Standard Beta PDD.}
 
-\item{M}{The mean of the target Standard Beta probability density distribution.}
+\item{mean}{The mean of the target Standard Beta probability density distribution.}
 
-\item{VAR}{The variance of the target Standard Beta probability density distribution.}
+\item{var}{The variance of the target Standard Beta probability density distribution.}
 
-\item{SD}{The standard deviation of the target Standard Beta probability density distribution.}
+\item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
 }
 \value{
 A numeric value representing the required value for the Beta Shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 }
 \description{
-Density under a specific point of the Standard Beta PDD with specific mean and variance.
+Calculates the density under specific points of the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }

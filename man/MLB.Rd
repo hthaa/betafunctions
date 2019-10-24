@@ -2,14 +2,18 @@
 % Please edit documentation in R/betafunctions.R
 \name{MLB}
 \alias{MLB}
-\title{Most likely beta value given observed outcome.}
+\title{Most likely true beta value given observed outcome.}
 \usage{
-MLB(a, b)
+MLB(a, b, x = NULL, n = NULL)
 }
 \arguments{
 \item{a}{Observed alpha value for fitted Standard Beta PDD.}
 
 \item{b}{Observed beta value for fitted Standard Beta PDD.}
+
+\item{x}{Observed proportion-correct outcome.}
+
+\item{n}{Test-length.}
 }
 \value{
 The Beta shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.

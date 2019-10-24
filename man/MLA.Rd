@@ -2,9 +2,9 @@
 % Please edit documentation in R/betafunctions.R
 \name{MLA}
 \alias{MLA}
-\title{Most likely alpha value given observed outcome.}
+\title{Most likely true alpha value given observed outcome.}
 \usage{
-MLA(a, b)
+MLA(a, b, x = NULL, N = NULL)
 }
 \arguments{
 \item{a}{Observed alpha value for fitted Standard Beta PDD.}
