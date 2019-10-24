@@ -272,3 +272,25 @@ MLM <- function(a, b, x = NULL, n = NULL) {
     (x*(n - 2) + 1) / n
   }
 }
+
+#' Probability Density under the Four-Parameter Beta PDD.
+#'
+#' @description Gives the density at desired values of X under the Four-Parameter Beta PDD.
+#' @param x Value of X.
+#' @param l The first (lower) location parameter.
+#' @param u The second (upper) location paraeter.
+#' @param alpha The first shape parameter.
+#' @param beta The second shape parameter.
+#' @return The value for the probability density at specified values of X.
+#' @export
+d4pBeta <- function(x, l, u, alpha, beta) {
+  betafunc <- integrate(function(y) { y^(alpha - 1)*(1 - y)^(beta - 1) }, lower = 0, upper = 1)$value
+  sapply(x, function(x) {
+    if (x < l | x > u) {
+      0
+    } else {
+      (1 / betafunc) * ((x - l)^(alpha - 1) * (u - x)^(beta - 1)) / (u - l)^(alpha + beta -1)
+    }
+    }
+  )
+}
