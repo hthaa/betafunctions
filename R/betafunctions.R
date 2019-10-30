@@ -294,3 +294,17 @@ dBeta.4P <- function(x, l, u, alpha, beta) {
     }
   )
 }
+
+#' Random Number Generation under the Four-Parameter Beta Probability Density Distribution.
+#'
+#' @description Function for generating random numbers from a specified four-parameter beta distribution.
+#' @param n Number of draws.
+#' @param l The first (lower) location parameter.
+#' @param u The second (upper) location paramter.
+#' @param alpha The first shape parameter.
+#' @param beta The second shape parameter.
+#' @return A vector with length \code{n} of random values drawn from the four-parameter beta distribution.
+#' @export
+rBeta.4P <- function(n, l, u, alpha, beta) {
+  rbeta(n, alpha, beta) * (u - l) + l
+}
