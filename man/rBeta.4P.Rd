@@ -11,7 +11,7 @@ rBeta.4P(n, l, u, alpha, beta)
 
 \item{l}{The first (lower) location parameter.}
 
-\item{u}{The second (upper) location paramter.}
+\item{u}{The second (upper) location parameter.}
 
 \item{alpha}{The first shape parameter.}
 
