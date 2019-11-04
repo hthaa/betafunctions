@@ -308,3 +308,47 @@ dBeta.4P <- function(x, l, u, alpha, beta) {
 rBeta.4P <- function(n, l, u, alpha, beta) {
   rbeta(n, alpha, beta) * (u - l) + l
 }
+
+#' Cumulative Probability Function under the Four-Parameter Beta Probability Density Distribution.
+#'
+#' @description Function for calculating the proportion of observations up to a specifiable quantile under the four-parameter beta distribution.
+#' @param q The quantile or a vector of quantiles for which the proportion is to be calculated.
+#' @param l The first (lower) location parameter.
+#' @param u The second (upper) location parameter.
+#' @param alpha The first shape parameter.
+#' @param beta The second shape parameter.
+#' @param lt Whether the proportion to be calculated is to be under the lower or upper tail. Default is TRUE (lower tail).
+#' @return A vector of proportions of observations falling under specified quantiles under the four-parameter beta distribution.
+#' @export
+pBeta.4P <- function(q, l, u, alpha, beta, lt = TRUE) {
+  sapply(q, function(x) {
+    num <- integrate(function(y) { dBeta.4P(y, l, u, alpha, beta) }, lower = l, upper = x)$value
+    den <- integrate(function(y) { dBeta.4P(y, l, u, alpha, beta) }, lower = l, upper = u)$value
+    if (lt) {
+      num/den
+    } else {
+      1 - num/den
+    }
+  }
+  )
+}
+
+#' Quantile given probability under the Four-Parameter Beta Probability Density Distribution.
+#'
+#' @description Function for calculating the quantile (i.e., value of x) for a given proportion (i.e., the value of y) under the four-parameter beta distribution.
+#' @param p A vector (or single value) of proportions or probabilities for which the corresponding value of x (i.e., the quantiles) are to be calculated.
+#' @param l The first (lower) location parameter.
+#' @param u The second (upper) location parameter.
+#' @param alpha The first shape parameter.
+#' @param beta The second shape parameter.
+#' @param lt Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is TRUE (lower tail).
+#' @return A vector of quantiles for specified probabilities or proportions of observations under the four-parameter beta distribution.
+#' @export
+qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
+  if (lt) {
+    qbeta(p, alpha, beta) * (u - l) + l
+  } else {
+    (1 - qbeta(p, alpha, beta)) * (u - l) + l
+  }
+
+}
