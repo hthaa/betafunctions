@@ -1,13 +1,16 @@
-#' Compute Moments of Beta Probability Density Distributions.
+#' Compute Moments of Two-to-Four Parameter Beta Probability Density Distributions.
 #'
 #' @description Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
 #' @param a The Alpha shape parameter of the PDD.
 #' @param b The Beta shape parameter of the PDD.
+#' @param l The first (lower) location parameter of a four-paramteer distribution.
+#' @param u The second (upper) location parameter of a four-parameter distribution.
 #' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
+#' @references Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
 #' @return A list of moment types, each a list of moment orders.
 #' @export
-betamoments <- function(a, b, mean = NULL, var = NULL, sd = NULL, types = c("raw", "central", "standardized"), orders = 4) {
+betamoments <- function(a, b, l = 0, u = 1, mean = NULL, var = NULL, sd = NULL, types = c("raw", "central", "standardized"), orders = 4) {
   if (!is.null(mean) & (!is.null(var) | !is.null(sd))) {
     if (!is.null(var) & !is.null(sd)) {
       if (var != sd^2) {
@@ -24,23 +27,23 @@ betamoments <- function(a, b, mean = NULL, var = NULL, sd = NULL, types = c("raw
   TYPE <- 1
   if (any(types == "raw")) {
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dbeta(x, a, b) * x^i }, lower = 0, upper = 1)$value
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { l + (u - l) * dbeta(x, a, b) * x^i }, lower = 0, upper = 1)$value
     }
     names(BETAMOMENTS)[TYPE] <- "raw"
     TYPE <- TYPE + 1
   }
   if (any(types == "central")) {
-    Mu <- integrate(function(x) { dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
+    Mu <- integrate(function(x) { l + (u - l) * dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dbeta(x, a, b) * (x - Mu)^i },
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { (u - l)^2 * dbeta(x, a, b) * (x - Mu)^i },
                                             lower = 0, upper = 1)$value
     }
     names(BETAMOMENTS)[TYPE] <- "central"
     TYPE <- TYPE + 1
   }
   if (any(types == "standardized")) {
-    Mu <- integrate(function(x) { dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
-    Sigma <- integrate(function(x) { dbeta(x, a, b) * (x - Mu)^2 }, lower = 0, upper = 1)$value
+    Mu <- integrate(function(x) { l + (u - l) * dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
+    Sigma <- integrate(function(x) { (u - l)^2 * dbeta(x, a, b) * (x - Mu)^2 }, lower = 0, upper = 1)$value
     for (i in 1:orders) {
       BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dbeta(x, a, b) * ((x - Mu)^i / sqrt(Sigma)^i) },
                                             lower = 0, upper = 1)$value
@@ -48,6 +51,50 @@ betamoments <- function(a, b, mean = NULL, var = NULL, sd = NULL, types = c("raw
     names(BETAMOMENTS)[TYPE] <- "standardized"
   }
   return(BETAMOMENTS)
+}
+
+observedmoments <- function(x, type = c("raw", "central", "standardized"),  orders = 4, correct = TRUE) {
+  x <- na.omit(x)
+  types <- 1
+  momentorders <- list()
+  if (any(type == "raw")) {
+    mu <- list(rep(vector(length = 1), orders))
+    for (i in 1:orders) {
+      mu[i] <- sum(x^i)/length(x)
+    }
+    momentorders[[length(momentorders) + 1]] <- mu
+    names(momentorders)[types] <- "raw"
+    types <- types + 1
+  }
+  if (any(type == "central")) {
+    sigma <- list(rep(vector(length = 1), orders))
+    for (i in 1:orders) {
+      if (correct) {
+        sigma[i] <- sum((x - mean(x))^i)/(length(x) -
+                                            1)
+      }
+      else {
+        sigma[i] <- sum((x - mean(x))^i)/(length(x))
+      }
+    }
+    momentorders[[length(momentorders) + 1]] <- sigma
+    names(momentorders)[types] <- "central"
+    types <- types + 1
+  }
+  if (any(type == "standardized")) {
+    gamma <- list(rep(vector(length = 1), orders))
+    for (i in 1:orders) {
+      if (correct) {
+        gamma[i] <- sum(((x - mean(x))^i)/sqrt(var(x))^i)/(length(x) -  2)
+      }
+      else {
+        gamma[i] <- sum(((x - mean(x))^i)/sqrt(var(x))^i)/length(x)
+      }
+    }
+    momentorders[[length(momentorders) + 1]] <- gamma
+    names(momentorders)[types] <- "standardized"
+  }
+  return(momentorders)
 }
 
 #' Alpha shape parameter given mean and variance of a Standard Beta PDD.
@@ -58,7 +105,7 @@ betamoments <- function(a, b, mean = NULL, var = NULL, sd = NULL, types = c("raw
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Alpha shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 #' @export
-AMS <- function(mean, var, sd) {
+AMS <- function(mean, var, sd = NULL) {
   if ((!is.null(var) & !is.null(sd))) {
     if (var != sd^2) {
       warning("Nonequivalent values of VAR and SD specified. Using VAR.")
@@ -79,7 +126,7 @@ AMS <- function(mean, var, sd) {
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 #' @export
-BMS <- function(mean, var, sd) {
+BMS <- function(mean, var, sd =NULL) {
   if ((!is.null(var) & !is.null(sd))) {
     if (var != sd^2) {
       warning("Nonequivalent values of VAR and SD specified. Using VAR.")
@@ -352,3 +399,117 @@ qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
   }
 
 }
+
+
+#' Livingston and Lewis' "Effective Test Length"
+#' @description  According to Livingston and Lewis (1995), "The effective test length corresponding to a test score is the number of discrete, dichotomously scored, locally independent, equally difficult items required to produce a total score of the same reliability."
+#' @param mean The mean of the observed-score distribution.
+#' @param variance The variance of the observed-score distribution.
+#' @param l The lower-bound of the observed-score distribution.
+#' @param u The upper-bound of the observed-score distribution.
+#' @param reliability The reliability of the observed scores (correlation with true-score distribution).
+#' @return An estimate of the effective length of a test, given the stability of the observations it produces.
+ETL <- function(mean, variance, l = 0, u = 1, reliability) {
+  ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
+}
+
+k <- function(alpha, beta, rho) {
+  K <- alpha + beta
+  mu <- alpha / K
+  sigma2 <- alpha * beta / (alpha + beta + 1) * (alpha + beta)^2
+  error <- sigma2 * (1 - rho)
+  K*((K - 1)*(sigma2 - error) - K*sigma2 + mu*(K - mu)) / 2*((mu*K - mu) - (sigma2 - error))
+}
+
+#' Beta Confusion Matrix.
+#'
+#' @description Function for calculating the confusion matrix for expected classification accuracy observed-scores, true-scores, and errors are distributed as Beta with shape-parameters alpha and beta.
+#' @param x A vector of observed scores for which a beta-distribution is to be fitted.
+#' @param alpha The first shape parameter of the observed-score distribution.
+#' @param beta The second shape parameter of the observed-score distribution.
+#' @param mean The mean of the observed-score distribution.
+#' @param variance The variance of the observed-score distribution.
+#' @param reliability The observed-score correlation with the true-score.
+#' @param cut The cutoff value for classifying observations into pass or fail categories.
+#' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
+#' @export
+
+BCM <- function(x = NULL, alpha = NULL, beta = NULL, mean = NULL, variance = NULL, reliability, cut) {
+  if (!is.null(x)) {
+    alpha <- AMS(mean(x), var(x))
+    beta <- BMS(mean(x), var(x))
+  } else {
+    if (!is.null(mean) & !is.null(variance)) {
+      alpha <- AMS(mean, variance)
+      beta <- BMS(mean, variance)
+    }
+  }
+  N <- ETL(mean, variance, reliability = reliability)
+
+  xaxis <- seq(.001, .999, .001)
+  density <- dbeta(xaxis, alpha, beta) / sum(dbeta(xaxis, alpha, beta))
+
+  p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
+  p.fail <- 1 - p.pass
+
+  p.tf <- p.fail[which(xaxis < cut)] * density[which(xaxis < cut)]
+  p.fp <- p.pass[which(xaxis < cut)] * density[which(xaxis < cut)]
+
+  p.ff <- p.fail[which(xaxis >= cut)] * density[which(xaxis >= cut)]
+  p.tp <- p.pass[which(xaxis >= cut)] * density[which(xaxis >= cut)]
+
+  cmat <- matrix(nrow = 2, ncol = 2)
+  rownames(cmat) <- c("True", "False")
+  colnames(cmat) <- c("Fail", "Pass")
+  cmat["True", "Fail"] <- sum(p.tf)
+  cmat["True", "Pass"] <- sum(p.tp)
+  cmat["False", "Fail"] <- sum(p.ff)
+  cmat["False", "Pass"] <- sum(p.fp)
+  return(list("EffectiveTestLength" = N, "ShapeParameters" = list("Alpha" = alpha, "Beta" = beta), "Confusionmatrix" = cmat))
+}
+
+#' Classification Accuracy Statistics.
+#'
+#' @description Provides a set of statistics often used for conveying information regarding the certainty of classifications based on tests.
+#' @param tp The number or rate of true-positive classifications.
+#' @param tn The number or rate of true-negative classifications.
+#' @param fp The number or rate of false-positive classifications.
+#' @param fn The number or rate of false-negative classifications.
+#' @return A list of classification accuracy statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio, negative likelihood ratio, positive predictive value, negative predictive value, and Youden's J.
+#' @export
+caStats <- function(tp, tn, fp, fn) {
+  sensitivity <-  tp / (tp + fn)
+  specificity <-  tn / (tn + fp)
+  plr <-          sensitivity / (1 - specificity)
+  nlr <-          (1 - sensitivity) / specificity
+  ppv <-          tp / (tp + fp)
+  npv <-          tn / (tn + fn)
+  J <-            (sensitivity + specificity) - 1
+  list("Sensitivity" = sensitivity, "Specificity" = specificity,
+       "LR.pos" = plr, "LR.neg" = nlr,
+       "PPV" = ppv, "NPV" = npv,
+       "Youden.J" = J)
+}
+
+#' Method of Moment Estimates of Shape- and Location Parameters of the Four-Parameter Beta Distribution.
+#'
+#' @description An implementation of the method of moments estimation of four-parameter beta distribution parameters presented by Hanson (1991). Given a string of values, calculates the shape- and location parameters required to produce a four-parameter beta distribution with the same mean, variance, skewness and kurtosis (i.e., the first four moments) as the observed-score distribution.
+#' @param scores A vector of values to which the four-parameter beta distribution is to be fitted.
+#' @return A list of parameter-values required to produce a four-parameter beta distribution with the same first four moments as the observed distribution.
+#' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.
+#' @references Lord, Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
+#' @export
+Beta.4p.fit <- function(scores) {
+  m <- observedmoments(scores)
+  m1 <- m$raw[[1]]
+  s2 <- m$central[[2]]
+  g3 <- m$standardized[[3]]
+  g4 <- m$standardized[[4]]
+  r <- 6 * (g4 - g3^2 - 1) / (6 + 3 * g3^2 - 2 * g4)
+  a <- r / 2 * (1 + sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+  b <- r / 2 * (1 - sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+  l <- m1 - ((a * sqrt(s2 * (a + b + 1))) / sqrt(a * b))
+  u <- m1 + ((b * sqrt(s2 * (a + b + 1))) / sqrt(a * b))
+  return(list("alpha" = a, "beta" = b, "l" = l, "u" = u))
+}
+
