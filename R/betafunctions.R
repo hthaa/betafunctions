@@ -23,11 +23,12 @@ betamoments <- function(a, b, l = 0, u = 1, mean = NULL, var = NULL, sd = NULL, 
     a <- AMS(mean, var)
     b <- BMS(mean, var)
   }
+  dsty <- integrate(function(x) {x^(a - 1) * (1 - x)^(b - 1)}, lower = 0, upper = 1)$value
   BETAMOMENTS <- rep(list(rep(list(NULL), orders)), length(types))
   TYPE <- 1
   if (any(types == "raw")) {
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { l + (u - l) * dbeta(x, a, b) * x^i }, lower = 0, upper = 1)$value
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^i }, lower = l, upper = u)$value
     }
     names(BETAMOMENTS)[TYPE] <- "raw"
     TYPE <- TYPE + 1
@@ -35,18 +36,18 @@ betamoments <- function(a, b, l = 0, u = 1, mean = NULL, var = NULL, sd = NULL, 
   if (any(types == "central")) {
     Mu <- integrate(function(x) { l + (u - l) * dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { (u - l)^2 * dbeta(x, a, b) * (x - Mu)^i },
-                                            lower = 0, upper = 1)$value
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^i },
+                                            lower = l, upper = u)$value
     }
     names(BETAMOMENTS)[TYPE] <- "central"
     TYPE <- TYPE + 1
   }
   if (any(types == "standardized")) {
-    Mu <- integrate(function(x) { l + (u - l) * dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
-    Sigma <- integrate(function(x) { (u - l)^2 * dbeta(x, a, b) * (x - Mu)^2 }, lower = 0, upper = 1)$value
+    Mu <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x }, lower = l, upper = u)$value
+    Sigma <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^2 }, lower = l, upper = u)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dbeta(x, a, b) * ((x - Mu)^i / sqrt(Sigma)^i) },
-                                            lower = 0, upper = 1)$value
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * ((x - Mu)^i / sqrt(Sigma)^i) },
+                                            lower = l, upper = u)$value
     }
     names(BETAMOMENTS)[TYPE] <- "standardized"
   }
