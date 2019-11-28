@@ -4,7 +4,7 @@
 \alias{AMS}
 \title{Alpha shape parameter given mean and variance of a Standard Beta PDD.}
 \usage{
-AMS(mean, var, sd)
+AMS(mean, var, sd = NULL)
 }
 \arguments{
 \item{mean}{The mean of the target Standard Beta probability density distribution.}

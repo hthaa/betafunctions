@@ -2,15 +2,19 @@
 % Please edit documentation in R/betafunctions.R
 \name{betamoments}
 \alias{betamoments}
-\title{Compute Moments of Beta Probability Density Distributions.}
+\title{Compute Moments of Two-to-Four Parameter Beta Probability Density Distributions.}
 \usage{
-betamoments(a, b, mean = NULL, var = NULL, sd = NULL,
-  types = c("raw", "central", "standardized"), orders = 4)
+betamoments(a, b, l = 0, u = 1, mean = NULL, var = NULL,
+  sd = NULL, types = c("raw", "central", "standardized"), orders = 4)
 }
 \arguments{
 \item{a}{The Alpha shape parameter of the PDD.}
 
 \item{b}{The Beta shape parameter of the PDD.}
+
+\item{l}{The first (lower) location parameter of a four-paramteer distribution.}
+
+\item{u}{The second (upper) location parameter of a four-parameter distribution.}
 
 \item{types}{A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".}
 
@@ -21,4 +25,7 @@ A list of moment types, each a list of moment orders.
 }
 \description{
 Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
+}
+\references{
+Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
 }

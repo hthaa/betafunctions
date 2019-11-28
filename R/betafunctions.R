@@ -53,6 +53,14 @@ betamoments <- function(a, b, l = 0, u = 1, mean = NULL, var = NULL, sd = NULL, 
   return(BETAMOMENTS)
 }
 
+#' Compute Moments of Observed Value Distribution.
+#'
+#' @description Computes Raw, Central, or Standardized moment properties of a vector of observed scores.
+#' @param x A vector of values, the distribution of which moments are to be calculated.
+#' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
+#' @param orders The number of moment-orders to be calculated for each of the moment-types.
+#' @return A list of moment types, each a list of moment orders.
+#' @export
 observedmoments <- function(x, type = c("raw", "central", "standardized"),  orders = 4, correct = TRUE) {
   x <- na.omit(x)
   types <- 1
@@ -70,8 +78,7 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
     sigma <- list(rep(vector(length = 1), orders))
     for (i in 1:orders) {
       if (correct) {
-        sigma[i] <- sum((x - mean(x))^i)/(length(x) -
-                                            1)
+        sigma[i] <- var(x)
       }
       else {
         sigma[i] <- sum((x - mean(x))^i)/(length(x))
@@ -85,10 +92,10 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
     gamma <- list(rep(vector(length = 1), orders))
     for (i in 1:orders) {
       if (correct) {
-        gamma[i] <- sum(((x - mean(x))^i)/sqrt(var(x))^i)/(length(x) -  2)
+        gamma[i] <- 1 / length(x) * sum(((x - mean(x))^i)/sqrt(var(x))^i)
       }
       else {
-        gamma[i] <- sum(((x - mean(x))^i)/sqrt(var(x))^i)/length(x)
+        gamma[i] <- 1 / length(x) * sum(((x - mean(x))^i)/sqrt(var(x))^i)
       }
     }
     momentorders[[length(momentorders) + 1]] <- gamma
@@ -398,97 +405,6 @@ qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
     (1 - qbeta(p, alpha, beta)) * (u - l) + l
   }
 
-}
-
-
-#' Livingston and Lewis' "Effective Test Length"
-#' @description  According to Livingston and Lewis (1995), "The effective test length corresponding to a test score is the number of discrete, dichotomously scored, locally independent, equally difficult items required to produce a total score of the same reliability."
-#' @param mean The mean of the observed-score distribution.
-#' @param variance The variance of the observed-score distribution.
-#' @param l The lower-bound of the observed-score distribution.
-#' @param u The upper-bound of the observed-score distribution.
-#' @param reliability The reliability of the observed scores (correlation with true-score distribution).
-#' @return An estimate of the effective length of a test, given the stability of the observations it produces.
-ETL <- function(mean, variance, l = 0, u = 1, reliability) {
-  ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
-}
-
-k <- function(alpha, beta, rho) {
-  K <- alpha + beta
-  mu <- alpha / K
-  sigma2 <- alpha * beta / (alpha + beta + 1) * (alpha + beta)^2
-  error <- sigma2 * (1 - rho)
-  K*((K - 1)*(sigma2 - error) - K*sigma2 + mu*(K - mu)) / 2*((mu*K - mu) - (sigma2 - error))
-}
-
-#' Beta Confusion Matrix.
-#'
-#' @description Function for calculating the confusion matrix for expected classification accuracy observed-scores, true-scores, and errors are distributed as Beta with shape-parameters alpha and beta.
-#' @param x A vector of observed scores for which a beta-distribution is to be fitted.
-#' @param alpha The first shape parameter of the observed-score distribution.
-#' @param beta The second shape parameter of the observed-score distribution.
-#' @param mean The mean of the observed-score distribution.
-#' @param variance The variance of the observed-score distribution.
-#' @param reliability The observed-score correlation with the true-score.
-#' @param cut The cutoff value for classifying observations into pass or fail categories.
-#' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
-#' @export
-
-BCM <- function(x = NULL, alpha = NULL, beta = NULL, mean = NULL, variance = NULL, reliability, cut) {
-  if (!is.null(x)) {
-    alpha <- AMS(mean(x), var(x))
-    beta <- BMS(mean(x), var(x))
-  } else {
-    if (!is.null(mean) & !is.null(variance)) {
-      alpha <- AMS(mean, variance)
-      beta <- BMS(mean, variance)
-    }
-  }
-  N <- ETL(mean, variance, reliability = reliability)
-
-  xaxis <- seq(.001, .999, .001)
-  density <- dbeta(xaxis, alpha, beta) / sum(dbeta(xaxis, alpha, beta))
-
-  p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
-  p.fail <- 1 - p.pass
-
-  p.tf <- p.fail[which(xaxis < cut)] * density[which(xaxis < cut)]
-  p.fp <- p.pass[which(xaxis < cut)] * density[which(xaxis < cut)]
-
-  p.ff <- p.fail[which(xaxis >= cut)] * density[which(xaxis >= cut)]
-  p.tp <- p.pass[which(xaxis >= cut)] * density[which(xaxis >= cut)]
-
-  cmat <- matrix(nrow = 2, ncol = 2)
-  rownames(cmat) <- c("True", "False")
-  colnames(cmat) <- c("Fail", "Pass")
-  cmat["True", "Fail"] <- sum(p.tf)
-  cmat["True", "Pass"] <- sum(p.tp)
-  cmat["False", "Fail"] <- sum(p.ff)
-  cmat["False", "Pass"] <- sum(p.fp)
-  return(list("EffectiveTestLength" = N, "ShapeParameters" = list("Alpha" = alpha, "Beta" = beta), "Confusionmatrix" = cmat))
-}
-
-#' Classification Accuracy Statistics.
-#'
-#' @description Provides a set of statistics often used for conveying information regarding the certainty of classifications based on tests.
-#' @param tp The number or rate of true-positive classifications.
-#' @param tn The number or rate of true-negative classifications.
-#' @param fp The number or rate of false-positive classifications.
-#' @param fn The number or rate of false-negative classifications.
-#' @return A list of classification accuracy statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio, negative likelihood ratio, positive predictive value, negative predictive value, and Youden's J.
-#' @export
-caStats <- function(tp, tn, fp, fn) {
-  sensitivity <-  tp / (tp + fn)
-  specificity <-  tn / (tn + fp)
-  plr <-          sensitivity / (1 - specificity)
-  nlr <-          (1 - sensitivity) / specificity
-  ppv <-          tp / (tp + fp)
-  npv <-          tn / (tn + fn)
-  J <-            (sensitivity + specificity) - 1
-  list("Sensitivity" = sensitivity, "Specificity" = specificity,
-       "LR.pos" = plr, "LR.neg" = nlr,
-       "PPV" = ppv, "NPV" = npv,
-       "Youden.J" = J)
 }
 
 #' Method of Moment Estimates of Shape- and Location Parameters of the Four-Parameter Beta Distribution.

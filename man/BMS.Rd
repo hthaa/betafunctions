@@ -4,7 +4,7 @@
 \alias{BMS}
 \title{Beta shape parameter given mean and variance of a Standard Beta PDD.}
 \usage{
-BMS(mean, var, sd)
+BMS(mean, var, sd = NULL)
 }
 \arguments{
 \item{mean}{The mean of the target Standard Beta probability density distribution.}
