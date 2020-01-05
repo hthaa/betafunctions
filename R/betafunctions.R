@@ -14,7 +14,7 @@ betamoments <- function(a, b, l = 0, u = 1, mean = NULL, var = NULL, sd = NULL, 
   if (!is.null(mean) & (!is.null(var) | !is.null(sd))) {
     if (!is.null(var) & !is.null(sd)) {
       if (var != sd^2) {
-        warning("Nonequivalent values of VAR and SD specified. Using VAR.")
+        warning("Nonequivalent values of 'var' and 'sd' specified. Using 'var'.")
       }
     }
     if (is.null(var) & !is.null(sd)) {
