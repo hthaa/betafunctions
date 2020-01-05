@@ -4,19 +4,11 @@
 \alias{LL.cac}
 \title{An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy and Consistency based on Test Scores.}
 \usage{
-LL.cac(x = NULL, min = 0, max = 1, alpha = NULL, beta = NULL,
-  l = 0, u = 1, mean = NULL, variance = NULL, reliability, cut)
+LL.cac(x = NULL, min = 0, max = 1, l = NULL, u = NULL,
+  reliability, cut)
 }
 \arguments{
 \item{x}{A vector of observed scores for which a beta-distribution is to be fitted.}
-
-\item{alpha}{The first shape parameter of the observed-score distribution.}
-
-\item{beta}{The second shape parameter of the observed-score distribution.}
-
-\item{mean}{The mean of the observed-score distribution.}
-
-\item{variance}{The variance of the observed-score distribution.}
 
 \item{reliability}{The observed-score correlation with the true-score.}
 
