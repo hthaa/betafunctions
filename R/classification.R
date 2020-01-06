@@ -31,24 +31,20 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @references Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
-LL.cac <- function(x = NULL, min = 0, max = 1, l = NULL, u = NULL, reliability, cut) {
+LL.cac <- function(x = NULL, min = 0, max = 1, reliability, cut) {
   x <- (x - min) / (max - min)
   params <- Beta.4p.fit(x)
   x.moments <- observedmoments(x)
   mean <- x.moments[[1]][[1]]
   variance <- x.moments[[2]][[2]]
-  if (!is.null(l)) params$l <- l
-  if (!is.null(u)) params$u <- u
-  if (params$l < 0) warning("Estimate of lower-bound indicates non-zero probability of attaining proportional score < 0.")
-  if (params$l > params$u) warning("Estimate of lower-bound greater than estimate of upper-bound.")
-  if (params$l > 1) warning("Estimate of upper-bound indicates non-zero probability of attaining proportional score > 1.")
   N <- ETL(mean, variance, reliability = reliability)
-  xprime <- N * x
 
   xaxis <- seq(params$l + .001, params$u - .001, .001)
-  density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) / sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
+  density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) /
+    sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
 
-  p.pass <- pBeta.4P(cut, params$l, params$u,  xaxis * N, (1 - xaxis) * N, lt = FALSE)
+  #Calculate probabilities of producing passing and failing scores along the true-score distribution.
+  p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
   p.fail <- 1 - p.pass
 
   p.tf <- p.fail[which(xaxis < cut)] * density[which(xaxis < cut)]
@@ -64,7 +60,7 @@ LL.cac <- function(x = NULL, min = 0, max = 1, l = NULL, u = NULL, reliability, 
   cmat["True", "Pass"] <- sum(p.tp)
   cmat["False", "Fail"] <- sum(p.ff)
   cmat["False", "Pass"] <- sum(p.fp)
-  return(list("EffectiveTestLength" = N, "Parameters" = list("l" = l, "u" = u, "Alpha" = alpha, "Beta" = beta), "Confusionmatrix" = cmat))
+  return(list("effectivetestlength" = N, "parameters" = params, "confusionmatrix" = cmat))
 }
 
 #' Classification Accuracy Statistics.
