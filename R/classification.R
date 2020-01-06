@@ -34,6 +34,13 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 LL.cac <- function(x = NULL, min = 0, max = 1, reliability, cut) {
   x <- (x - min) / (max - min)
   params <- Beta.4p.fit(x)
+  if (params$l < 0) {
+    warning("Improper solution for lower-bound estimate of true-score distribution (< 0). Reverting to two-parameter solution.")
+    params$alpha <- AMS(mean(x), var(x))
+    params$beta <- BMS(mean(x), var(x))
+    params$l <- 0
+    params$u <- 1
+  }
   x.moments <- observedmoments(x)
   mean <- x.moments[[1]][[1]]
   variance <- x.moments[[2]][[2]]

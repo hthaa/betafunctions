@@ -4,8 +4,7 @@
 \alias{LL.cac}
 \title{An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy and Consistency based on Test Scores.}
 \usage{
-LL.cac(x = NULL, min = 0, max = 1, l = NULL, u = NULL,
-  reliability, cut)
+LL.cac(x = NULL, min = 0, max = 1, reliability, cut)
 }
 \arguments{
 \item{x}{A vector of observed scores for which a beta-distribution is to be fitted.}
