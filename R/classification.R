@@ -32,7 +32,7 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @references Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
-LL.cac <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL) {
+LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL) {
   x <- (x - min) / (max - min)
   params <- Beta.4p.fit(x)
   if (params$l < 0) {
@@ -119,7 +119,7 @@ LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut) {
       cuts <- seq(0, 1, .001)
       outputmatrix <- matrix(nrow = length(seq(0, 1, .001)), ncol = 2)
     }
-    cmat <- LL.cac(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut)$confusionmatrix
+    cmat <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut)$confusionmatrix
     axval <- caStats(cmat[1, 1], cmat[1, 2], cmat[2, 1], cmat[2, 2])
     outputmatrix[i, 1] <- 1 - axval$Specificity
     outputmatrix[i, 2] <- axval$Sensitivity
