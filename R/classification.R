@@ -127,6 +127,11 @@ LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE
     outputmatrix[i, 3] <- axval$Youden.J
     outputmatrix[, 4] <- cuts
     colnames(outputmatrix) <- c("FPR", "TPR", "Youden.J", "Cutoff")
+    outputmatrix[which(is.na(outputmatrix[, 1])), 1] <- 0
+    outputmatrix[which(is.na(outputmatrix[, 2])), 2] <- 1
+  }
+  if (raw.out) {
+    return(outputmatrix)
   }
   plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
   abline(h = seq(0, 1, .1), v = seq(0, 1, .1), col = "lightgrey", lty = "dotted")
@@ -147,9 +152,6 @@ LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE
                         round(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 4], 3),
                         "\n(Max. Youden's J. = ", round(max(outputmatrix[, 3]), 3), ").", sep = ""),
          adj = c(0, 1))
-  }
-  if (raw.out) {
-    return(outputmatrix)
   }
 }
 
