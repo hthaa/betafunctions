@@ -28,10 +28,11 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @param x A vector of observed scores for which a beta-distribution is to be fitted.
 #' @param reliability The observed-score correlation with the true-score.
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
+#' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curve values.
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @references Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
-LL.cac <- function(x = NULL, min = 0, max = 1, reliability, cut) {
+LL.cac <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL) {
   x <- (x - min) / (max - min)
   params <- Beta.4p.fit(x)
   if (params$l < 0) {
@@ -41,12 +42,21 @@ LL.cac <- function(x = NULL, min = 0, max = 1, reliability, cut) {
     params$l <- 0
     params$u <- 1
   }
-  x.moments <- observedmoments(x)
-  mean <- x.moments[[1]][[1]]
-  variance <- x.moments[[2]][[2]]
+  if (params$u > 1) {
+    warning("Improper solution for upper-bound estimate of true-score distribution (> 1). Reverting to two-parameter solution.")
+    params$alpha <- AMS(mean(x), var(x))
+    params$beta <- BMS(mean(x), var(x))
+    params$l <- 0
+    params$u <- 1
+  }
+  mean <- mean(x)
+  variance <- var(x)
   N <- ETL(mean, variance, reliability = reliability)
+  if (is.null(truecut)) {
+    truecut <- cut
+  }
 
-  xaxis <- seq(params$l + .001, params$u - .001, .001)
+  xaxis <- seq(0, 1, .001)
   density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) /
     sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
 
@@ -54,11 +64,11 @@ LL.cac <- function(x = NULL, min = 0, max = 1, reliability, cut) {
   p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
   p.fail <- 1 - p.pass
 
-  p.tf <- p.fail[which(xaxis < cut)] * density[which(xaxis < cut)]
-  p.fp <- p.pass[which(xaxis < cut)] * density[which(xaxis < cut)]
+  p.tf <- p.fail[which(xaxis < truecut)] * density[which(xaxis < truecut)]
+  p.fp <- p.pass[which(xaxis < truecut)] * density[which(xaxis < truecut)]
 
-  p.ff <- p.fail[which(xaxis >= cut)] * density[which(xaxis >= cut)]
-  p.tp <- p.pass[which(xaxis >= cut)] * density[which(xaxis >= cut)]
+  p.ff <- p.fail[which(xaxis >= truecut)] * density[which(xaxis >= truecut)]
+  p.tp <- p.pass[which(xaxis >= truecut)] * density[which(xaxis >= truecut)]
 
   cmat <- matrix(nrow = 2, ncol = 2)
   rownames(cmat) <- c("True", "False")
@@ -91,4 +101,31 @@ caStats <- function(tp, tn, fp, fn) {
        "LR.pos" = plr, "LR.neg" = nlr,
        "PPV" = ppv, "NPV" = npv,
        "Youden.J" = J)
+}
+
+#' ROC curves for the Livingston and Lewis approach.
+#'
+#' @description Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.
+#' @param x A vector of observed results.
+#' @param min The minimum possible value to attain on the observed-score scale. Default is 0 (assuming \code{x} represent proportions).
+#' @param max The maximum possible value to attain on the observed-score scale. Default is 1 (assuming \code{x} represent proportions).
+#' @param reliability The reliability coefficient of the test.
+#' @param truecut The true point along the x-scale that marks the categorization-threshold.
+#' @return A plot tracing the ROC curve for the test.
+#' @export
+LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut) {
+  for (i in 1:length(seq(0, 1, .001))) {
+    if (i == 1) {
+      cuts <- seq(0, 1, .001)
+      outputmatrix <- matrix(nrow = length(seq(0, 1, .001)), ncol = 2)
+    }
+    cmat <- LL.cac(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut)$confusionmatrix
+    axval <- caStats(cmat[1, 1], cmat[1, 2], cmat[2, 1], cmat[2, 2])
+    outputmatrix[i, 1] <- 1 - axval$Specificity
+    outputmatrix[i, 2] <- axval$Sensitivity
+  }
+  plot(outputmatrix[, 1], outputmatrix[, 2], type = "l",
+       xlab = "False-Positive Rate (1 - Specificity)",
+       ylab = "True-Positive Rate (Sensitivity)",
+       main = paste("ROC curve for true-cut equal to", truecut), lwd = 2)
 }

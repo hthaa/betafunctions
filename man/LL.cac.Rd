@@ -4,7 +4,8 @@
 \alias{LL.cac}
 \title{An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy and Consistency based on Test Scores.}
 \usage{
-LL.cac(x = NULL, min = 0, max = 1, reliability, cut)
+LL.cac(x = NULL, min = 0, max = 1, reliability, cut,
+  truecut = NULL)
 }
 \arguments{
 \item{x}{A vector of observed scores for which a beta-distribution is to be fitted.}
@@ -12,6 +13,8 @@ LL.cac(x = NULL, min = 0, max = 1, reliability, cut)
 \item{reliability}{The observed-score correlation with the true-score.}
 
 \item{cut}{The cutoff value for classifying observations into pass or fail categories.}
+
+\item{truecut}{Optional specification of a "true" cutoff. Useful for producing ROC curve values.}
 }
 \value{
 A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
