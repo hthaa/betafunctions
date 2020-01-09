@@ -4,7 +4,8 @@
 \alias{LL.ROC}
 \title{ROC curves for the Livingston and Lewis approach.}
 \usage{
-LL.ROC(x = NULL, min = 0, max = 1, reliability, truecut)
+LL.ROC(x = NULL, min = 0, max = 1, reliability, truecut,
+  AUC = FALSE, maxJ = FALSE, raw.out = FALSE)
 }
 \arguments{
 \item{x}{A vector of observed results.}
@@ -16,6 +17,8 @@ LL.ROC(x = NULL, min = 0, max = 1, reliability, truecut)
 \item{reliability}{The reliability coefficient of the test.}
 
 \item{truecut}{The true point along the x-scale that marks the categorization-threshold.}
+
+\item{AUC}{Calculate and include the area under the curve? Default is FALSE.}
 }
 \value{
 A plot tracing the ROC curve for the test.

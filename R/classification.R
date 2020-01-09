@@ -22,9 +22,9 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
   ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
 }
 
-#' An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy and Consistency based on Test Scores.
+#' An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy based on Test Scores.
 #'
-#' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy and consistency, which assumes that observed-scores, true-scores, and errors of measurement follow the four-parameter beta distribution. Under this assumption, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and estimated test reliability.
+#' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which assumes that observed-scores, true-scores, and errors of measurement follow the four-parameter beta distribution. Under this assumption, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and estimated test reliability.
 #' @param x A vector of observed scores for which a beta-distribution is to be fitted.
 #' @param reliability The observed-score correlation with the true-score.
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
@@ -55,7 +55,6 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL) 
   if (is.null(truecut)) {
     truecut <- cut
   }
-
   xaxis <- seq(0, 1, .001)
   density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) /
     sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
@@ -64,12 +63,13 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL) 
   p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
   p.fail <- 1 - p.pass
 
+  # Calculate proportions of true and false positives and negatives.
   p.tf <- p.fail[which(xaxis < truecut)] * density[which(xaxis < truecut)]
   p.fp <- p.pass[which(xaxis < truecut)] * density[which(xaxis < truecut)]
-
   p.ff <- p.fail[which(xaxis >= truecut)] * density[which(xaxis >= truecut)]
   p.tp <- p.pass[which(xaxis >= truecut)] * density[which(xaxis >= truecut)]
 
+  # Calculate confusion matrix.
   cmat <- matrix(nrow = 2, ncol = 2)
   rownames(cmat) <- c("True", "False")
   colnames(cmat) <- c("Fail", "Pass")
@@ -111,21 +111,58 @@ caStats <- function(tp, tn, fp, fn) {
 #' @param max The maximum possible value to attain on the observed-score scale. Default is 1 (assuming \code{x} represent proportions).
 #' @param reliability The reliability coefficient of the test.
 #' @param truecut The true point along the x-scale that marks the categorization-threshold.
+#' @param AUC Calculate and include the area under the curve? Default is FALSE.
 #' @return A plot tracing the ROC curve for the test.
 #' @export
-LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut) {
+LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE) {
   for (i in 1:length(seq(0, 1, .001))) {
     if (i == 1) {
       cuts <- seq(0, 1, .001)
-      outputmatrix <- matrix(nrow = length(seq(0, 1, .001)), ncol = 2)
+      outputmatrix <- matrix(nrow = length(seq(0, 1, .001)), ncol = 4)
     }
     cmat <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut)$confusionmatrix
     axval <- caStats(cmat[1, 1], cmat[1, 2], cmat[2, 1], cmat[2, 2])
     outputmatrix[i, 1] <- 1 - axval$Specificity
     outputmatrix[i, 2] <- axval$Sensitivity
+    outputmatrix[i, 3] <- axval$Youden.J
+    outputmatrix[, 4] <- cuts
+    colnames(outputmatrix) <- c("FPR", "TPR", "Youden.J", "Cutoff")
   }
+  plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
+  abline(h = seq(0, 1, .1), v = seq(0, 1, .1), col = "lightgrey", lty = "dotted")
+  par(new = TRUE)
   plot(outputmatrix[, 1], outputmatrix[, 2], type = "l",
        xlab = "False-Positive Rate (1 - Specificity)",
        ylab = "True-Positive Rate (Sensitivity)",
        main = paste("ROC curve for true-cut equal to", truecut), lwd = 2)
+  if (AUC) {
+    legend("bottomright", bty = "n", cex = 1.5, legend = paste("AUC =", round(AUC(outputmatrix[, 1], outputmatrix[, 2]), 3)))
+  }
+  if (maxJ) {
+    points(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1],
+           outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2], cex = 1.5, pch = 19)
+    text(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1] + .025,
+         outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2] - .025,
+         labels = paste("Maximum Youden's J. at cutoff = ",
+                        round(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 4], 3),
+                        "\n(Max. Youden's J. = ", round(max(outputmatrix[, 3]), 3), ").", sep = ""),
+         adj = c(0, 1))
+  }
+  if (raw.out) {
+    return(outputmatrix)
+  }
+}
+
+#' Area Under the ROC Curve.
+#'
+#' @desription Given a vector of false-positive rates and a vector of true-positive rates, calculate the area under the Receiver Operator Characteristic (ROC) curve.
+#' @param FPR Vector of False-Positive Rates.
+#' @param TPR Vector of True-Posiitive Rates.
+#' @return A value representing the area under the ROC curve.
+#' @note Script originally retrieved and modified from https://blog.revolutionanalytics.com/2016/11/calculating-auc.html.
+#' @export
+AUC <- function(FPR, TPR) {
+  dFPR <- c(diff(FPR), 0)
+  dTPR <- c(diff(TPR), 0)
+  sum(TPR * dFPR) + sum(dTPR * dFPR)/2
 }

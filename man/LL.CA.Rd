@@ -2,7 +2,7 @@
 % Please edit documentation in R/classification.R
 \name{LL.CA}
 \alias{LL.CA}
-\title{An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy and Consistency based on Test Scores.}
+\title{An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy based on Test Scores.}
 \usage{
 LL.CA(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL)
 }
@@ -19,7 +19,7 @@ LL.CA(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL)
 A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 }
 \description{
-An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy and consistency, which assumes that observed-scores, true-scores, and errors of measurement follow the four-parameter beta distribution. Under this assumption, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and estimated test reliability.
+An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which assumes that observed-scores, true-scores, and errors of measurement follow the four-parameter beta distribution. Under this assumption, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and estimated test reliability.
 }
 \references{
 Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
