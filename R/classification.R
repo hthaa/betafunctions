@@ -32,7 +32,7 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @references Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
-LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL) {
+LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, pdist = "beta") {
   x <- (x - min) / (max - min)
   params <- Beta.4p.fit(x)
   if (params$l < 0) {
@@ -60,7 +60,13 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL) 
     sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
 
   #Calculate probabilities of producing passing and failing scores along the true-score distribution.
-  p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
+  if (pdist == "beta") {
+    p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
+  }
+  if (pdist == "binomial") {
+    N <- round(N)
+    p.pass <- pbinom(cut * N, N, xaxis, lower.tail = FALSE)
+  }
   p.fail <- 1 - p.pass
 
   # Calculate proportions of true and false positives and negatives.
@@ -139,7 +145,8 @@ LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE
   plot(outputmatrix[, 1], outputmatrix[, 2], type = "l",
        xlab = "False-Positive Rate (1 - Specificity)",
        ylab = "True-Positive Rate (Sensitivity)",
-       main = paste("ROC curve for true-cut equal to", truecut), lwd = 2)
+       main = paste("ROC curve for true-cut equal to", truecut), lwd = 2,
+       xlim = c(0, 1), ylim = c(0, 1))
   if (AUC) {
     legend("bottomright", bty = "n", cex = 1.5, legend = paste("AUC =", round(AUC(outputmatrix[, 1], outputmatrix[, 2]), 3)))
   }
