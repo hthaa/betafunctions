@@ -29,6 +29,7 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @param reliability The observed-score correlation with the true-score.
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curve values.
+#' @param pdist The probability distribution to be used for pruducing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @references Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
@@ -164,7 +165,7 @@ LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE
 
 #' Area Under the ROC Curve.
 #'
-#' @desription Given a vector of false-positive rates and a vector of true-positive rates, calculate the area under the Receiver Operator Characteristic (ROC) curve.
+#' @description Given a vector of false-positive rates and a vector of true-positive rates, calculate the area under the Receiver Operator Characteristic (ROC) curve.
 #' @param FPR Vector of False-Positive Rates.
 #' @param TPR Vector of True-Posiitive Rates.
 #' @return A value representing the area under the ROC curve.

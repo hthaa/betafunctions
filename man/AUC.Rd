@@ -15,7 +15,7 @@ AUC(FPR, TPR)
 A value representing the area under the ROC curve.
 }
 \description{
-Area Under the ROC Curve.
+Given a vector of false-positive rates and a vector of true-positive rates, calculate the area under the Receiver Operator Characteristic (ROC) curve.
 }
 \note{
 Script originally retrieved and modified from https://blog.revolutionanalytics.com/2016/11/calculating-auc.html.
