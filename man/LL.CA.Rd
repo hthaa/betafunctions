@@ -2,7 +2,7 @@
 % Please edit documentation in R/classification.R
 \name{LL.CA}
 \alias{LL.CA}
-\title{An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy based on Test Scores.}
+\title{An implementation of the Livingston and Lewis (1995) Method for estimating Classification Accuracy based on Test Scores.}
 \usage{
 LL.CA(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL,
   pdist = "beta")
@@ -16,7 +16,7 @@ LL.CA(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL,
 
 \item{truecut}{Optional specification of a "true" cutoff. Useful for producing ROC curve values.}
 
-\item{pdist}{The probability distribution to be used for pruducing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.}
+\item{pdist}{The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.}
 }
 \value{
 A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.

@@ -22,14 +22,14 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
   ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
 }
 
-#' An implementation of the Livingston and Lewis (1995) Method to Classification Accuracy based on Test Scores.
+#' An implementation of the Livingston and Lewis (1995) Method for estimating Classification Accuracy based on Test Scores.
 #'
 #' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which assumes that observed-scores, true-scores, and errors of measurement follow the four-parameter beta distribution. Under this assumption, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and estimated test reliability.
 #' @param x A vector of observed scores for which a beta-distribution is to be fitted.
 #' @param reliability The observed-score correlation with the true-score.
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curve values.
-#' @param pdist The probability distribution to be used for pruducing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.
+#' @param pdist The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @references Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
