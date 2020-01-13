@@ -16,7 +16,7 @@ k <- function(alpha, beta, reliability) {
 #' @param u The upper-bound of the observed-score distribution.
 #' @param reliability The reliability of the observed scores (correlation with true-score distribution).
 #' @return An estimate of the effective length of a test, given the stability of the observations it produces.
-#' @references Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
 ETL <- function(mean, variance, l = 0, u = 1, reliability) {
   ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
@@ -31,7 +31,7 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curve values.
 #' @param pdist The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
-#' @references Livinston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
 LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, pdist = "beta") {
   x <- (x - min) / (max - min)
@@ -90,24 +90,27 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, 
 #' Classification Accuracy Statistics.
 #'
 #' @description Provides a set of statistics often used for conveying information regarding the certainty of classifications based on tests.
-#' @param tp The number or rate of true-positive classifications.
-#' @param tn The number or rate of true-negative classifications.
-#' @param fp The number or rate of false-positive classifications.
-#' @param fn The number or rate of false-negative classifications.
-#' @return A list of classification accuracy statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio, negative likelihood ratio, positive predictive value, negative predictive value, and Youden's J.
+#' @param tp The frequency or rate of true-positive classifications.
+#' @param tn The frequency or rate of true-negative classifications.
+#' @param fp The frequency or rate of false-positive classifications.
+#' @param fn The frequency or rate of false-negative classifications.
+#' @return A list of diagnostic performance statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio (LR.pos), negative likelihood ratio (LR.neg), diagnostic odds ratio (DOR), positive predictive value (PPV), negative predictive value (NPV), Youden's J. (Youden.J), and Accuracy.
+#' @references Glas et al. (2003). The Diagnostic Odds Ratio: A Single Indicator of Test Performance, Journal of Clinical Epidemiology, 1129-1135, 56(11). doi: 10.1016/S0895-4356(03)00177-X
 #' @export
 caStats <- function(tp, tn, fp, fn) {
   sensitivity <-  tp / (tp + fn)
   specificity <-  tn / (tn + fp)
   plr <-          sensitivity / (1 - specificity)
   nlr <-          (1 - sensitivity) / specificity
+  dor <-          plr / nlr
   ppv <-          tp / (tp + fp)
   npv <-          tn / (tn + fn)
+  accuracy <-     (tp + tn) / (tp + tn + fp + fn)
   J <-            (sensitivity + specificity) - 1
   list("Sensitivity" = sensitivity, "Specificity" = specificity,
-       "LR.pos" = plr, "LR.neg" = nlr,
+       "LR.pos" = plr, "LR.neg" = nlr, "DOR" = dor,
        "PPV" = ppv, "NPV" = npv,
-       "Youden.J" = J)
+       "Youden.J" = J, "Accuracy" = accuracy)
 }
 
 #' ROC curves for the Livingston and Lewis approach.

@@ -7,17 +7,20 @@
 caStats(tp, tn, fp, fn)
 }
 \arguments{
-\item{tp}{The number or rate of true-positive classifications.}
+\item{tp}{The frequency or rate of true-positive classifications.}
 
-\item{tn}{The number or rate of true-negative classifications.}
+\item{tn}{The frequency or rate of true-negative classifications.}
 
-\item{fp}{The number or rate of false-positive classifications.}
+\item{fp}{The frequency or rate of false-positive classifications.}
 
-\item{fn}{The number or rate of false-negative classifications.}
+\item{fn}{The frequency or rate of false-negative classifications.}
 }
 \value{
-A list of classification accuracy statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio, negative likelihood ratio, positive predictive value, negative predictive value, and Youden's J.
+A list of diagnostic performance statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio (LR.pos), negative likelihood ratio (LR.neg), diagnostic odds ratio (DOR), positive predictive value (PPV), negative predictive value (NPV), Youden's J. (Youden.J), and Accuracy.
 }
 \description{
 Provides a set of statistics often used for conveying information regarding the certainty of classifications based on tests.
+}
+\references{
+Glas et al. (2003). The Diagnostic Odds Ratio: A Single Indicator of Test Performance, Journal of Clinical Epidemiology, 1129-1135, 56(11). doi: 10.1016/S0895-4356(03)00177-X
 }

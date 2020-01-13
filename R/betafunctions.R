@@ -10,31 +10,19 @@
 #' @references Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
 #' @return A list of moment types, each a list of moment orders.
 #' @export
-betamoments <- function(a, b, l = 0, u = 1, mean = NULL, var = NULL, sd = NULL, types = c("raw", "central", "standardized"), orders = 4) {
-  if (!is.null(mean) & (!is.null(var) | !is.null(sd))) {
-    if (!is.null(var) & !is.null(sd)) {
-      if (var != sd^2) {
-        warning("Nonequivalent values of 'var' and 'sd' specified. Using 'var'.")
-      }
-    }
-    if (is.null(var) & !is.null(sd)) {
-      var <- sd
-    }
-    a <- AMS(mean, var)
-    b <- BMS(mean, var)
-  }
-  dsty <- integrate(function(x) {x^(a - 1) * (1 - x)^(b - 1)}, lower = 0, upper = 1)$value
+betamoments <- function(a, b, l = 0, u = 1, types = c("raw", "central", "standardized"), orders = 4) {
   BETAMOMENTS <- rep(list(rep(list(NULL), orders)), length(types))
   TYPE <- 1
   if (any(types == "raw")) {
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^i }, lower = l, upper = u)$value
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^i },
+                                            lower = l, upper = u)$value
     }
     names(BETAMOMENTS)[TYPE] <- "raw"
     TYPE <- TYPE + 1
   }
   if (any(types == "central")) {
-    Mu <- integrate(function(x) { l + (u - l) * dbeta(x, a, b) * x }, lower = 0, upper = 1)$value
+    Mu <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
     for (i in 1:orders) {
       BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^i },
                                             lower = l, upper = u)$value
@@ -43,10 +31,11 @@ betamoments <- function(a, b, l = 0, u = 1, mean = NULL, var = NULL, sd = NULL, 
     TYPE <- TYPE + 1
   }
   if (any(types == "standardized")) {
-    Mu <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x }, lower = l, upper = u)$value
-    Sigma <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^2 }, lower = l, upper = u)$value
+    Mu <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
+    SigmaSquared <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^2 },
+                       lower = l, upper = u)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * ((x - Mu)^i / sqrt(Sigma)^i) },
+      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * ((x - Mu)^i / sqrt(SigmaSquared)^i) },
                                             lower = l, upper = u)$value
     }
     names(BETAMOMENTS)[TYPE] <- "standardized"
@@ -339,12 +328,12 @@ MLM <- function(a, b, x = NULL, n = NULL) {
 #' @return The value for the probability density at specified values of X.
 #' @export
 dBeta.4P <- function(x, l, u, alpha, beta) {
-  betafunc <- integrate(function(y) { y^(alpha - 1)*(1 - y)^(beta - 1) }, lower = 0, upper = 1)$value
+ bfunc <- beta(alpha, beta)
   sapply(x, function(x) {
     if (x < l | x > u) {
       0
     } else {
-      (1 / betafunc) * ((x - l)^(alpha - 1) * (u - x)^(beta - 1)) / (u - l)^(alpha + beta -1)
+      (1 / bfunc) * ((x - l)^(alpha - 1) * (u - x)^(beta - 1)) / (u - l)^(alpha + beta -1)
     }
     }
   )
