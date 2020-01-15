@@ -11,7 +11,7 @@ Beta.gfx.poly.pdf(from, to, by, alpha, beta)
 
 \item{to}{The point of the x-axis to where y-density values are to be produced.}
 
-\item{by}{The resolution (or specing) at which to produce y-density values.}
+\item{by}{The resolution (or spacing) at which to produce y-density values.}
 
 \item{alpha}{The Alpha shape-parameter value for the Standard Beta probability density distribution.}
 

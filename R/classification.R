@@ -1,12 +1,3 @@
-
-k <- function(alpha, beta, reliability) {
-  K <- alpha + beta
-  mu <- alpha / K
-  sigma2 <- alpha * beta / (alpha + beta + 1) * (alpha + beta)^2
-  error <- sigma2 * (1 - reliability)
-  K*((K - 1)*(sigma2 - error) - K*sigma2 + mu*(K - mu)) / 2*((mu*K - mu) - (sigma2 - error))
-}
-
 #' Livingston and Lewis' "Effective Test Length"
 #'
 #' @description  According to Livingston and Lewis (1995), "The effective test length corresponding to a test score is the number of discrete, dichotomously scored, locally independent, equally difficult items required to produce a total score of the same reliability."
@@ -50,15 +41,25 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, 
     params$l <- 0
     params$u <- 1
   }
-  mean <- mean(x)
-  variance <- var(x)
-  N <- ETL(mean, variance, reliability = reliability)
+
+  #Calculate mean and variance for the true-score distribution.
+  TpMoments <- betamoments(params$alpha, params$beta, params$l, params$u, types = c("raw", "central"), orders = 2)
+
+  #Estimate the effective test-length based on true-score distribution and reliability.
+  N <- ETL(TpMoments[["raw"]][[1]], TpMoments[["central"]][[2]], reliability = reliability)
+
+  #Establish cutscores on the proportional scale.
   if (is.null(truecut)) {
     truecut <- cut
   }
-  xaxis <- seq(0, 1, .001)
-  density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) /
-    sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
+  cut <- cut / max
+  truecut <- truecut / max
+
+  #Generate density distribution along the proportional scale.
+  xaxis <- seq(0, 1, .000001)
+  sumdens <- sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
+  density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) / sumdens
+
 
   #Calculate probabilities of producing passing and failing scores along the true-score distribution.
   if (pdist == "beta") {

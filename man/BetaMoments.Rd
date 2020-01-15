@@ -4,8 +4,8 @@
 \alias{betamoments}
 \title{Compute Moments of Two-to-Four Parameter Beta Probability Density Distributions.}
 \usage{
-betamoments(a, b, l = 0, u = 1, mean = NULL, var = NULL,
-  sd = NULL, types = c("raw", "central", "standardized"), orders = 4)
+betamoments(a, b, l = 0, u = 1, types = c("raw", "central",
+  "standardized"), orders = 4)
 }
 \arguments{
 \item{a}{The Alpha shape parameter of the PDD.}

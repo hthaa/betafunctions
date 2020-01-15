@@ -219,7 +219,7 @@ rBetaMS <- function(n, mean, var = NULL, sd = NULL) {
 #' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
 #' @param from The point of the x-axis from where to start producing y-density values.
 #' @param to The point of the x-axis to where y-density values are to be produced.
-#' @param by The resolution (or specing) at which to produce y-density values.
+#' @param by The resolution (or spacing) at which to produce y-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
 #' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
@@ -394,7 +394,6 @@ qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
   } else {
     (1 - qbeta(p, alpha, beta)) * (u - l) + l
   }
-
 }
 
 #' Method of Moment Estimates of Shape- and Location Parameters of the Four-Parameter Beta Distribution.
