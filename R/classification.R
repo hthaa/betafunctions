@@ -18,14 +18,16 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which assumes that observed-scores, true-scores, and errors of measurement follow the four-parameter beta distribution. Under this assumption, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and estimated test reliability.
 #' @param x A vector of observed scores for which a beta-distribution is to be fitted.
 #' @param reliability The observed-score correlation with the true-score.
+#' @param min The minimum value possible to attain on the test. Default is 0.
+#' @param max The maximum value possible to attain on the test. Default is 1.
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
+#' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curve values.
-#' @param gradesize The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).
-#' @param pdist The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.
+#' @param grainsize The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
-LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, pdist = "beta", grainsize = .001) {
+LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, grainsize = .001) {
   x <- (x - min) / (max - min)
   params <- Beta.4p.fit(x)
   if (params$l < 0) {
