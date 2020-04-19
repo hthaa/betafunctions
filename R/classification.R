@@ -20,11 +20,12 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @param reliability The observed-score correlation with the true-score.
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curve values.
+#' @param gradesize The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).
 #' @param pdist The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.
 #' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
-LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, pdist = "beta") {
+LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, pdist = "beta", grainsize = .001) {
   x <- (x - min) / (max - min)
   params <- Beta.4p.fit(x)
   if (params$l < 0) {
@@ -56,7 +57,7 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, 
   truecut <- truecut / max
 
   #Generate density distribution along the proportional scale.
-  xaxis <- seq(0, 1, .000001)
+  xaxis <- seq(0, 1, grainsize)
   sumdens <- sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
   density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) / sumdens
 
@@ -65,14 +66,9 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, 
   if (pdist == "beta") {
     p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
   }
-  if (pdist == "binomial" | pdist == "betabinomial") {
+  if (pdist == "binomial") {
     N <- round(N)
-    if (pdist == "binomial") {
-      p.pass <- pbinom(cut * N, N, xaxis, lower.tail = FALSE)
-    }
-    if (pdist == "betabinomial") {
-      p.pass <- (dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) / sumdens) * pbinom(cut * N, N, xaxis, lower.tail = FALSE)
-    }
+    p.pass <- pbinom(cut * N, N, xaxis, lower.tail = FALSE)
   }
   p.fail <- 1 - p.pass
 
