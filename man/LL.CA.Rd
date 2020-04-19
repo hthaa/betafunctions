@@ -4,8 +4,8 @@
 \alias{LL.CA}
 \title{An implementation of the Livingston and Lewis (1995) Method for estimating Classification Accuracy based on Test Scores.}
 \usage{
-LL.CA(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL,
-  pdist = "beta")
+LL.CA(x = NULL, reliability, cut, min = 0, max = 1,
+  error.model = "binomial", truecut = NULL, grainsize = 0.001)
 }
 \arguments{
 \item{x}{A vector of observed scores for which a beta-distribution is to be fitted.}
@@ -14,9 +14,15 @@ LL.CA(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL,
 
 \item{cut}{The cutoff value for classifying observations into pass or fail categories.}
 
+\item{min}{The minimum value possible to attain on the test. Default is 0.}
+
+\item{max}{The maximum value possible to attain on the test. Default is 1.}
+
+\item{error.model}{The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..}
+
 \item{truecut}{Optional specification of a "true" cutoff. Useful for producing ROC curve values.}
 
-\item{pdist}{The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The Beta distribution is continuous, while the binomial distribution is discrete. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value.}
+\item{grainsize}{The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).}
 }
 \value{
 A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.

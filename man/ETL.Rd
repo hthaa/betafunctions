@@ -2,7 +2,7 @@
 % Please edit documentation in R/classification.R
 \name{ETL}
 \alias{ETL}
-\title{Livingston and Lewis' "Effective Test Length"}
+\title{Livingston and Lewis' "Effective Test Length".}
 \usage{
 ETL(mean, variance, l = 0, u = 1, reliability)
 }

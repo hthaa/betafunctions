@@ -4,12 +4,16 @@
 \alias{MLA}
 \title{Most likely true alpha value given observed outcome.}
 \usage{
-MLA(a, b, x = NULL, N = NULL)
+MLA(a, b, x = NULL, n = NULL)
 }
 \arguments{
 \item{a}{Observed alpha value for fitted Standard Beta PDD.}
 
 \item{b}{Observed beta value for fitted Standard Beta PDD.}
+
+\item{x}{Observed proportion-correct outcome.}
+
+\item{n}{Test-length.}
 }
 \value{
 The Alpha shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.

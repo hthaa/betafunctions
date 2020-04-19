@@ -10,9 +10,11 @@ observedmoments(x, type = c("raw", "central", "standardized"),
 \arguments{
 \item{x}{A vector of values, the distribution of which moments are to be calculated.}
 
+\item{type}{A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".}
+
 \item{orders}{The number of moment-orders to be calculated for each of the moment-types.}
 
-\item{types}{A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".}
+\item{correct}{Whether to include bias correction in estimation of orders. Default is TRUE.}
 }
 \value{
 A list of moment types, each a list of moment orders.

@@ -1,4 +1,4 @@
-#' Livingston and Lewis' "Effective Test Length"
+#' Livingston and Lewis' "Effective Test Length".
 #'
 #' @description  According to Livingston and Lewis (1995), "The effective test length corresponding to a test score is the number of discrete, dichotomously scored, locally independent, equally difficult items required to produce a total score of the same reliability."
 #' @param mean The mean of the observed-score distribution.
@@ -32,15 +32,15 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
   params <- Beta.4p.fit(x)
   if (params$l < 0) {
     warning("Improper solution for lower-bound estimate of true-score distribution (< 0). Reverting to two-parameter solution.")
-    params$alpha <- AMS(mean(x), var(x))
-    params$beta <- BMS(mean(x), var(x))
+    params$alpha <- AMS(base::mean(x), stats::var(x))
+    params$beta <- BMS(base::mean(x), stats::var(x))
     params$l <- 0
     params$u <- 1
   }
   if (params$u > 1) {
     warning("Improper solution for upper-bound estimate of true-score distribution (> 1). Reverting to two-parameter solution.")
-    params$alpha <- AMS(mean(x), var(x))
-    params$beta <- BMS(mean(x), var(x))
+    params$alpha <- AMS(base::mean(x), stats::var(x))
+    params$beta <- BMS(base::mean(x), stats::var(x))
     params$l <- 0
     params$u <- 1
   }
@@ -52,25 +52,25 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
   N <- ETL(TpMoments[["raw"]][[1]], TpMoments[["central"]][[2]], reliability = reliability)
 
   #Establish cutscores on the proportional scale.
-  if (is.null(truecut)) {
+  if (base::is.null(truecut)) {
     truecut <- cut
   }
   cut <- cut / max
   truecut <- truecut / max
 
   #Generate density distribution along the proportional scale.
-  xaxis <- seq(0, 1, grainsize)
-  sumdens <- sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
+  xaxis <- base::seq(0, 1, grainsize)
+  sumdens <- base::sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
   density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) / sumdens
 
 
   #Calculate probabilities of producing passing and failing scores along the true-score distribution.
-  if (pdist == "beta") {
-    p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
+  if (error.model == "beta") {
+    p.pass <- stats::pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
   }
-  if (pdist == "binomial") {
-    N <- round(N)
-    p.pass <- pbinom(cut * N, N, xaxis, lower.tail = FALSE)
+  if (error.model == "binomial") {
+    N <- base::round(N)
+    p.pass <- stats::pbinom(cut * N, N, xaxis, lower.tail = FALSE)
   }
   p.fail <- 1 - p.pass
 
@@ -81,14 +81,14 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
   p.tp <- p.pass[which(xaxis >= truecut)] * density[which(xaxis >= truecut)]
 
   # Calculate confusion matrix.
-  cmat <- matrix(nrow = 2, ncol = 2)
-  rownames(cmat) <- c("True", "False")
-  colnames(cmat) <- c("Fail", "Pass")
-  cmat["True", "Fail"] <- sum(p.tf)
-  cmat["True", "Pass"] <- sum(p.tp)
-  cmat["False", "Fail"] <- sum(p.ff)
-  cmat["False", "Pass"] <- sum(p.fp)
-  return(list("effectivetestlength" = N, "parameters" = params, "confusionmatrix" = cmat))
+  cmat <- base::matrix(nrow = 2, ncol = 2)
+  rownames(cmat) <- base::c("True", "False")
+  colnames(cmat) <- base::c("Fail", "Pass")
+  cmat["True", "Fail"] <- base::sum(p.tf)
+  cmat["True", "Pass"] <- base::sum(p.tp)
+  cmat["False", "Fail"] <- base::sum(p.ff)
+  cmat["False", "Pass"] <- base::sum(p.fp)
+  return(base::list("effectivetestlength" = N, "parameters" = params, "confusionmatrix" = cmat))
 }
 
 #' Classification Accuracy Statistics.
@@ -111,10 +111,10 @@ caStats <- function(tp, tn, fp, fn) {
   npv <-          tn / (tn + fn)
   accuracy <-     (tp + tn) / (tp + tn + fp + fn)
   J <-            (sensitivity + specificity) - 1
-  list("Sensitivity" = sensitivity, "Specificity" = specificity,
-       "LR.pos" = plr, "LR.neg" = nlr, "DOR" = dor,
-       "PPV" = ppv, "NPV" = npv,
-       "Youden.J" = J, "Accuracy" = accuracy)
+  base::list("Sensitivity" = sensitivity, "Specificity" = specificity,
+             "LR.pos" = plr, "LR.neg" = nlr, "DOR" = dor,
+             "PPV" = ppv, "NPV" = npv,
+             "Youden.J" = J, "Accuracy" = accuracy)
 }
 
 #' ROC curves for the Livingston and Lewis approach.
@@ -126,7 +126,9 @@ caStats <- function(tp, tn, fp, fn) {
 #' @param reliability The reliability coefficient of the test.
 #' @param truecut The true point along the x-scale that marks the categorization-threshold.
 #' @param AUC Calculate and include the area under the curve? Default is FALSE.
-#' @return A plot tracing the ROC curve for the test.
+#' @param maxJ Mark the point along the curve where Youden's J statistic is maximized? Default is FALSE.
+#' @param raw.out Give raw coordinates as output rather than plot? Default is FALSE.
+#' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is TRUE.
 #' @export
 LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE) {
   for (i in 1:length(seq(0, 1, .001))) {
@@ -147,21 +149,21 @@ LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE
   if (raw.out) {
     return(outputmatrix)
   }
-  plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
-  abline(h = seq(0, 1, .1), v = seq(0, 1, .1), col = "lightgrey", lty = "dotted")
-  par(new = TRUE)
-  plot(outputmatrix[, 1], outputmatrix[, 2], type = "l",
+  graphics::plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
+  graphics::abline(h = seq(0, 1, .1), v = seq(0, 1, .1), col = "lightgrey", lty = "dotted")
+  graphics::par(new = TRUE)
+  graphics::plot(outputmatrix[, 1], outputmatrix[, 2], type = "l",
        xlab = "False-Positive Rate (1 - Specificity)",
        ylab = "True-Positive Rate (Sensitivity)",
        main = paste("ROC curve for true-cut equal to", truecut), lwd = 2,
        xlim = c(0, 1), ylim = c(0, 1))
   if (AUC) {
-    legend("bottomright", bty = "n", cex = 1.5, legend = paste("AUC =", round(AUC(outputmatrix[, 1], outputmatrix[, 2]), 3)))
+    graphics::legend("bottomright", bty = "n", cex = 1.5, legend = paste("AUC =", round(AUC(outputmatrix[, 1], outputmatrix[, 2]), 3)))
   }
   if (maxJ) {
-    points(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1],
+    graphics::points(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1],
            outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2], cex = 1.5, pch = 19)
-    text(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1] + .025,
+    graphics::text(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1] + .025,
          outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2] - .025,
          labels = paste("Maximum Youden's J. at cutoff = ",
                         round(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 4], 3),
@@ -179,7 +181,7 @@ LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE
 #' @note Script originally retrieved and modified from https://blog.revolutionanalytics.com/2016/11/calculating-auc.html.
 #' @export
 AUC <- function(FPR, TPR) {
-  dFPR <- c(diff(FPR), 0)
-  dTPR <- c(diff(TPR), 0)
-  sum(TPR * dFPR) + sum(dTPR * dFPR)/2
+  dFPR <- base::c(diff(FPR), 0)
+  dTPR <- base::c(diff(TPR), 0)
+  base::sum(TPR * dFPR) + sum(dTPR * dFPR)/2
 }

@@ -13,7 +13,7 @@ MLM(a, b, x = NULL, n = NULL)
 
 \item{x}{Observed proportion-correct outcome.}
 
-\item{N}{Test-length.}
+\item{n}{Test-length.}
 }
 \value{
 The expected mean of the Standard Beta probability density distribution, for which the observed mean is the most likely value.

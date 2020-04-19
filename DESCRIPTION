@@ -1,12 +1,14 @@
 Package: betafunctions
 Type: Package
 Title: Functions for Working with the Standard Beta Probability Density Distribution
-Version: 0.1.0
+Version: 1.0.0
 Author: Haakon Haakstad
 Maintainer: Haakon Haakstad <h.t.haakstad@cemo.uio.no>
-Description: Package providing a number of functions for working with the Standard
-    Beta Probability Density Distribution (PDD), including alternative parameterizations
-    and calculation of moment properties.
+Description: Package providing a number of functions for working with the Two- and Four-
+    parameter Beta distribution, including alternative parameterizations and calculation 
+    of moments. Includes functions for estimating classification accuracy and diagnostic
+    performance statistics using what's known as the Livinston and Lewis approach in the
+    educational-measurement literature.
 License: CC0
 Encoding: UTF-8
 LazyData: true

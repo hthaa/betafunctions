@@ -11,34 +11,34 @@
 #' @return A list of moment types, each a list of moment orders.
 #' @export
 betamoments <- function(a, b, l = 0, u = 1, types = c("raw", "central", "standardized"), orders = 4) {
-  BETAMOMENTS <- rep(list(rep(list(NULL), orders)), length(types))
+  BETAMOMENTS <- base::rep(base::list(base::rep(base::list(NULL), orders)), base::length(types))
   TYPE <- 1
   if (any(types == "raw")) {
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^i },
+      BETAMOMENTS[[TYPE]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^i },
                                             lower = l, upper = u)$value
     }
-    names(BETAMOMENTS)[TYPE] <- "raw"
+    base::names(BETAMOMENTS)[TYPE] <- "raw"
     TYPE <- TYPE + 1
   }
   if (any(types == "central")) {
-    Mu <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
+    Mu <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^i },
+      BETAMOMENTS[[TYPE]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^i },
                                             lower = l, upper = u)$value
     }
-    names(BETAMOMENTS)[TYPE] <- "central"
+    base::names(BETAMOMENTS)[TYPE] <- "central"
     TYPE <- TYPE + 1
   }
-  if (any(types == "standardized")) {
-    Mu <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
-    SigmaSquared <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^2 },
+  if (base::any(types == "standardized")) {
+    Mu <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
+    SigmaSquared <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^2 },
                        lower = l, upper = u)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- integrate(function(x) { dBeta.4P(x, l, u, a, b) * ((x - Mu)^i / sqrt(SigmaSquared)^i) },
+      BETAMOMENTS[[TYPE]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * ((x - Mu)^i / sqrt(SigmaSquared)^i) },
                                             lower = l, upper = u)$value
     }
-    names(BETAMOMENTS)[TYPE] <- "standardized"
+    base::names(BETAMOMENTS)[TYPE] <- "standardized"
   }
   return(BETAMOMENTS)
 }
@@ -47,48 +47,49 @@ betamoments <- function(a, b, l = 0, u = 1, types = c("raw", "central", "standar
 #'
 #' @description Computes Raw, Central, or Standardized moment properties of a vector of observed scores.
 #' @param x A vector of values, the distribution of which moments are to be calculated.
-#' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
+#' @param type A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
+#' @param correct Whether to include bias correction in estimation of orders. Default is TRUE.
 #' @return A list of moment types, each a list of moment orders.
 #' @export
 observedmoments <- function(x, type = c("raw", "central", "standardized"),  orders = 4, correct = TRUE) {
-  x <- na.omit(x)
+  x <- stats::na.omit(x)
   types <- 1
-  momentorders <- list()
-  if (any(type == "raw")) {
+  momentorders <- base::list()
+  if (base::any(type == "raw")) {
     mu <- list(rep(vector(length = 1), orders))
     for (i in 1:orders) {
-      mu[i] <- sum(x^i)/length(x)
+      mu[i] <- base::sum(x^i)/base::length(x)
     }
-    momentorders[[length(momentorders) + 1]] <- mu
-    names(momentorders)[types] <- "raw"
+    momentorders[[base::length(momentorders) + 1]] <- mu
+    base::names(momentorders)[types] <- "raw"
     types <- types + 1
   }
-  if (any(type == "central")) {
-    sigma <- list(rep(vector(length = 1), orders))
+  if (base::any(type == "central")) {
+    sigma <- base::list(base::rep(base::vector(length = 1), orders))
     for (i in 1:orders) {
       if (correct) {
-        sigma[i] <- var(x)
+        sigma[i] <- stats::var(x)
       }
       else {
-        sigma[i] <- sum((x - mean(x))^i)/(length(x))
+        sigma[i] <- base::sum((x - base::mean(x))^i)/(base::length(x))
       }
     }
     momentorders[[length(momentorders) + 1]] <- sigma
     names(momentorders)[types] <- "central"
     types <- types + 1
   }
-  if (any(type == "standardized")) {
-    gamma <- list(rep(vector(length = 1), orders))
+  if (base::any(type == "standardized")) {
+    gamma <- base::list(base::rep(base::vector(length = 1), orders))
     for (i in 1:orders) {
       if (correct) {
-        gamma[i] <- 1 / length(x) * sum(((x - mean(x))^i)/sqrt(var(x))^i)
+        gamma[i] <- 1 / base::length(x) * base::sum(((x - base::mean(x))^i)/sqrt(stats::var(x))^i)
       }
       else {
-        gamma[i] <- 1 / length(x) * sum(((x - mean(x))^i)/sqrt(var(x))^i)
+        gamma[i] <- 1 / base::length(x) * base::sum(((x - base::mean(x))^i)/sqrt(stats::var(x))^i)
       }
     }
-    momentorders[[length(momentorders) + 1]] <- gamma
+    momentorders[[base::length(momentorders) + 1]] <- gamma
     names(momentorders)[types] <- "standardized"
   }
   return(momentorders)
@@ -103,12 +104,12 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
 #' @return A numeric value representing the required value for the Alpha shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 #' @export
 AMS <- function(mean, var, sd = NULL) {
-  if ((!is.null(var) & !is.null(sd))) {
+  if ((!base::is.null(var) & !base::is.null(sd))) {
     if (var != sd^2) {
       warning("Nonequivalent values of VAR and SD specified. Using VAR.")
     }
   }
-  if (is.null(var) & !is.null(sd)) var <- sd^2
+  if (base::is.null(var) & !base::is.null(sd)) var <- sd^2
   if(((mean^2 - mean^3) / var) - mean <= 0) {
     warning("Parameter out of bounds (Alpha <= 0).")
   }
@@ -123,13 +124,13 @@ AMS <- function(mean, var, sd = NULL) {
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 #' @export
-BMS <- function(mean, var, sd =NULL) {
-  if ((!is.null(var) & !is.null(sd))) {
+BMS <- function(mean, var, sd = NULL) {
+  if ((!base::is.null(var) & !base::is.null(sd))) {
     if (var != sd^2) {
       warning("Nonequivalent values of VAR and SD specified. Using VAR.")
     }
   }
-  if (is.null(var) & !is.null(sd)) var <- sd^2
+  if (base::is.null(var) & !base::is.null(sd)) var <- sd^2
   if((mean * (1 - mean)^2) / var + mean - 1 <= 0) {
     warning("Parameter out of bounds (Beta <= 0).")
   }
@@ -152,8 +153,8 @@ pBetaMS <- function(q, mean, var = NULL, sd = NULL, lt = TRUE) {
       warning("Nonequivalent values of VAR and SD specified. Using VAR.")
     }
   }
-  if (is.null(var) & !is.null(sd)) var <- sd^2
-  pbeta(q, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1, lower.tail = lt)
+  if (base::is.null(var) & !base::is.null(sd)) var <- sd^2
+  stats::pbeta(q, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1, lower.tail = lt)
 }
 
 #' Density under a specific point of the Standard Beta PDD with specific mean and variance or standard deviation.
@@ -166,13 +167,13 @@ pBetaMS <- function(q, mean, var = NULL, sd = NULL, lt = TRUE) {
 #' @return A numeric value representing the required value for the Beta Shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 #' @export
 dBetaMS <- function(x, mean, var = NULL, sd = NULL) {
-  if ((!is.null(var) & !is.null(sd))) {
+  if ((!base::is.null(var) & !base::is.null(sd))) {
     if (var != sd^2) {
       warning("Nonequivalent values of VAR and SD specified. Using VAR.")
     }
   }
-  if (is.null(var) & !is.null(sd)) var <- sd^2
-  dbeta(x, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1)
+  if (base::is.null(var) & !base::is.null(sd)) var <- sd^2
+  stats::dbeta(x, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1)
 }
 
 #' Quantile containing specific proportion of the distribution, given a specific probability of the Standard Beta PDD with specific mean and variance or standard deviation.
@@ -186,13 +187,13 @@ dBetaMS <- function(x, mean, var = NULL, sd = NULL) {
 #' @return A numeric value representing the quantile for which the specified proportion of observations fall within.
 #' @export
 qBetaMS <- function(p, mean, var = NULL, sd = NULL, lt = TRUE) {
-  if ((!is.null(var) & !is.null(sd))) {
+  if ((!base::is.null(var) & !base::is.null(sd))) {
     if (var != sd^2) {
       warning("Nonequivalent values of VAR and SD specified. Using VAR.")
     }
   }
-  if (is.null(var) & !is.null(sd)) var <- sd^2
-  qbeta(p, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1, lower.tail = lt)
+  if (base::is.null(var) & !base::is.null(sd)) var <- sd^2
+  stats::qbeta(p, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1, lower.tail = lt)
 }
 
 #' Random draw from the Standard Beta PDD with specific mean and variance.
@@ -205,13 +206,13 @@ qBetaMS <- function(p, mean, var = NULL, sd = NULL, lt = TRUE) {
 #' @return A vector of length \code{n}, each value representing a random draw from the Standard Beta probability density distribution with defined mean and variance.
 #' @export
 rBetaMS <- function(n, mean, var = NULL, sd = NULL) {
-  if ((!is.null(var) & !is.null(sd))) {
+  if ((!base::is.null(var) & !base::is.null(sd))) {
     if (var != sd^2) {
       warning("Nonequivalent values of VAR and SD specified. Using VAR.")
     }
   }
   if (is.null(var) & !is.null(sd)) var <- sd^2
-  rbeta(n, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1)
+  stats::rbeta(n, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1)
 }
 
 #' Coordinate generation for marking an area under the curve for the Standard Beta probability density distribution.
@@ -225,16 +226,16 @@ rBetaMS <- function(n, mean, var = NULL, sd = NULL) {
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
 #' @export
 Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta) {
-  x <- c(from, seq(from, to, by), to)
-  for (i in 1:length(x)) {
-    if (i == 1) y <- vector(length = length(x))
-    if (i == 1 | i == length(x)) {
+  x <- base::c(from, base::seq(from, to, by), to)
+  for (i in 1:base::length(x)) {
+    if (i == 1) y <- base::vector(length = base::length(x))
+    if (i == 1 | i == base::length(x)) {
       y[i] <- 0
     } else {
-      y[i] <- dbeta(x[i], alpha, beta)
+      y[i] <- stats::dbeta(x[i], alpha, beta)
     }
   }
-  return(cbind(x, y))
+  return(base::cbind(x, y))
 }
 
 #' Coordinate generation for marking an area under the curve for the Standard Beta cumulative probability density distribution.
@@ -248,16 +249,16 @@ Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta) {
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
 #' @export
 Beta.gfx.poly.cdf <- function(from, to, by, alpha, beta) {
-  x <- c(from, seq(from, to, by), to)
-  for (i in 1:length(x)) {
-    if (i == 1) y <- vector(length = length(x))
-    if (i == 1 | i == length(x)) {
+  x <- base::c(from, seq(from, to, by), to)
+  for (i in 1:base::length(x)) {
+    if (i == 1) y <- base::vector(length = base::length(x))
+    if (i == 1 | i == base::length(x)) {
       y[i] <- 0
     } else {
-      y[i] <- pbeta(x[i], alpha, beta)
+      y[i] <- stats::pbeta(x[i], alpha, beta)
     }
   }
-  return(cbind(x, y))
+  return(base::cbind(x, y))
 }
 
 #' Most likely true alpha value given observed outcome.
@@ -265,15 +266,17 @@ Beta.gfx.poly.cdf <- function(from, to, by, alpha, beta) {
 #' @description Given a fitted Standard Distribution, return the Alpha value where the observed mean becomes the mode.
 #' @param a Observed alpha value for fitted Standard Beta PDD.
 #' @param b Observed beta value for fitted Standard Beta PDD.
+#' @param x Observed proportion-correct outcome.
+#' @param n Test-length.
 #' @return The Alpha shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.
 #' @export
-MLA <- function(a, b, x = NULL, N = NULL) {
-  if (is.null(x) | is.null(N)) {
+MLA <- function(a, b, x = NULL, n = NULL) {
+  if (base::is.null(x) | base::is.null(n)) {
     n <- a + b
     A <- (a*(n - 2) + n) / n
     A
   } else {
-    x*(N - 2) + 1
+    x*(n - 2) + 1
   }
 }
 
@@ -287,7 +290,7 @@ MLA <- function(a, b, x = NULL, N = NULL) {
 #' @return The Beta shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.
 #' @export
 MLB <- function(a, b, x = NULL, n = NULL) {
-  if (is.null(x) | is.null(n)) {
+  if (base::is.null(x) | base::is.null(n)) {
     n <- a + b
     A <- (a*(n - 2) + n) / n
     B <- n - A
@@ -303,11 +306,11 @@ MLB <- function(a, b, x = NULL, n = NULL) {
 #' @param a Observed alpha value for fitted Standard Beta PDD.
 #' @param b Observed beta value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
-#' @param N Test-length.
+#' @param n Test-length.
 #' @return The expected mean of the Standard Beta probability density distribution, for which the observed mean is the most likely value.
 #' @export
 MLM <- function(a, b, x = NULL, n = NULL) {
-  if (is.null(x) | is.null(n)) {
+  if (base::is.null(x) | base::is.null(n)) {
     n <- a + b
     A <- (a*(n - 2) + n) / n
     B <- (n - A)
@@ -328,8 +331,8 @@ MLM <- function(a, b, x = NULL, n = NULL) {
 #' @return The value for the probability density at specified values of X.
 #' @export
 dBeta.4P <- function(x, l, u, alpha, beta) {
- bfunc <- beta(alpha, beta)
-  sapply(x, function(x) {
+ bfunc <- base::beta(alpha, beta)
+  base::sapply(x, function(x) {
     if (x < l | x > u) {
       0
     } else {
@@ -350,7 +353,7 @@ dBeta.4P <- function(x, l, u, alpha, beta) {
 #' @return A vector with length \code{n} of random values drawn from the four-parameter beta distribution.
 #' @export
 rBeta.4P <- function(n, l, u, alpha, beta) {
-  rbeta(n, alpha, beta) * (u - l) + l
+  stats::rbeta(n, alpha, beta) * (u - l) + l
 }
 
 #' Cumulative Probability Function under the Four-Parameter Beta Probability Density Distribution.
@@ -366,8 +369,8 @@ rBeta.4P <- function(n, l, u, alpha, beta) {
 #' @export
 pBeta.4P <- function(q, l, u, alpha, beta, lt = TRUE) {
   sapply(q, function(x) {
-    num <- integrate(function(y) { dBeta.4P(y, l, u, alpha, beta) }, lower = l, upper = x)$value
-    den <- integrate(function(y) { dBeta.4P(y, l, u, alpha, beta) }, lower = l, upper = u)$value
+    num <- stats::integrate(function(y) { dBeta.4P(y, l, u, alpha, beta) }, lower = l, upper = x)$value
+    den <- stats::integrate(function(y) { dBeta.4P(y, l, u, alpha, beta) }, lower = l, upper = u)$value
     if (lt) {
       num/den
       } else {
@@ -390,9 +393,9 @@ pBeta.4P <- function(q, l, u, alpha, beta, lt = TRUE) {
 #' @export
 qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
   if (lt) {
-    qbeta(p, alpha, beta) * (u - l) + l
+    stats::qbeta(p, alpha, beta) * (u - l) + l
   } else {
-    (1 - qbeta(p, alpha, beta)) * (u - l) + l
+    (1 - stats::qbeta(p, alpha, beta)) * (u - l) + l
   }
 }
 
