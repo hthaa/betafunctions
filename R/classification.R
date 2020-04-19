@@ -65,9 +65,14 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, 
   if (pdist == "beta") {
     p.pass <- pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
   }
-  if (pdist == "binomial") {
+  if (pdist == "binomial" | pdist == "betabinomial") {
     N <- round(N)
-    p.pass <- pbinom(cut * N, N, xaxis, lower.tail = FALSE)
+    if (pdist == "binomial") {
+      p.pass <- pbinom(cut * N, N, xaxis, lower.tail = FALSE)
+    }
+    if (pdist == "betabinomial") {
+      pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE) * pbinom(cut * N, N, xaxis, lower.tail = FALSE)
+    }
   }
   p.fail <- 1 - p.pass
 
