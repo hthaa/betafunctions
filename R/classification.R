@@ -71,7 +71,7 @@ LL.CA <- function(x = NULL, min = 0, max = 1, reliability, cut, truecut = NULL, 
       p.pass <- pbinom(cut * N, N, xaxis, lower.tail = FALSE)
     }
     if (pdist == "betabinomial") {
-      pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE) * pbinom(cut * N, N, xaxis, lower.tail = FALSE)
+      (dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) / sumdens) * pbinom(cut * N, N, xaxis, lower.tail = FALSE)
     }
   }
   p.fail <- 1 - p.pass
