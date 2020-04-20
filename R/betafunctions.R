@@ -282,7 +282,7 @@ MLA <- function(a, b, x = NULL, n = NULL) {
 
 #' Most likely true beta value given observed outcome.
 #'
-#' @description Given a fitted Standard Beta Distribution, return the Beta value where the observed mean becomes the mode.
+#' @description Assuming a prior standard Beta distribution, return the Beta value where the observed mean becomes the mode.
 #' @param a Observed alpha value for fitted Standard Beta PDD.
 #' @param b Observed beta value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
@@ -302,7 +302,7 @@ MLB <- function(a, b, x = NULL, n = NULL) {
 
 #' Most likely mean of the Standard Beta PDD, given that the observation is considered the most likely observation of the Standard Beta PDD (i.e., mode).
 #'
-#' @description Given a fitted Standard Beta Distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
+#' @description Assuming a prior standard Beta distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
 #' @param a Observed alpha value for fitted Standard Beta PDD.
 #' @param b Observed beta value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
