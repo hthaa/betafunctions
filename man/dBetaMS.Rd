@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{dBetaMS}
 \alias{dBetaMS}
-\title{Density under a specific point of the Standard Beta PDD with specific mean and variance or standard deviation.}
+\title{Density Under a Specific Point of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.}
 \usage{
 dBetaMS(x, mean, var = NULL, sd = NULL)
 }

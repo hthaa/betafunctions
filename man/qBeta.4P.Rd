@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{qBeta.4P}
 \alias{qBeta.4P}
-\title{Quantile given probability under the Four-Parameter Beta Probability Density Distribution.}
+\title{Quantile Given Probability Under the Four-Parameter Beta Probability Density Distribution.}
 \usage{
 qBeta.4P(p, l, u, alpha, beta, lt = TRUE)
 }

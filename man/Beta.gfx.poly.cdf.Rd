@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{Beta.gfx.poly.cdf}
 \alias{Beta.gfx.poly.cdf}
-\title{Coordinate generation for marking an area under the curve for the Standard Beta cumulative probability density distribution.}
+\title{Coordinate Generation for Marking an Area Under the Curve for the Standard Beta Cumulative Probability Density Distribution.}
 \usage{
 Beta.gfx.poly.cdf(from, to, by, alpha, beta)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{MLM}
 \alias{MLM}
-\title{Most likely mean of the Standard Beta PDD, given that the observation is considered the most likely observation of the Standard Beta PDD (i.e., mode).}
+\title{Most Likely Mean of the Standard Beta PDD, Given that the Observation is Considered the Most Likely Observation of the Standard Beta PDD (i.e., Mode).}
 \usage{
 MLM(a, b, x = NULL, n = NULL)
 }
@@ -19,5 +19,5 @@ MLM(a, b, x = NULL, n = NULL)
 The expected mean of the Standard Beta probability density distribution, for which the observed mean is the most likely value.
 }
 \description{
-Given a fitted Standard Beta Distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
+Assuming a prior standard Beta distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
 }

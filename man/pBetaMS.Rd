@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{pBetaMS}
 \alias{pBetaMS}
-\title{Probability of some specific observation under the Standard Beta PDD with specific mean and variance.}
+\title{Probability of Some Specific Observation under the Standard Beta PDD with Specific Mean and Variance.}
 \usage{
 pBetaMS(q, mean, var = NULL, sd = NULL, lt = TRUE)
 }

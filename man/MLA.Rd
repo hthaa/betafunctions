@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{MLA}
 \alias{MLA}
-\title{Most likely true alpha value given observed outcome.}
+\title{Most Likely True Alpha Value Given Observed Outcome.}
 \usage{
 MLA(a, b, x = NULL, n = NULL)
 }

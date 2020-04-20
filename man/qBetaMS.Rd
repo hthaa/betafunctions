@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{qBetaMS}
 \alias{qBetaMS}
-\title{Quantile containing specific proportion of the distribution, given a specific probability of the Standard Beta PDD with specific mean and variance or standard deviation.}
+\title{Quantile Containing Specific Proportion of the Distribution, Given a Specific Probability of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.}
 \usage{
 qBetaMS(p, mean, var = NULL, sd = NULL, lt = TRUE)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{AMS}
 \alias{AMS}
-\title{Alpha shape parameter given mean and variance of a Standard Beta PDD.}
+\title{Alpha Shape Parameter Given Mean and Variance of a Standard Beta PDD.}
 \usage{
 AMS(mean, var, sd = NULL)
 }

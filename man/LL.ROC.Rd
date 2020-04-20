@@ -4,17 +4,17 @@
 \alias{LL.ROC}
 \title{ROC curves for the Livingston and Lewis approach.}
 \usage{
-LL.ROC(x = NULL, min = 0, max = 1, reliability, truecut,
+LL.ROC(x = NULL, reliability, min = 0, max = 1, truecut,
   AUC = FALSE, maxJ = FALSE, raw.out = FALSE)
 }
 \arguments{
 \item{x}{A vector of observed results.}
 
+\item{reliability}{The reliability coefficient of the test.}
+
 \item{min}{The minimum possible value to attain on the observed-score scale. Default is 0 (assuming \code{x} represent proportions).}
 
 \item{max}{The maximum possible value to attain on the observed-score scale. Default is 1 (assuming \code{x} represent proportions).}
-
-\item{reliability}{The reliability coefficient of the test.}
 
 \item{truecut}{The true point along the x-scale that marks the categorization-threshold.}
 
@@ -29,4 +29,12 @@ A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out i
 }
 \description{
 Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.
+}
+\examples{
+# Generate some fictional data. Say, 100 individuals take a test with a maximum score of 100 and a minimum score of 0.
+testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+hist(testdata, xlim = c(0, 100))
+
+# Suppose the cutoff value for attaining a pass is 50 items correct, and that the reliability of this test was estimated to 0.7. To produce a plot with an ROC curve using LL.ROC(), along with the AUC statistics and the points at which Youden's J. is maximized:
+LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100, AUC = TRUE, maxJ = TRUE)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{BMS}
 \alias{BMS}
-\title{Beta shape parameter given mean and variance of a Standard Beta PDD.}
+\title{Beta Shape Parameter Given Mean and Variance of a Standard Beta PDD.}
 \usage{
 BMS(mean, var, sd = NULL)
 }

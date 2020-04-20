@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{Beta.gfx.poly.pdf}
 \alias{Beta.gfx.poly.pdf}
-\title{Coordinate generation for marking an area under the curve for the Standard Beta probability density distribution.}
+\title{Coordinate Generation for Marking an Area Under the Curve for the Standard Beta Probability Density Distribution.}
 \usage{
 Beta.gfx.poly.pdf(from, to, by, alpha, beta)
 }

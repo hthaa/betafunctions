@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{MLB}
 \alias{MLB}
-\title{Most likely true beta value given observed outcome.}
+\title{Most Likely True Beta Value Given Observed Outcome.}
 \usage{
 MLB(a, b, x = NULL, n = NULL)
 }
@@ -19,5 +19,5 @@ MLB(a, b, x = NULL, n = NULL)
 The Beta shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.
 }
 \description{
-Given a fitted Standard Beta Distribution, return the Beta value where the observed mean becomes the mode.
+Assuming a prior standard Beta distribution, return the Beta value where the observed mean becomes the mode.
 }

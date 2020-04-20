@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{rBetaMS}
 \alias{rBetaMS}
-\title{Random draw from the Standard Beta PDD with specific mean and variance.}
+\title{Random Draw from the Standard Beta PDD With Specific Mean and Variance.}
 \usage{
 rBetaMS(n, mean, var = NULL, sd = NULL)
 }
