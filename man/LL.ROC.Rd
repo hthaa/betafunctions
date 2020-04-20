@@ -31,10 +31,14 @@ A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out i
 Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.
 }
 \examples{
-# Generate some fictional data. Say, 100 individuals take a test with a maximum score of 100 and a minimum score of 0.
+# Generate some fictional data. Say, 100 individuals take a test with a
+# maximum score of 100 and a minimum score of 0.
 testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 
-# Suppose the cutoff value for attaining a pass is 50 items correct, and that the reliability of this test was estimated to 0.7. To produce a plot with an ROC curve using LL.ROC(), along with the AUC statistics and the points at which Youden's J. is maximized:
+# Suppose the cutoff value for attaining a pass is 50 items correct, and
+# that the reliability of this test was estimated to 0.7. To produce a plot
+# with an ROC curve using LL.ROC(), along with the AUC statistics and the
+# points at which Youden's J. is maximized:
 LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100, AUC = TRUE, maxJ = TRUE)
 }

@@ -31,11 +31,14 @@ A list containing the estimated parameters necessary for the approach, as well a
 An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to four-parameter beta distributions, and errors of measurement binomial distribution distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
 }
 \examples{
-# Generate some fictional data. Say, 100 individuals take a test with a maximum score of 100 and a minimum score of 0.
+# Generate some fictional data. Say, 100 individuals take a test with a
+# maximum score of 100 and a minimum score of 0.
 testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 
-# Suppose the cutoff value for attaining a pass is 50 items correct, and that the reliability of this test was estimated to 0.7. To estimate and retrieve the necessary parameters and the confusion matrix with LL.CA():
+# Suppose the cutoff value for attaining a pass is 50 items correct, and
+# that the reliability of this test was estimated to 0.7. To estimate and
+# retrieve the necessary parameters and the confusion matrix with LL.CA():
 LL.CA(x = testdata, reliability = .7, cut = 50, min = 0, max = 100)
 }
 \references{

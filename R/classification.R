@@ -26,11 +26,14 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @param grainsize The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).
 #' @return A list containing the estimated parameters necessary for the approach, as well as the confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @examples
-#' # Generate some fictional data. Say, 100 individuals take a test with a maximum score of 100 and a minimum score of 0.
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
 #' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
-#' # Suppose the cutoff value for attaining a pass is 50 items correct, and that the reliability of this test was estimated to 0.7. To estimate and retrieve the necessary parameters and the confusion matrix with LL.CA():
+#' # Suppose the cutoff value for attaining a pass is 50 items correct, and
+#' # that the reliability of this test was estimated to 0.7. To estimate and
+#' # retrieve the necessary parameters and the confusion matrix with LL.CA():
 #' LL.CA(x = testdata, reliability = .7, cut = 50, min = 0, max = 100)
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
@@ -137,18 +140,22 @@ caStats <- function(tp, tn, fp, fn) {
 #' @param raw.out Give raw coordinates as output rather than plot? Default is FALSE.
 #' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is TRUE.
 #' @examples
-#' # Generate some fictional data. Say, 100 individuals take a test with a maximum score of 100 and a minimum score of 0.
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
 #' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
-#' # Suppose the cutoff value for attaining a pass is 50 items correct, and that the reliability of this test was estimated to 0.7. To produce a plot with an ROC curve using LL.ROC(), along with the AUC statistics and the points at which Youden's J. is maximized:
+#' # Suppose the cutoff value for attaining a pass is 50 items correct, and
+#' # that the reliability of this test was estimated to 0.7. To produce a plot
+#' # with an ROC curve using LL.ROC(), along with the AUC statistics and the
+#' # points at which Youden's J. is maximized:
 #' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100, AUC = TRUE, maxJ = TRUE)
 #' @export
 LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE) {
-  for (i in 1:length(seq(0, 1, .001))) {
+  for (i in 1:length(seq(0, 1, .01))) {
     if (i == 1) {
-      cuts <- seq(min, max, (max - min) / 1000)
-      outputmatrix <- matrix(nrow = length(seq(0, 1, .001)), ncol = 4)
+      cuts <- seq(min, max, (max - min) / 100)
+      outputmatrix <- matrix(nrow = length(seq(0, 1, .01)), ncol = 4)
     }
     cmat <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut)$confusionmatrix
     axval <- caStats(cmat[1, 1], cmat[1, 2], cmat[2, 1], cmat[2, 2])
