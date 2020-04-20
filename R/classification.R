@@ -13,18 +13,25 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
   ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
 }
 
-#' An implementation of the Livingston and Lewis (1995) Method for estimating Classification Accuracy based on Test Scores.
+#' An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Accuracy based on Observed Test Scores and Test Reliability.
 #'
-#' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which assumes that observed-scores, true-scores, and errors of measurement follow the four-parameter beta distribution. Under this assumption, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and estimated test reliability.
+#' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to four-parameter beta distributions, and errors of measurement binomial distribution distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
 #' @param x A vector of observed scores for which a beta-distribution is to be fitted.
-#' @param reliability The observed-score correlation with the true-score.
+#' @param reliability The observed-score squared correlation with the true-score.
 #' @param min The minimum value possible to attain on the test. Default is 0.
 #' @param max The maximum value possible to attain on the test. Default is 1.
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..
-#' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curve values.
+#' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves.
 #' @param grainsize The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).
-#' @return A confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
+#' @return A list containing the estimated parameters necessary for the approach, as well as the confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a maximum score of 100 and a minimum score of 0.
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # Suppose the cutoff value for attaining a pass is 50 items correct, and that the reliability of this test was estimated to 0.7. To estimate and retrieve the necessary parameters and the confusion matrix with LL.CA():
+#' LL.CA(x = testdata, reliability = .7, cut = 50, min = 0, max = 100)
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
 LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, grainsize = .001) {
@@ -129,11 +136,18 @@ caStats <- function(tp, tn, fp, fn) {
 #' @param maxJ Mark the point along the curve where Youden's J statistic is maximized? Default is FALSE.
 #' @param raw.out Give raw coordinates as output rather than plot? Default is FALSE.
 #' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is TRUE.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a maximum score of 100 and a minimum score of 0.
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # Suppose the cutoff value for attaining a pass is 50 items correct, and that the reliability of this test was estimated to 0.7. To produce a plot with an ROC curve using LL.ROC(), along with the AUC statistics and the points at which Youden's J. is maximized:
+#' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100, AUC = TRUE, maxJ = TRUE)
 #' @export
-LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE) {
+LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE) {
   for (i in 1:length(seq(0, 1, .001))) {
     if (i == 1) {
-      cuts <- seq(0, 1, .001)
+      cuts <- seq(min, max, (max - min) / 1000)
       outputmatrix <- matrix(nrow = length(seq(0, 1, .001)), ncol = 4)
     }
     cmat <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut)$confusionmatrix
@@ -166,7 +180,7 @@ LL.ROC <- function(x = NULL, min = 0, max = 1, reliability, truecut, AUC = FALSE
     graphics::text(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1] + .025,
          outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2] - .025,
          labels = paste("Maximum Youden's J. at cutoff = ",
-                        round(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 4], 3),
+                        round(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3]))[1], 4], 3),
                         "\n(Max. Youden's J. = ", round(max(outputmatrix[, 3]), 3), ").", sep = ""),
          adj = c(0, 1))
   }
