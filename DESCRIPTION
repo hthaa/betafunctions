@@ -1,7 +1,7 @@
 Package: betafunctions
 Type: Package
 Title: Functions for Working with the Standard Beta Probability Density Distribution
-Version: 1.0.0
+Version: 1.0.1
 Author: Haakon Haakstad
 Maintainer: Haakon Haakstad <h.t.haakstad@cemo.uio.no>
 Description: Package providing a number of functions for working with the Two- and Four-
