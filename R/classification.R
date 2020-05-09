@@ -5,7 +5,7 @@
 #' @param variance The variance of the observed-score distribution.
 #' @param l The lower-bound of the observed-score distribution. Default is 0 (assuming observed scores represent proportions).
 #' @param u The upper-bound of the observed-score distribution. Default is 1 (assuming observed scores represent proportions).
-#' @param reliability The reliability of the observed scores (proportion of variance shared with true-score distribution).
+#' @param reliability The reliability of the observed scores (proportion of observed-score distribution variance shared with true-score distribution).
 #' @return An estimate of the effective length of a test, given the stability of the observations it produces.
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @examples

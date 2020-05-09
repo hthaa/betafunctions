@@ -446,8 +446,8 @@ MLM <- function(a, b, x = NULL, n = NULL) {
 
 #' Probability Density under the Four-Parameter Beta PDD.
 #'
-#' @description Gives the density at desired values of X under the Four-Parameter Beta PDD.
-#' @param x Value of X.
+#' @description Gives the density at desired values of \code{x} under the Four-Parameter Beta PDD.
+#' @param x Value of \code{x}.
 #' @param l The first (lower) location parameter.
 #' @param u The second (upper) location paraeter.
 #' @param alpha The first shape parameter.
