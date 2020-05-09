@@ -4,15 +4,21 @@
 \alias{betamoments}
 \title{Compute Moments of Two-to-Four Parameter Beta Probability Density Distributions.}
 \usage{
-betamoments(a, b, l = 0, u = 1, types = c("raw", "central",
-  "standardized"), orders = 4)
+betamoments(
+  a,
+  b,
+  l = 0,
+  u = 1,
+  types = c("raw", "central", "standardized"),
+  orders = 4
+)
 }
 \arguments{
 \item{a}{The Alpha shape parameter of the PDD.}
 
 \item{b}{The Beta shape parameter of the PDD.}
 
-\item{l}{The first (lower) location parameter of a four-paramteer distribution.}
+\item{l}{The first (lower) location parameter of a four-parameter distribution.}
 
 \item{u}{The second (upper) location parameter of a four-parameter distribution.}
 
@@ -28,10 +34,10 @@ Computes Raw, Central, or Standardized moment properties of defined Standard Bet
 }
 \examples{
 # Assume some variable follows a four-parameter beta distribution with
-# location parameters \\code{l = 0.25} and \\code{u = .75}, and shape
-# parameters \\code{a = 5} and \\code{b = 3}. To compute the first four
+# location parameters l = 0.25 and u = .75, and shape
+# parameters a = 5 and b = 3. To compute the first four
 # raw, central, and standardized moments of this distrubution using
-# \\code{betamoments()}:
+# \code{betamoments()}:
 betamoments(a = 5, b = 3, l = .25, u = .75,
 types = c("raw", "central", "standardized"), orders = 4)
 }

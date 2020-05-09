@@ -9,7 +9,7 @@ AUC(FPR, TPR)
 \arguments{
 \item{FPR}{Vector of False-Positive Rates.}
 
-\item{TPR}{Vector of True-Posiitive Rates.}
+\item{TPR}{Vector of True-Positive Rates.}
 }
 \value{
 A value representing the area under the ROC curve.
@@ -30,12 +30,12 @@ hist(testdata, xlim = c(0, 100))
 # Suppose the cutoff value for attaining a pass is 50 items correct, and
 # that the reliability of this test was estimated to 0.7. To calculate the
 # necessary (x, y) coordinates to compute the area under the curve statistic
-# one can use the \\code{LL.ROC()} function with the argument
-# \\code{raw.out = TRUE}.
+# one can use the LL.ROC() function with the argument
+# raw.out = TRUE.
 coords <- LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0,
 max = 100, raw.out = TRUE)
 
-# To calculate and retrieve the Area Under the Curve (AUC) with the \\code{AUC()}
+# To calculate and retrieve the Area Under the Curve (AUC) with the AUC()
 # function, feed it the raw coordinates calculated above.
 AUC(coords[, "FPR"], coords[, "TPR"])
 }

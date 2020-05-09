@@ -29,6 +29,6 @@ hist(testdata, xlim = c(0, 100))
 
 # To find the alpha shape-parameter of a Standard (two-parameter) Beta
 # distribution with the same mean and variance as the observed-score
-# distribution using \\code{AMS()}:
+# distribution using AMS():
 AMS(mean(testdata), var(testdata))
 }

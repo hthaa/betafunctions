@@ -3,7 +3,7 @@
 #' @description Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
 #' @param a The Alpha shape parameter of the PDD.
 #' @param b The Beta shape parameter of the PDD.
-#' @param l The first (lower) location parameter of a four-paramteer distribution.
+#' @param l The first (lower) location parameter of a four-parameter distribution.
 #' @param u The second (upper) location parameter of a four-parameter distribution.
 #' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
@@ -280,7 +280,7 @@ rBetaMS <- function(n, mean, var = NULL, sd = NULL) {
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
 #' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
-#' @param u The upper-bound location parameter of the Beta distrubution.
+#' @param u The upper-bound location parameter of the Beta distribution.
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
 #' @examples
 #' # To box in an area under a four-parameter beta distribution with location
@@ -313,7 +313,7 @@ Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
 #' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
-#' @param u The upper-bound location parameter of the Beta distrubution.
+#' @param u The upper-bound location parameter of the Beta distribution.
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
 #' @examples
 #' # To box in an area under a four-parameter beta quantle distribution with
@@ -342,11 +342,11 @@ Beta.gfx.poly.qdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 #' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
 #' @param from The point of the x-axis from where to start producing y-density values.
 #' @param to The point of the x-axis to where y-density values are to be produced.
-#' @param by The resolution (or specing) at which to produce y-density values.
+#' @param by The resolution (or spacing) at which to produce y-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
 #' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
-#' @param u The upper-bound location parameter of the Beta distrubution.
+#' @param u The upper-bound location parameter of the Beta distribution.
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
 #' @examples
 #' # To box in an area under a four-parameter beta cumulative distribution with
@@ -449,7 +449,7 @@ MLM <- function(a, b, x = NULL, n = NULL) {
 #' @description Gives the density at desired values of \code{x} under the Four-Parameter Beta PDD.
 #' @param x Value of \code{x}.
 #' @param l The first (lower) location parameter.
-#' @param u The second (upper) location paraeter.
+#' @param u The second (upper) location parameter.
 #' @param alpha The first shape parameter.
 #' @param beta The second shape parameter.
 #' @return The value for the probability density at specified values of X.

@@ -4,8 +4,12 @@
 \alias{observedmoments}
 \title{Compute Moments of Observed Value Distribution.}
 \usage{
-observedmoments(x, type = c("raw", "central", "standardized"),
-  orders = 4, correct = TRUE)
+observedmoments(
+  x,
+  type = c("raw", "central", "standardized"),
+  orders = 4,
+  correct = TRUE
+)
 }
 \arguments{
 \item{x}{A vector of values, the distribution of which moments are to be calculated.}
@@ -30,7 +34,7 @@ testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 
 # To compute the first four raw, central, and standardized moments for this
-# distribution of observed scores using \\code{observedmoments()}:
+# distribution of observed scores using observedmoments():
 observedmoments(x = testdata, type = c("raw", "central", "standardized"),
 orders = 4, correct = TRUE)
 }

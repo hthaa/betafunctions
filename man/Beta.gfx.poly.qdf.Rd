@@ -19,7 +19,7 @@ Beta.gfx.poly.qdf(from, to, by, alpha, beta, l = 0, u = 1)
 
 \item{l}{The lower-bound location parameter of the Beta distribution.}
 
-\item{u}{The upper-bound location parameter of the Beta distrubution.}
+\item{u}{The upper-bound location parameter of the Beta distribution.}
 }
 \value{
 A two-column matrix with density-values of y to plot against corresponding location values of x.
@@ -29,8 +29,8 @@ Plotting tool, producing a two-column matrix with values of \code{y} correspondi
 }
 \examples{
 # To box in an area under a four-parameter beta quantle distribution with
-# location parameters \\code{l = .25} and \\code{u = 75}, and shape parameters
-# \\code{alpha = 5} and \\code{beta = 3}, from .4 to .6:
+# location parameters l = .25 and u = 75, and shape parameters
+# alpha = 5 and beta = 3, from .4 to .6:
 plot(NULL, xlim = c(0, 1), ylim = c(0, 1))
 coords <- Beta.gfx.poly.qdf(from = .4, to = .6, by = .001, alpha = 5,
 beta = 3, l = .25, u = .75)

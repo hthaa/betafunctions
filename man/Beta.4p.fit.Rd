@@ -23,7 +23,7 @@ testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 
 # To fit and retrieve the parameters for a four-parameter beta distribution
-# to the observed-score distribution using \\code{Beta.4p.fit()}:
+# to the observed-score distribution using Beta.4p.fit():
 Beta.4p.fit(testdata)
 }
 \references{

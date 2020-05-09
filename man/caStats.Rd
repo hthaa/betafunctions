@@ -30,11 +30,11 @@ hist(testdata, xlim = c(0, 100))
 
 # Suppose the cutoff value for attaining a pass is 50 items correct, and
 # that the reliability of this test was estimated to 0.7. First, compute the
-# estimated confusion matrix using \\code{LL.CA()}:
+# estimated confusion matrix using LL.CA():
 cmat <- LL.CA(x = testdata, reliability = .7, cut = 50, min = 0,
 max = 100)$confusionmatrix
 
-# To estimate and retrieve diagnostic performance statistics using \\code{caStats()},
+# To estimate and retrieve diagnostic performance statistics using caStats(),
 # feed it the appropriate entries of the confusion matrix.
 caStats(tp = cmat["True", "Fail"], tn = cmat["True", "Pass"],
 fp = cmat["False", "Fail"], fn = cmat["False", "Pass"])

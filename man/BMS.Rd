@@ -29,6 +29,6 @@ hist(testdata, xlim = c(0, 100))
 
 # To find the beta shape-parameter of a Standard (two-parameter) Beta
 # distribution with the same mean and variance as the observed-score
-# distribution using \\code{BMS()}:
+# distribution using BMS():
 BMS(mean(testdata), var(testdata))
 }

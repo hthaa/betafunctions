@@ -4,8 +4,16 @@
 \alias{LL.ROC}
 \title{ROC curves for the Livingston and Lewis approach.}
 \usage{
-LL.ROC(x = NULL, reliability, min = 0, max = 1, truecut,
-  AUC = FALSE, maxJ = FALSE, raw.out = FALSE)
+LL.ROC(
+  x = NULL,
+  reliability,
+  min = 0,
+  max = 1,
+  truecut,
+  AUC = FALSE,
+  maxJ = FALSE,
+  raw.out = FALSE
+)
 }
 \arguments{
 \item{x}{A vector of observed results.}
@@ -22,10 +30,10 @@ LL.ROC(x = NULL, reliability, min = 0, max = 1, truecut,
 
 \item{maxJ}{Mark the point along the curve where Youden's J statistic is maximized? Default is FALSE.}
 
-\item{raw.out}{Give raw coordinates as output rather than plot? Default is \code{FALSE}.}
+\item{raw.out}{Give raw coordinates as output rather than plot? Default is FALSE.}
 }
 \value{
-A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
+A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is TRUE.
 }
 \description{
 Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.

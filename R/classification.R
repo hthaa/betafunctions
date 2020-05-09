@@ -228,7 +228,7 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE
 #'
 #' @description Given a vector of false-positive rates and a vector of true-positive rates, calculate the area under the Receiver Operator Characteristic (ROC) curve.
 #' @param FPR Vector of False-Positive Rates.
-#' @param TPR Vector of True-Posiitive Rates.
+#' @param TPR Vector of True-Positive Rates.
 #' @return A value representing the area under the ROC curve.
 #' @note Script originally retrieved and modified from https://blog.revolutionanalytics.com/2016/11/calculating-auc.html.
 #' @examples
@@ -254,4 +254,32 @@ AUC <- function(FPR, TPR) {
   dFPR <- base::c(diff(FPR), 0)
   dTPR <- base::c(diff(TPR), 0)
   base::sum(TPR * dFPR) + sum(dTPR * dFPR)/2
+}
+
+#' Calculate Cronbach's Alpha from supplied variables.
+#'
+#' @description Calculates Cronbach's Alpha, a very commonly used index for assessing the reliability / internal consistency of a sumscore. Often interpreted as the mean correlation across all possible split-half alternate forms of the test.
+#' @param x A data-frame or matrix of numerical values where rows are across-items within-respondent observation vectors, and columns are within-item across-respondents observation vectors.
+#' @note Missing values are treated by passing \code{na.rm = TRUE} to the \code{var} function call.
+#' @note Be aware that this function does not issue a warning if there are negative correlations between variables in the supplied data-set.
+#' @return Cronbach's Alpha for the sumscore of supplied variables.
+#' @references Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. Psychometrika 16, 297–334. doi: 10.1007/BF02310555
+#' @examples
+#' # Generate some fictional data. Say 100 students take a 50-item long test
+#' # where all items are equally difficult.
+#' set.seed(1234)
+#' p.success <- rBeta.4P(100, .25, .75, 5, 3)
+#' for (i in 1:50) {
+#'   if (i == 1) {
+#'     rawdata <- matrix(nrow = 100, ncol = 50)
+#'   }
+#'   rawdata[, i] <- rbinom(100, 1, p.success)
+#' }
+#' # To calculate Cronbach's Alpha for this test:
+#' cba(rawdata)
+#' @export
+cba <- function(x) {
+  (base::ncol(x) / (base::ncol(x) - 1)) *
+    (1 - (base::sum(base::diag(stats::var(x, na.rm = TRUE))) /
+            base::sum(stats::var(x, na.rm = TRUE))))
 }

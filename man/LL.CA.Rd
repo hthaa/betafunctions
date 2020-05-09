@@ -4,8 +4,16 @@
 \alias{LL.CA}
 \title{An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Accuracy based on Observed Test Scores and Test Reliability.}
 \usage{
-LL.CA(x = NULL, reliability, cut, min = 0, max = 1,
-  error.model = "binomial", truecut = NULL, grainsize = 0.001)
+LL.CA(
+  x = NULL,
+  reliability,
+  cut,
+  min = 0,
+  max = 1,
+  error.model = "binomial",
+  truecut = NULL,
+  grainsize = 0.001
+)
 }
 \arguments{
 \item{x}{A vector of observed scores for which a beta-distribution is to be fitted.}
