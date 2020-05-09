@@ -21,3 +21,9 @@ The expected mean of the Standard Beta probability density distribution, for whi
 \description{
 Assuming a prior standard Beta distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
 }
+\examples{
+# Assuming a prior Standard (two-parameter) Beta distribution is fit, which
+# yield an alpha parameter of 10 and a beta parameter of 8, calculate the
+# true-mean most likely to have produced the observations:
+MLM(a = 10, b = 8)
+}

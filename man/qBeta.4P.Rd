@@ -25,3 +25,11 @@ A vector of quantiles for specified probabilities or proportions of observations
 \description{
 Function for calculating the quantile (i.e., value of x) for a given proportion (i.e., the value of y) under the four-parameter beta distribution.
 }
+\examples{
+# Assume some variable follows a four-parameter beta distribution with
+# location parameters \\code{l = 0.25} and \\code{u = .75}, and shape
+# parameters \\code{alpha = 5} and \\code{beta = 3}. To compute the
+# quantile at a specific point of the distribution (e.g., .5)
+# using \\code{qBeta.4P()}:
+qBeta.4P(p = .5, l = .25, u = .75, alpha = 5, beta = 3)
+}

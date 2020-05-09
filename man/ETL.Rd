@@ -11,9 +11,9 @@ ETL(mean, variance, l = 0, u = 1, reliability)
 
 \item{variance}{The variance of the observed-score distribution.}
 
-\item{l}{The lower-bound of the observed-score distribution.}
+\item{l}{The lower-bound of the observed-score distribution. Default is 0 (assuming observed scores represent proportions).}
 
-\item{u}{The upper-bound of the observed-score distribution.}
+\item{u}{The upper-bound of the observed-score distribution. Default is 1 (assuming observed scores represent proportions).}
 
 \item{reliability}{The reliability of the observed scores (correlation with true-score distribution).}
 }
@@ -22,6 +22,18 @@ An estimate of the effective length of a test, given the stability of the observ
 }
 \description{
 According to Livingston and Lewis (1995), "The effective test length corresponding to a test score is the number of discrete, dichotomously scored, locally independent, equally difficult items required to produce a total score of the same reliability."
+}
+\examples{
+# Generate some fictional data. Say, 100 individuals take a test with a
+# maximum score of 100 and a minimum score of 0.
+set.seed(1234)
+testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+hist(testdata, xlim = c(0, 100))
+
+# Suppose the reliability of this test was estimated to 0.7. To estimate and
+# retrieve the effective test length using \\code{ETL()}:
+ETL(mean = mean(testdata), variance = var(testdata), l = 0, u = 100,
+reliability = .7)
 }
 \references{
 Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).

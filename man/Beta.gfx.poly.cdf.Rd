@@ -2,9 +2,9 @@
 % Please edit documentation in R/betafunctions.R
 \name{Beta.gfx.poly.cdf}
 \alias{Beta.gfx.poly.cdf}
-\title{Coordinate Generation for Marking an Area Under the Curve for the Standard Beta Cumulative Probability Density Distribution.}
+\title{Coordinate Generation for Marking an Area Under the Curve for the Beta Cumulative Probability Density Distribution.}
 \usage{
-Beta.gfx.poly.cdf(from, to, by, alpha, beta)
+Beta.gfx.poly.cdf(from, to, by, alpha, beta, l = 0, u = 1)
 }
 \arguments{
 \item{from}{The point of the x-axis from where to start producing y-density values.}
@@ -16,9 +16,20 @@ Beta.gfx.poly.cdf(from, to, by, alpha, beta)
 \item{alpha}{The Alpha shape-parameter value for the Standard Beta probability density distribution.}
 
 \item{beta}{The Beta shape-parameter fort he Standard Beta probability density distribution.}
+
+\item{l}{The lower-bound location parameter of the Beta distribution.}
+
+\item{u}{The upper-bound location parameter of the Beta distrubution.}
 }
 \value{
 A two-column matrix with density-values of y to plot against corresponding location values of x.
+# To box in an area under a four-parameter beta cumulative distribution with
+# location parameters \code{l = .25} and \code{u = 75}, and shape parameters
+# \code{alpha = 5} and \code{beta = 3}, from .4 to .6:
+plot(NULL, xlim = c(0, 1), ylim = c(0, 1))
+coords <- Beta.gfx.poly.cdf(from = .4, to = .6, by = .001, alpha = 5,
+beta = 3, l = .25, u = .75)
+polygon(coords)
 }
 \description{
 Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.

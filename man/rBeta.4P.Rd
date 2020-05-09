@@ -23,3 +23,10 @@ A vector with length \code{n} of random values drawn from the four-parameter bet
 \description{
 Function for generating random numbers from a specified four-parameter beta distribution.
 }
+\examples{
+# Assume some variable follows a four-parameter beta distribution with
+# location parameters \\code{l = 0.25} and \\code{u = .75}, and shape
+# parameters \\code{alpha = 5} and \\code{beta = 3}. To draw a random
+# value from this distribution using \\code{rBeta.4P()}:
+rBeta.4P(n = 1, l = .25, u = .75, alpha = 5, beta = 3)
+}

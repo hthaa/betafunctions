@@ -23,3 +23,9 @@ A value representing the probability of a random draw from the Standard Beta pro
 \description{
 Calculates the probability of some specific observation falling under a specified interval  ([0, x] or [x, 1]) under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }
+\examples{
+# To compute the proportion of the density under the lower-end tail of a
+# point along the Standard (two-parameter) PDD (e.g., .5) with mean of .6
+# and variance of .04:
+pBetaMS(q = .5, mean = .6, var = .04)
+}

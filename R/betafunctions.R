@@ -7,6 +7,14 @@
 #' @param u The second (upper) location parameter of a four-parameter distribution.
 #' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
+#' @examples
+#' # Assume some variable follows a four-parameter beta distribution with
+#' # location parameters l = 0.25 and u = .75, and shape
+#' # parameters a = 5 and b = 3. To compute the first four
+#' # raw, central, and standardized moments of this distrubution using
+#' # \code{betamoments()}:
+#' betamoments(a = 5, b = 3, l = .25, u = .75,
+#' types = c("raw", "central", "standardized"), orders = 4)
 #' @references Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
 #' @return A list of moment types, each a list of moment orders.
 #' @export
@@ -51,6 +59,17 @@ betamoments <- function(a, b, l = 0, u = 1, types = c("raw", "central", "standar
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
 #' @param correct Whether to include bias correction in estimation of orders. Default is TRUE.
 #' @return A list of moment types, each a list of moment orders.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # To compute the first four raw, central, and standardized moments for this
+#' # distribution of observed scores using observedmoments():
+#' observedmoments(x = testdata, type = c("raw", "central", "standardized"),
+#' orders = 4, correct = TRUE)
 #' @export
 observedmoments <- function(x, type = c("raw", "central", "standardized"),  orders = 4, correct = TRUE) {
   x <- stats::na.omit(x)
@@ -97,11 +116,23 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
 
 #' Alpha Shape Parameter Given Mean and Variance of a Standard Beta PDD.
 #'
-#' @description Calculates the Alpha value required to produce a Standard Beta probability density distribution with defined mean and variance or standard deviation.
+#' @description Calculates the Alpha value required to produce a Standard  (two-parameter) Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param mean The mean of the target Standard Beta probability density distribution.
 #' @param var The variance of the target Standard Beta probability density distribution.
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Alpha shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0, rescaled to proportion
+#' # of maximum.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3)) / 100
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # To find the alpha shape-parameter of a Standard (two-parameter) Beta
+#' # distribution with the same mean and variance as the observed-score
+#' # distribution using AMS():
+#' AMS(mean(testdata), var(testdata))
 #' @export
 AMS <- function(mean, var, sd = NULL) {
   if ((!base::is.null(var) & !base::is.null(sd))) {
@@ -118,11 +149,23 @@ AMS <- function(mean, var, sd = NULL) {
 
 #' Beta Shape Parameter Given Mean and Variance of a Standard Beta PDD.
 #'
-#' @description Calculates the Beta value required to produce a Standard Beta probability density distribution with defined mean and variance or standard deviation.
+#' @description Calculates the Beta value required to produce a Standard (two-parameter) Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param mean The mean of the target Standard Beta probability density distribution.
 #' @param var The variance of the target Standard Beta probability density distribution.
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0, rescaled to proportion
+#' # of maximum.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3)) / 100
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # To find the beta shape-parameter of a Standard (two-parameter) Beta
+#' # distribution with the same mean and variance as the observed-score
+#' # distribution using BMS():
+#' BMS(mean(testdata), var(testdata))
 #' @export
 BMS <- function(mean, var, sd = NULL) {
   if ((!base::is.null(var) & !base::is.null(sd))) {
@@ -146,6 +189,11 @@ BMS <- function(mean, var, sd = NULL) {
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
 #' @param lt Whether the density that should be considered is between the lower-end (i.e., [0 -> x]) or the higher-end of the distribution (i.e., [x -> 1]).
 #' @return A value representing the probability of a random draw from the Standard Beta probability density distribution with a defined mean and variance being from one of two defined intervals (i.e., [0 -> x] or [x -> 1]).
+#' @examples
+#' # To compute the proportion of the density under the lower-end tail of a
+#' # point along the Standard (two-parameter) PDD (e.g., .5) with mean of .6
+#' # and variance of .04:
+#' pBetaMS(q = .5, mean = .6, var = .04)
 #' @export
 pBetaMS <- function(q, mean, var = NULL, sd = NULL, lt = TRUE) {
   if ((!is.null(var) & !is.null(sd))) {
@@ -165,6 +213,10 @@ pBetaMS <- function(q, mean, var = NULL, sd = NULL, lt = TRUE) {
 #' @param var The variance of the target Standard Beta probability density distribution.
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Beta Shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
+#' @examples
+#' # To compute the density at a specific point (e.g., .5) along the Standard
+#' # (two-parameter) PDD with mean of .6 and variance of .04:
+#' dBetaMS(x = .5, mean =.6, var = .04)
 #' @export
 dBetaMS <- function(x, mean, var = NULL, sd = NULL) {
   if ((!base::is.null(var) & !base::is.null(sd))) {
@@ -185,6 +237,10 @@ dBetaMS <- function(x, mean, var = NULL, sd = NULL) {
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
 #' @param lt Logical. Specifies which end of the tail for which to calculate quantile. Default is TRUE (meaning, find q for lower tail.)
 #' @return A numeric value representing the quantile for which the specified proportion of observations fall within.
+#' @examples
+#' # To compute the quantile at a specific point (e.g., .5) along the Standard
+#' # (two-parameter) PDD with mean of .6 and variance of .04:
+#' qBetaMS(p = .5, mean =.6, var = .04)
 #' @export
 qBetaMS <- function(p, mean, var = NULL, sd = NULL, lt = TRUE) {
   if ((!base::is.null(var) & !base::is.null(sd))) {
@@ -215,7 +271,7 @@ rBetaMS <- function(n, mean, var = NULL, sd = NULL) {
   stats::rbeta(n, ((mean^2 - mean^3) / var) - mean, (mean * (1 - mean)^2) / var + mean - 1)
 }
 
-#' Coordinate Generation for Marking an Area Under the Curve for the Standard Beta Probability Density Distribution.
+#' Coordinate Generation for Marking an Area Under the Curve for the Beta Probability Density Distribution.
 #'
 #' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
 #' @param from The point of the x-axis from where to start producing y-density values.
@@ -223,22 +279,65 @@ rBetaMS <- function(n, mean, var = NULL, sd = NULL) {
 #' @param by The resolution (or spacing) at which to produce y-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
 #' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
+#' @param l The lower-bound location parameter of the Beta distribution.
+#' @param u The upper-bound location parameter of the Beta distrubution.
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
+#' @examples
+#' # To box in an area under a four-parameter beta distribution with location
+#' # parameters l = .25 and u = .75, and shape parameters
+#' # alpha = 5 and beta = 3, from .4 to .6:
+#' plot(NULL, xlim = c(0, 1), ylim = c(0, 7))
+#' coords <- Beta.gfx.poly.pdf(from = .4, to = .6, by = .001, alpha = 5,
+#' beta = 3, l = .25, u = .75)
+#' polygon(coords)
 #' @export
-Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta) {
+Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
   x <- base::c(from, base::seq(from, to, by), to)
   for (i in 1:base::length(x)) {
     if (i == 1) y <- base::vector(length = base::length(x))
     if (i == 1 | i == base::length(x)) {
       y[i] <- 0
     } else {
-      y[i] <- stats::dbeta(x[i], alpha, beta)
+      y[i] <- dBeta.4P(x[i], l, u, alpha, beta)
     }
   }
   return(base::cbind(x, y))
 }
 
-#' Coordinate Generation for Marking an Area Under the Curve for the Standard Beta Cumulative Probability Density Distribution.
+#' Coordinate Generation for Marking an Area Under the Curve for the Beta Quantile Density Distribution.
+#'
+#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
+#' @param from The point of the x-axis from where to start producing y-density values.
+#' @param to The point of the x-axis to where y-density values are to be produced.
+#' @param by The resolution (or spacing) at which to produce y-density values.
+#' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
+#' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
+#' @param l The lower-bound location parameter of the Beta distribution.
+#' @param u The upper-bound location parameter of the Beta distrubution.
+#' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
+#' @examples
+#' # To box in an area under a four-parameter beta quantle distribution with
+#' # location parameters l = .25 and u = 75, and shape parameters
+#' # alpha = 5 and beta = 3, from .4 to .6:
+#' plot(NULL, xlim = c(0, 1), ylim = c(0, 1))
+#' coords <- Beta.gfx.poly.qdf(from = .4, to = .6, by = .001, alpha = 5,
+#' beta = 3, l = .25, u = .75)
+#' polygon(coords)
+#' @export
+Beta.gfx.poly.qdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
+  x <- base::c(from, base::seq(from, to, by), to)
+  for (i in 1:base::length(x)) {
+    if (i == 1) y <- base::vector(length = base::length(x))
+    if (i == 1 | i == base::length(x)) {
+      y[i] <- l
+    } else {
+      y[i] <- qBeta.4P(x[i], l, u, alpha, beta)
+    }
+  }
+  return(base::cbind(x, y))
+}
+
+#' Coordinate Generation for Marking an Area Under the Curve for the Beta Cumulative Probability Density Distribution.
 #'
 #' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
 #' @param from The point of the x-axis from where to start producing y-density values.
@@ -246,16 +345,26 @@ Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta) {
 #' @param by The resolution (or specing) at which to produce y-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
 #' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
+#' @param l The lower-bound location parameter of the Beta distribution.
+#' @param u The upper-bound location parameter of the Beta distrubution.
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
+#' @examples
+#' # To box in an area under a four-parameter beta cumulative distribution with
+#' # location parameters l = .25 and u = 75, and shape parameters
+#' # alpha = 5 and beta = 3, from .4 to .6:
+#' plot(NULL, xlim = c(0, 1), ylim = c(0, 1))
+#' coords <- Beta.gfx.poly.cdf(from = .4, to = .6, by = .001, alpha = 5,
+#' beta = 3, l = .25, u = .75)
+#' polygon(coords)
 #' @export
-Beta.gfx.poly.cdf <- function(from, to, by, alpha, beta) {
+Beta.gfx.poly.cdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
   x <- base::c(from, seq(from, to, by), to)
   for (i in 1:base::length(x)) {
     if (i == 1) y <- base::vector(length = base::length(x))
     if (i == 1 | i == base::length(x)) {
       y[i] <- 0
     } else {
-      y[i] <- stats::pbeta(x[i], alpha, beta)
+      y[i] <- pBeta.4P(x[i], l, u, alpha, beta)
     }
   }
   return(base::cbind(x, y))
@@ -269,6 +378,11 @@ Beta.gfx.poly.cdf <- function(from, to, by, alpha, beta) {
 #' @param x Observed proportion-correct outcome.
 #' @param n Test-length.
 #' @return The Alpha shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.
+#' @examples
+#' # Assuming a prior Standard (two-parameter) Beta distribution is fit, which
+#' # yield an alpha parameter of 10 and a beta parameter of 8, calculate the
+#' # true-alpha parameter most likely to have produced the observations:
+#' MLA(a = 10, b = 8)
 #' @export
 MLA <- function(a, b, x = NULL, n = NULL) {
   if (base::is.null(x) | base::is.null(n)) {
@@ -287,6 +401,11 @@ MLA <- function(a, b, x = NULL, n = NULL) {
 #' @param b Observed beta value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
 #' @param n Test-length.
+#' @examples
+#' # Assuming a prior Standard (two-parameter) Beta distribution is fit, which
+#' # yield an alpha parameter of 10 and a beta parameter of 8, calculate the
+#' # true-beta parameter most likely to have produced the observations:
+#' MLB(a = 10, b = 8)
 #' @return The Beta shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.
 #' @export
 MLB <- function(a, b, x = NULL, n = NULL) {
@@ -307,6 +426,11 @@ MLB <- function(a, b, x = NULL, n = NULL) {
 #' @param b Observed beta value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
 #' @param n Test-length.
+#' @examples
+#' # Assuming a prior Standard (two-parameter) Beta distribution is fit, which
+#' # yield an alpha parameter of 10 and a beta parameter of 8, calculate the
+#' # true-mean most likely to have produced the observations:
+#' MLM(a = 10, b = 8)
 #' @return The expected mean of the Standard Beta probability density distribution, for which the observed mean is the most likely value.
 #' @export
 MLM <- function(a, b, x = NULL, n = NULL) {
@@ -329,6 +453,13 @@ MLM <- function(a, b, x = NULL, n = NULL) {
 #' @param alpha The first shape parameter.
 #' @param beta The second shape parameter.
 #' @return The value for the probability density at specified values of X.
+#' @examples
+#' # Assume some variable follows a four-parameter beta distribution with
+#' # location parameters l = 0.25 and u = .75, and shape
+#' # parameters alpha = 5 and beta = 3. To compute the
+#' # probability density at a specific point of the distribution (e.g., .5)
+#' # using dBeta.4P():
+#' dBeta.4P(x = .5, l = .25, u = .75, alpha = 5, beta = 3)
 #' @export
 dBeta.4P <- function(x, l, u, alpha, beta) {
  bfunc <- base::beta(alpha, beta)
@@ -351,6 +482,12 @@ dBeta.4P <- function(x, l, u, alpha, beta) {
 #' @param alpha The first shape parameter.
 #' @param beta The second shape parameter.
 #' @return A vector with length \code{n} of random values drawn from the four-parameter beta distribution.
+#' @examples
+#' # Assume some variable follows a four-parameter beta distribution with
+#' # location parameters l = 0.25 and u = .75, and shape
+#' # parameters alpha = 5 and beta = 3. To draw a random
+#' # value from this distribution using rBeta.4P():
+#' rBeta.4P(n = 1, l = .25, u = .75, alpha = 5, beta = 3)
 #' @export
 rBeta.4P <- function(n, l, u, alpha, beta) {
   stats::rbeta(n, alpha, beta) * (u - l) + l
@@ -366,6 +503,13 @@ rBeta.4P <- function(n, l, u, alpha, beta) {
 #' @param beta The second shape parameter.
 #' @param lt Whether the proportion to be calculated is to be under the lower or upper tail. Default is TRUE (lower tail).
 #' @return A vector of proportions of observations falling under specified quantiles under the four-parameter beta distribution.
+#' @examples
+#' # Assume some variable follows a four-parameter beta distribution with
+#' # location parameters l = 0.25 and u = .75, and shape
+#' # parameters alpha = 5 and beta = 3. To compute the
+#' # cumulative probability at a specific point of the distribution (e.g., .5)
+#' # using pBeta.4P():
+#' pBeta.4P(q = .5, l = .25, u = .75, alpha = 5, beta = 3)
 #' @export
 pBeta.4P <- function(q, l, u, alpha, beta, lt = TRUE) {
   sapply(q, function(x) {
@@ -390,6 +534,13 @@ pBeta.4P <- function(q, l, u, alpha, beta, lt = TRUE) {
 #' @param beta The second shape parameter.
 #' @param lt Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is TRUE (lower tail).
 #' @return A vector of quantiles for specified probabilities or proportions of observations under the four-parameter beta distribution.
+#' @examples
+#' # Assume some variable follows a four-parameter beta distribution with
+#' # location parameters l = 0.25 and u = .75, and shape
+#' # parameters alpha = 5 and beta = 3. To compute the
+#' # quantile at a specific point of the distribution (e.g., .5)
+#' # using qBeta.4P():
+#' qBeta.4P(p = .5, l = .25, u = .75, alpha = 5, beta = 3)
 #' @export
 qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
   if (lt) {
@@ -406,6 +557,16 @@ qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
 #' @return A list of parameter-values required to produce a four-parameter beta distribution with the same first four moments as the observed distribution.
 #' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.
 #' @references Lord, Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # To fit and retrieve the parameters for a four-parameter beta distribution
+#' # to the observed-score distribution using Beta.4p.fit():
+#' Beta.4p.fit(testdata)
 #' @export
 Beta.4p.fit <- function(scores) {
   m <- observedmoments(scores)

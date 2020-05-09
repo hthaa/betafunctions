@@ -22,10 +22,10 @@ LL.ROC(x = NULL, reliability, min = 0, max = 1, truecut,
 
 \item{maxJ}{Mark the point along the curve where Youden's J statistic is maximized? Default is FALSE.}
 
-\item{raw.out}{Give raw coordinates as output rather than plot? Default is FALSE.}
+\item{raw.out}{Give raw coordinates as output rather than plot? Default is \code{FALSE}.}
 }
 \value{
-A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is TRUE.
+A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
 }
 \description{
 Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.
@@ -40,5 +40,6 @@ hist(testdata, xlim = c(0, 100))
 # that the reliability of this test was estimated to 0.7. To produce a plot
 # with an ROC curve using LL.ROC(), along with the AUC statistics and the
 # points at which Youden's J. is maximized:
-LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100, AUC = TRUE, maxJ = TRUE)
+LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
+AUC = TRUE, maxJ = TRUE)
 }

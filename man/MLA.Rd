@@ -21,3 +21,9 @@ The Alpha shape-parameter value for the Standard Beta probability density distri
 \description{
 Given a fitted Standard Distribution, return the Alpha value where the observed mean becomes the mode.
 }
+\examples{
+# Assuming a prior Standard (two-parameter) Beta distribution is fit, which
+# yield an alpha parameter of 10 and a beta parameter of 8, calculate the
+# true-alpha parameter most likely to have produced the observations:
+MLA(a = 10, b = 8)
+}

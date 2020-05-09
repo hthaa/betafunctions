@@ -3,11 +3,22 @@
 #' @description  According to Livingston and Lewis (1995), "The effective test length corresponding to a test score is the number of discrete, dichotomously scored, locally independent, equally difficult items required to produce a total score of the same reliability."
 #' @param mean The mean of the observed-score distribution.
 #' @param variance The variance of the observed-score distribution.
-#' @param l The lower-bound of the observed-score distribution.
-#' @param u The upper-bound of the observed-score distribution.
-#' @param reliability The reliability of the observed scores (correlation with true-score distribution).
+#' @param l The lower-bound of the observed-score distribution. Default is 0 (assuming observed scores represent proportions).
+#' @param u The upper-bound of the observed-score distribution. Default is 1 (assuming observed scores represent proportions).
+#' @param reliability The reliability of the observed scores (proportion of variance shared with true-score distribution).
 #' @return An estimate of the effective length of a test, given the stability of the observations it produces.
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # Suppose the reliability of this test was estimated to 0.7. To estimate and
+#' # retrieve the effective test length using ETL():
+#' ETL(mean = mean(testdata), variance = var(testdata), l = 0, u = 100,
+#' reliability = .7)
 #' @export
 ETL <- function(mean, variance, l = 0, u = 1, reliability) {
   ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
@@ -18,8 +29,8 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to four-parameter beta distributions, and errors of measurement binomial distribution distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
 #' @param x A vector of observed scores for which a beta-distribution is to be fitted.
 #' @param reliability The observed-score squared correlation with the true-score.
-#' @param min The minimum value possible to attain on the test. Default is 0.
-#' @param max The maximum value possible to attain on the test. Default is 1.
+#' @param min The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).
+#' @param max The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves.
@@ -28,6 +39,7 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
 #' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
@@ -108,7 +120,24 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
 #' @param tn The frequency or rate of true-negative classifications.
 #' @param fp The frequency or rate of false-positive classifications.
 #' @param fn The frequency or rate of false-negative classifications.
-#' @return A list of diagnostic performance statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio (LR.pos), negative likelihood ratio (LR.neg), diagnostic odds ratio (DOR), positive predictive value (PPV), negative predictive value (NPV), Youden's J. (Youden.J), and Accuracy.
+#' @return A list of diagnostic performance statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio (LR.pos), negative likelihood ratio (LR.neg), positive predictive value (PPV), negative predictive value (NPV), Youden's J. (Youden.J), and Accuracy.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # Suppose the cutoff value for attaining a pass is 50 items correct, and
+#' # that the reliability of this test was estimated to 0.7. First, compute the
+#' # estimated confusion matrix using LL.CA():
+#' cmat <- LL.CA(x = testdata, reliability = .7, cut = 50, min = 0,
+#' max = 100)$confusionmatrix
+#'
+#' # To estimate and retrieve diagnostic performance statistics using caStats(),
+#' # feed it the appropriate entries of the confusion matrix.
+#' caStats(tp = cmat["True", "Fail"], tn = cmat["True", "Pass"],
+#' fp = cmat["False", "Fail"], fn = cmat["False", "Pass"])
 #' @references Glas et al. (2003). The Diagnostic Odds Ratio: A Single Indicator of Test Performance, Journal of Clinical Epidemiology, 1129-1135, 56(11). doi: 10.1016/S0895-4356(03)00177-X
 #' @export
 caStats <- function(tp, tn, fp, fn) {
@@ -116,13 +145,12 @@ caStats <- function(tp, tn, fp, fn) {
   specificity <-  tn / (tn + fp)
   plr <-          sensitivity / (1 - specificity)
   nlr <-          (1 - sensitivity) / specificity
-  dor <-          plr / nlr
   ppv <-          tp / (tp + fp)
   npv <-          tn / (tn + fn)
   accuracy <-     (tp + tn) / (tp + tn + fp + fn)
   J <-            (sensitivity + specificity) - 1
   base::list("Sensitivity" = sensitivity, "Specificity" = specificity,
-             "LR.pos" = plr, "LR.neg" = nlr, "DOR" = dor,
+             "LR.pos" = plr, "LR.neg" = nlr,
              "PPV" = ppv, "NPV" = npv,
              "Youden.J" = J, "Accuracy" = accuracy)
 }
@@ -149,9 +177,12 @@ caStats <- function(tp, tn, fp, fn) {
 #' # that the reliability of this test was estimated to 0.7. To produce a plot
 #' # with an ROC curve using LL.ROC(), along with the AUC statistics and the
 #' # points at which Youden's J. is maximized:
-#' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100, AUC = TRUE, maxJ = TRUE)
+#' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
+#' AUC = TRUE, maxJ = TRUE)
 #' @export
 LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE) {
+  oldpar <- graphics::par(no.readonly = TRUE)
+  base::on.exit(graphics::par(oldpar))
   for (i in 1:length(seq(0, 1, .01))) {
     if (i == 1) {
       cuts <- seq(min, max, (max - min) / 100)
@@ -200,6 +231,24 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE
 #' @param TPR Vector of True-Posiitive Rates.
 #' @return A value representing the area under the ROC curve.
 #' @note Script originally retrieved and modified from https://blog.revolutionanalytics.com/2016/11/calculating-auc.html.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # Suppose the cutoff value for attaining a pass is 50 items correct, and
+#' # that the reliability of this test was estimated to 0.7. To calculate the
+#' # necessary (x, y) coordinates to compute the area under the curve statistic
+#' # one can use the LL.ROC() function with the argument
+#' # raw.out = TRUE.
+#' coords <- LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0,
+#' max = 100, raw.out = TRUE)
+#'
+#' # To calculate and retrieve the Area Under the Curve (AUC) with the AUC()
+#' # function, feed it the raw coordinates calculated above.
+#' AUC(coords[, "FPR"], coords[, "TPR"])
 #' @export
 AUC <- function(FPR, TPR) {
   dFPR <- base::c(diff(FPR), 0)

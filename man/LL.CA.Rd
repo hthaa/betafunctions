@@ -14,9 +14,9 @@ LL.CA(x = NULL, reliability, cut, min = 0, max = 1,
 
 \item{cut}{The cutoff value for classifying observations into pass or fail categories.}
 
-\item{min}{The minimum value possible to attain on the test. Default is 0.}
+\item{min}{The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).}
 
-\item{max}{The maximum value possible to attain on the test. Default is 1.}
+\item{max}{The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).}
 
 \item{error.model}{The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..}
 
@@ -33,6 +33,7 @@ An implementation of what has been come to be known as the "Livingston and Lewis
 \examples{
 # Generate some fictional data. Say, 100 individuals take a test with a
 # maximum score of 100 and a minimum score of 0.
+set.seed(1234)
 testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 

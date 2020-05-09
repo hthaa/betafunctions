@@ -21,3 +21,8 @@ A numeric value representing the required value for the Beta Shape-parameter in 
 \description{
 Calculates the density under specific points of the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }
+\examples{
+# To compute the density at a specific point (e.g., .5) along the Standard
+# (two-parameter) PDD with mean of .6 and variance of .04:
+dBetaMS(x = .5, mean =.6, var = .04)
+}

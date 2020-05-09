@@ -17,5 +17,18 @@ BMS(mean, var, sd = NULL)
 A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 }
 \description{
-Calculates the Beta value required to produce a Standard Beta probability density distribution with defined mean and variance or standard deviation.
+Calculates the Beta value required to produce a Standard (two-parameter) Beta probability density distribution with defined mean and variance or standard deviation.
+}
+\examples{
+# Generate some fictional data. Say, 100 individuals take a test with a
+# maximum score of 100 and a minimum score of 0, rescaled to proportion
+# of maximum.
+set.seed(1234)
+testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3)) / 100
+hist(testdata, xlim = c(0, 100))
+
+# To find the beta shape-parameter of a Standard (two-parameter) Beta
+# distribution with the same mean and variance as the observed-score
+# distribution using \\code{BMS()}:
+BMS(mean(testdata), var(testdata))
 }

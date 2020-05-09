@@ -23,3 +23,8 @@ A numeric value representing the quantile for which the specified proportion of 
 \description{
 Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (LT = TRUE) or [x, 1] (LT = FALSE) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }
+\examples{
+# To compute the quantile at a specific point (e.g., .5) along the Standard
+# (two-parameter) PDD with mean of .6 and variance of .04:
+qBetaMS(p = .5, mean =.6, var = .04)
+}

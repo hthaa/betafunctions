@@ -26,6 +26,15 @@ A list of moment types, each a list of moment orders.
 \description{
 Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
 }
+\examples{
+# Assume some variable follows a four-parameter beta distribution with
+# location parameters \\code{l = 0.25} and \\code{u = .75}, and shape
+# parameters \\code{a = 5} and \\code{b = 3}. To compute the first four
+# raw, central, and standardized moments of this distrubution using
+# \\code{betamoments()}:
+betamoments(a = 5, b = 3, l = .25, u = .75,
+types = c("raw", "central", "standardized"), orders = 4)
+}
 \references{
 Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
 }

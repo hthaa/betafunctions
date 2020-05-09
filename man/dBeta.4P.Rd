@@ -23,3 +23,11 @@ The value for the probability density at specified values of X.
 \description{
 Gives the density at desired values of X under the Four-Parameter Beta PDD.
 }
+\examples{
+# Assume some variable follows a four-parameter beta distribution with
+# location parameters \\code{l = 0.25} and \\code{u = .75}, and shape
+# parameters \\code{alpha = 5} and \\code{beta = 3}. To compute the
+# probability density at a specific point of the distribution (e.g., .5)
+# using \\code{dBeta.4P()}:
+dBeta.4P(x = .5, l = .25, u = .75, alpha = 5, beta = 3)
+}
