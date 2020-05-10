@@ -12,7 +12,7 @@
 #' # location parameters l = 0.25 and u = .75, and shape
 #' # parameters a = 5 and b = 3. To compute the first four
 #' # raw, central, and standardized moments of this distrubution using
-#' # \code{betamoments()}:
+#' # betamoments():
 #' betamoments(a = 5, b = 3, l = .25, u = .75,
 #' types = c("raw", "central", "standardized"), orders = 4)
 #' @references Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
@@ -230,7 +230,7 @@ dBetaMS <- function(x, mean, var = NULL, sd = NULL) {
 
 #' Quantile Containing Specific Proportion of the Distribution, Given a Specific Probability of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.
 #'
-#' @description Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (LT = TRUE) or [x, 1] (LT = FALSE) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
+#' @description Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (\code{lt = TRUE}) or [x, 1] (\code{lt = FALSE}) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param p A value of probability marking the point of the Y-axis to correspond to the X-axis.
 #' @param mean The mean of the target Standard Beta probability density distribution.
 #' @param var The variance of the target Standard Beta probability density distribution.
@@ -306,17 +306,17 @@ Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 
 #' Coordinate Generation for Marking an Area Under the Curve for the Beta Quantile Density Distribution.
 #'
-#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
-#' @param from The point of the x-axis from where to start producing y-density values.
-#' @param to The point of the x-axis to where y-density values are to be produced.
+#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability quantile function.
+#' @param from The point of the x-axis from where to start producing y-quantile values.
+#' @param to The point of the x-axis to where y-quantile values are to be produced.
 #' @param by The resolution (or spacing) at which to produce y-density values.
-#' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
-#' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
+#' @param alpha The Alpha shape-parameter value for the Standard Beta probability  distribution.
+#' @param beta The Beta shape-parameter for the Standard Beta probability  distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
 #' @param u The upper-bound location parameter of the Beta distribution.
-#' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
+#' @return A two-column matrix with quantile-values of y to plot against corresponding location values of x.
 #' @examples
-#' # To box in an area under a four-parameter beta quantle distribution with
+#' # To box in an area under a four-parameter beta quantile distribution with
 #' # location parameters l = .25 and u = 75, and shape parameters
 #' # alpha = 5 and beta = 3, from .4 to .6:
 #' plot(NULL, xlim = c(0, 1), ylim = c(0, 1))
@@ -339,17 +339,17 @@ Beta.gfx.poly.qdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 
 #' Coordinate Generation for Marking an Area Under the Curve for the Beta Cumulative Probability Density Distribution.
 #'
-#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
+#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta cumulative probability function.
 #' @param from The point of the x-axis from where to start producing y-density values.
 #' @param to The point of the x-axis to where y-density values are to be produced.
 #' @param by The resolution (or spacing) at which to produce y-density values.
-#' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
-#' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
+#' @param alpha The Alpha shape-parameter value for the Standard Beta cumulative probability distribution.
+#' @param beta The Beta shape-parameter fort he Standard Beta cumulative probability distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
 #' @param u The upper-bound location parameter of the Beta distribution.
-#' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
+#' @return A two-column matrix with cumulative probability-values of y to plot against corresponding location values of x.
 #' @examples
-#' # To box in an area under a four-parameter beta cumulative distribution with
+#' # To box in an area under a four-parameter Beta cumulative distribution with
 #' # location parameters l = .25 and u = 75, and shape parameters
 #' # alpha = 5 and beta = 3, from .4 to .6:
 #' plot(NULL, xlim = c(0, 1), ylim = c(0, 1))
@@ -372,7 +372,7 @@ Beta.gfx.poly.cdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 
 #' Most Likely True Alpha Value Given Observed Outcome.
 #'
-#' @description Given a fitted Standard Distribution, return the Alpha value where the observed mean becomes the mode.
+#' @description Given a fitted Standard (two-parameter) Beta Distribution, return the alpha shape-parameter value where the observed mean becomes the mode.
 #' @param a Observed alpha value for fitted Standard Beta PDD.
 #' @param b Observed beta value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
@@ -396,7 +396,7 @@ MLA <- function(a, b, x = NULL, n = NULL) {
 
 #' Most Likely True Beta Value Given Observed Outcome.
 #'
-#' @description Assuming a prior standard Beta distribution, return the Beta value where the observed mean becomes the mode.
+#' @description Assuming a prior standard (two-parameter) Beta Distribution, return the beta shape-parameter value where the observed mean becomes the mode.
 #' @param a Observed alpha value for fitted Standard Beta PDD.
 #' @param b Observed beta value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
@@ -421,7 +421,7 @@ MLB <- function(a, b, x = NULL, n = NULL) {
 
 #' Most Likely Mean of the Standard Beta PDD, Given that the Observation is Considered the Most Likely Observation of the Standard Beta PDD (i.e., Mode).
 #'
-#' @description Assuming a prior standard Beta distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
+#' @description Assuming a prior Standard (two-parameter) Beta Distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
 #' @param a Observed alpha value for fitted Standard Beta PDD.
 #' @param b Observed beta value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
@@ -475,13 +475,13 @@ dBeta.4P <- function(x, l, u, alpha, beta) {
 
 #' Random Number Generation under the Four-Parameter Beta Probability Density Distribution.
 #'
-#' @description Function for generating random numbers from a specified four-parameter beta distribution.
+#' @description Function for generating random numbers from a specified Four-Parameter Beta Distribution.
 #' @param n Number of draws.
 #' @param l The first (lower) location parameter.
 #' @param u The second (upper) location parameter.
 #' @param alpha The first shape parameter.
 #' @param beta The second shape parameter.
-#' @return A vector with length \code{n} of random values drawn from the four-parameter beta distribution.
+#' @return A vector with length \code{n} of random values drawn from the Four-Parameter Beta Distribution.
 #' @examples
 #' # Assume some variable follows a four-parameter beta distribution with
 #' # location parameters l = 0.25 and u = .75, and shape
@@ -495,7 +495,7 @@ rBeta.4P <- function(n, l, u, alpha, beta) {
 
 #' Cumulative Probability Function under the Four-Parameter Beta Probability Density Distribution.
 #'
-#' @description Function for calculating the proportion of observations up to a specifiable quantile under the four-parameter beta distribution.
+#' @description Function for calculating the proportion of observations up to a specifiable quantile under the Four-Parameter Beta Distribution.
 #' @param q The quantile or a vector of quantiles for which the proportion is to be calculated.
 #' @param l The first (lower) location parameter.
 #' @param u The second (upper) location parameter.
@@ -526,7 +526,7 @@ pBeta.4P <- function(q, l, u, alpha, beta, lt = TRUE) {
 
 #' Quantile Given Probability Under the Four-Parameter Beta Probability Density Distribution.
 #'
-#' @description Function for calculating the quantile (i.e., value of x) for a given proportion (i.e., the value of y) under the four-parameter beta distribution.
+#' @description Function for calculating the quantile (i.e., value of x) for a given proportion (i.e., the value of y) under the Four-Parameter Beta Distribution.
 #' @param p A vector (or single value) of proportions or probabilities for which the corresponding value of x (i.e., the quantiles) are to be calculated.
 #' @param l The first (lower) location parameter.
 #' @param u The second (upper) location parameter.
