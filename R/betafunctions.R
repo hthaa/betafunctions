@@ -274,7 +274,7 @@ rBetaMS <- function(n, mean, var = NULL, sd = NULL) {
 #' Coordinate Generation for Marking an Area Under the Curve for the Beta Probability Density Distribution.
 #'
 #' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
-#' @param from The point of the x-axis from where to start producing y-density values.
+#' @param from The point of the \code{x}-axis from where to start producing \code{y}-density values.
 #' @param to The point of the x-axis to where y-density values are to be produced.
 #' @param by The resolution (or spacing) at which to produce y-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
@@ -307,14 +307,14 @@ Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 #' Coordinate Generation for Marking an Area Under the Curve for the Beta Quantile Density Distribution.
 #'
 #' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability quantile function.
-#' @param from The point of the x-axis from where to start producing y-quantile values.
-#' @param to The point of the x-axis to where y-quantile values are to be produced.
-#' @param by The resolution (or spacing) at which to produce y-density values.
-#' @param alpha The Alpha shape-parameter value for the Standard Beta probability  distribution.
-#' @param beta The Beta shape-parameter for the Standard Beta probability  distribution.
+#' @param from The point of the \code{x}-axis from where to start producing \code{y}-quantile values.
+#' @param to The point of the \code{x}-axis to where \code{y}-quantile values are to be produced.
+#' @param by The resolution (or spacing) at which to produce \code{y}-density values.
+#' @param alpha The Alpha shape-parameter value for the Standard Beta probability distribution.
+#' @param beta The Beta shape-parameter for the Standard Beta probability distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
 #' @param u The upper-bound location parameter of the Beta distribution.
-#' @return A two-column matrix with quantile-values of y to plot against corresponding location values of x.
+#' @return A two-column matrix with quantile-values of \code{y} to plot against corresponding location values of \code{x}.
 #' @examples
 #' # To box in an area under a four-parameter beta quantile distribution with
 #' # location parameters l = .25 and u = 75, and shape parameters
@@ -340,14 +340,14 @@ Beta.gfx.poly.qdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 #' Coordinate Generation for Marking an Area Under the Curve for the Beta Cumulative Probability Density Distribution.
 #'
 #' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta cumulative probability function.
-#' @param from The point of the x-axis from where to start producing y-density values.
-#' @param to The point of the x-axis to where y-density values are to be produced.
-#' @param by The resolution (or spacing) at which to produce y-density values.
+#' @param from The point of the \code{x}-axis from where to start producing \code{y}-density values.
+#' @param to The point of the \code{x}-axis to where \code{y}-density values are to be produced.
+#' @param by The resolution (or spacing) at which to produce \code{y}-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta cumulative probability distribution.
 #' @param beta The Beta shape-parameter fort he Standard Beta cumulative probability distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
 #' @param u The upper-bound location parameter of the Beta distribution.
-#' @return A two-column matrix with cumulative probability-values of y to plot against corresponding location values of x.
+#' @return A two-column matrix with cumulative probability-values of y to plot against corresponding location values of \code{x}.
 #' @examples
 #' # To box in an area under a four-parameter Beta cumulative distribution with
 #' # location parameters l = .25 and u = 75, and shape parameters
@@ -373,8 +373,8 @@ Beta.gfx.poly.cdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 #' Most Likely True Alpha Value Given Observed Outcome.
 #'
 #' @description Given a fitted Standard (two-parameter) Beta Distribution, return the alpha shape-parameter value where the observed mean becomes the mode.
-#' @param a Observed alpha value for fitted Standard Beta PDD.
-#' @param b Observed beta value for fitted Standard Beta PDD.
+#' @param a Observed alpha-parameter value for fitted Standard Beta PDD.
+#' @param b Observed beta-parameter value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
 #' @param n Test-length.
 #' @return The Alpha shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.
@@ -397,8 +397,8 @@ MLA <- function(a, b, x = NULL, n = NULL) {
 #' Most Likely True Beta Value Given Observed Outcome.
 #'
 #' @description Assuming a prior standard (two-parameter) Beta Distribution, return the beta shape-parameter value where the observed mean becomes the mode.
-#' @param a Observed alpha value for fitted Standard Beta PDD.
-#' @param b Observed beta value for fitted Standard Beta PDD.
+#' @param a Observed alpha-parameter value for fitted Standard Beta PDD.
+#' @param b Observed beta-parameter value for fitted Standard Beta PDD.
 #' @param x Observed proportion-correct outcome.
 #' @param n Test-length.
 #' @examples
@@ -452,7 +452,7 @@ MLM <- function(a, b, x = NULL, n = NULL) {
 #' @param u The second (upper) location parameter.
 #' @param alpha The first shape parameter.
 #' @param beta The second shape parameter.
-#' @return The value for the probability density at specified values of X.
+#' @return The value for the probability density at specified values of \code{x}.
 #' @examples
 #' # Assume some variable follows a four-parameter beta distribution with
 #' # location parameters l = 0.25 and u = .75, and shape
@@ -501,7 +501,7 @@ rBeta.4P <- function(n, l, u, alpha, beta) {
 #' @param u The second (upper) location parameter.
 #' @param alpha The first shape parameter.
 #' @param beta The second shape parameter.
-#' @param lt Whether the proportion to be calculated is to be under the lower or upper tail. Default is TRUE (lower tail).
+#' @param lt Whether the proportion to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).
 #' @return A vector of proportions of observations falling under specified quantiles under the four-parameter beta distribution.
 #' @examples
 #' # Assume some variable follows a four-parameter beta distribution with
@@ -524,15 +524,15 @@ pBeta.4P <- function(q, l, u, alpha, beta, lt = TRUE) {
   )
 }
 
-#' Quantile Given Probability Under the Four-Parameter Beta Probability Density Distribution.
+#' Quantile Given Probability Under the Four-Parameter Beta Distribution.
 #'
-#' @description Function for calculating the quantile (i.e., value of x) for a given proportion (i.e., the value of y) under the Four-Parameter Beta Distribution.
-#' @param p A vector (or single value) of proportions or probabilities for which the corresponding value of x (i.e., the quantiles) are to be calculated.
+#' @description Function for calculating the quantile (i.e., value of \code{x}) for a given proportion (i.e., the value of \code{y}) under the Four-Parameter Beta Distribution.
+#' @param p A vector (or single value) of proportions or probabilities for which the corresponding value of \code{x} (i.e., the quantiles) are to be calculated.
 #' @param l The first (lower) location parameter.
 #' @param u The second (upper) location parameter.
 #' @param alpha The first shape parameter.
 #' @param beta The second shape parameter.
-#' @param lt Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is TRUE (lower tail).
+#' @param lt Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).
 #' @return A vector of quantiles for specified probabilities or proportions of observations under the four-parameter beta distribution.
 #' @examples
 #' # Assume some variable follows a four-parameter beta distribution with
@@ -577,8 +577,8 @@ Beta.4p.fit <- function(scores) {
   r <- 6 * (g4 - g3^2 - 1) / (6 + 3 * g3^2 - 2 * g4)
   a <- r / 2 * (1 + sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
   b <- r / 2 * (1 - sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
-  l <- m1 - ((a * sqrt(s2 * (a + b + 1))) / sqrt(a * b))
-  u <- m1 + ((b * sqrt(s2 * (a + b + 1))) / sqrt(a * b))
-  return(list("alpha" = a, "beta" = b, "l" = l, "u" = u))
+  l <- m1 - ((a * base::sqrt(s2 * (a + b + 1))) / base::sqrt(a * b))
+  u <- m1 + ((b * base::sqrt(s2 * (a + b + 1))) / base::sqrt(a * b))
+  return(base::list("alpha" = a, "beta" = b, "l" = l, "u" = u))
 }
 
