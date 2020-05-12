@@ -35,6 +35,7 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves.
 #' @param grainsize The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).
+#' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output.
 #' @return A list containing the estimated parameters necessary for the approach, as well as the confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
@@ -49,7 +50,8 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' LL.CA(x = testdata, reliability = .7, cut = 50, min = 0, max = 100)
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
-LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, grainsize = .001) {
+LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, grainsize = .001, output = c("accuracy", "consistency")) {
+  out <- list()
   x <- (x - min) / (max - min)
   params <- Beta.4p.fit(x)
   if (params$l < 0) {
@@ -96,21 +98,42 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
   }
   p.fail <- 1 - p.pass
 
-  # Calculate proportions of true and false positives and negatives.
-  p.tf <- p.fail[which(xaxis < truecut)] * density[which(xaxis < truecut)]
-  p.fp <- p.pass[which(xaxis < truecut)] * density[which(xaxis < truecut)]
-  p.ff <- p.fail[which(xaxis >= truecut)] * density[which(xaxis >= truecut)]
-  p.tp <- p.pass[which(xaxis >= truecut)] * density[which(xaxis >= truecut)]
+  out[["effectivetestlength"]] <- N
+  out[["parameters"]] <- params
 
-  # Calculate confusion matrix.
-  cmat <- base::matrix(nrow = 2, ncol = 2)
-  rownames(cmat) <- base::c("True", "False")
-  colnames(cmat) <- base::c("Fail", "Pass")
-  cmat["True", "Fail"] <- base::sum(p.tf)
-  cmat["True", "Pass"] <- base::sum(p.tp)
-  cmat["False", "Fail"] <- base::sum(p.ff)
-  cmat["False", "Pass"] <- base::sum(p.fp)
-  return(base::list("effectivetestlength" = N, "parameters" = params, "confusionmatrix" = cmat))
+  if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") | any(output == "CA")) {
+    # Calculate proportions of true and false positives and negatives.
+    p.tf <- p.fail[base::which(xaxis < truecut)] * density[base::which(xaxis < truecut)]
+    p.fp <- p.pass[base::which(xaxis < truecut)] * density[base::which(xaxis < truecut)]
+    p.ff <- p.fail[base::which(xaxis >= truecut)] * density[base::which(xaxis >= truecut)]
+    p.tp <- p.pass[base::which(xaxis >= truecut)] * density[base::which(xaxis >= truecut)]
+    # Calculate confusion matrix.
+    cmat <- base::matrix(nrow = 2, ncol = 2)
+    base::rownames(cmat) <- base::c("True", "False")
+    base::colnames(cmat) <- base::c("Fail", "Pass")
+    cmat["True", "Fail"] <- base::sum(p.tf)
+    cmat["True", "Pass"] <- base::sum(p.tp)
+    cmat["False", "Fail"] <- base::sum(p.ff)
+    cmat["False", "Pass"] <- base::sum(p.fp)
+    out[["confusionmatrix"]] <- cmat
+
+    # Calculate classification accuracy indices.
+    ca <- caStats(cmat[1, 1], cmat[1, 2], cmat[2, 1], cmat[2, 2])
+    out[["classification.accuracy"]] <- ca
+  }
+
+  if (any(output == "consistency") | any(output == "Consistency" )| any(output == "cc") | any(output == "CC")) {
+    # Calculate classification consistency indices.
+    cc.p <- sum(p.fail[base::which(xaxis < truecut)]^2 * density[base::which(xaxis < truecut)]) +
+      sum(p.pass[base::which(xaxis >= truecut)]^2 * density[base::which(xaxis >= truecut)])
+    cc.p_c <- sum(p.fail[base::which(xaxis < truecut)]^2 * density[base::which(xaxis < truecut)]^2) +
+      sum(p.pass[base::which(xaxis >= truecut)]^2 * density[base::which(xaxis >= truecut)]^2)
+    cc.Kappa <- (cc.p - cc.p_c) / (1 - cc.p_c)
+    out[["classification.consistency"]] <- list("p" = cc.p, "p_c" = cc.p_c, "Kappa" = cc.Kappa)
+  }
+
+
+  return(out)
 }
 
 #' Classification Accuracy Statistics.
