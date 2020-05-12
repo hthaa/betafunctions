@@ -24,19 +24,19 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
   ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
 }
 
-#' An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Accuracy based on Observed Test Scores and Test Reliability.
+#' An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Consistency and Accuracy based on Observed Test Scores and Test Reliability.
 #'
-#' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
+#' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
 #' @param x A vector of observed scores for which a beta-distribution is to be fitted.
-#' @param reliability The observed-score squared correlation with the true-score.
+#' @param reliability The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.
 #' @param min The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).
 #' @param max The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves.
 #' @param grainsize The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).
-#' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output.
-#' @return A list containing the estimated parameters necessary for the approach, as well as the confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
+#' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
+#' @return A list containing the estimated parameters necessary for the approach, as well as the confusion matrix containing estimated proportion sof true/false pass/fail categorizations for a test, diagnostic performance statistics, and/or classification consistency indices.
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
@@ -68,26 +68,20 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
     params$l <- 0
     params$u <- 1
   }
-
   #Calculate mean and variance for the true-score distribution.
   TpMoments <- betamoments(params$alpha, params$beta, params$l, params$u, types = c("raw", "central"), orders = 2)
-
   #Estimate the effective test-length based on true-score distribution and reliability.
   N <- ETL(TpMoments[["raw"]][[1]], TpMoments[["central"]][[2]], reliability = reliability)
-
   #Establish cutscores on the proportional scale.
   if (base::is.null(truecut)) {
     truecut <- cut
   }
   cut <- cut / max
   truecut <- truecut / max
-
   #Generate density distribution along the proportional scale.
   xaxis <- base::seq(0, 1, grainsize)
   sumdens <- base::sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
   density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) / sumdens
-
-
   #Calculate probabilities of producing passing and failing scores along the true-score distribution.
   if (error.model == "beta") {
     p.pass <- stats::pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
@@ -97,10 +91,8 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
     p.pass <- stats::pbinom(cut * N, N, xaxis, lower.tail = FALSE)
   }
   p.fail <- 1 - p.pass
-
   out[["effectivetestlength"]] <- N
   out[["parameters"]] <- params
-
   if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") | any(output == "CA")) {
     # Calculate proportions of true and false positives and negatives.
     p.tf <- p.fail[base::which(xaxis < truecut)] * density[base::which(xaxis < truecut)]
@@ -116,12 +108,10 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
     cmat["False", "Fail"] <- base::sum(p.ff)
     cmat["False", "Pass"] <- base::sum(p.fp)
     out[["confusionmatrix"]] <- cmat
-
     # Calculate classification accuracy indices.
     ca <- caStats(cmat[1, 1], cmat[1, 2], cmat[2, 1], cmat[2, 2])
     out[["classification.accuracy"]] <- ca
   }
-
   if (any(output == "consistency") | any(output == "Consistency" )| any(output == "cc") | any(output == "CC")) {
     # Calculate classification consistency indices.
     cc.p <- sum(p.fail[base::which(xaxis < truecut)]^2 * density[base::which(xaxis < truecut)]) +
@@ -131,8 +121,6 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
     cc.Kappa <- (cc.p - cc.p_c) / (1 - cc.p_c)
     out[["classification.consistency"]] <- list("p" = cc.p, "p_c" = cc.p_c, "Kappa" = cc.Kappa)
   }
-
-
   return(out)
 }
 
