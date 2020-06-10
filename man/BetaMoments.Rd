@@ -37,7 +37,7 @@ Computes Raw, Central, or Standardized moment properties of defined Standard Bet
 # location parameters l = 0.25 and u = .75, and shape
 # parameters a = 5 and b = 3. To compute the first four
 # raw, central, and standardized moments of this distrubution using
-# \code{betamoments()}:
+# betamoments():
 betamoments(a = 5, b = 3, l = .25, u = .75,
 types = c("raw", "central", "standardized"), orders = 4)
 }

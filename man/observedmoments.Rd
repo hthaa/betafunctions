@@ -14,11 +14,11 @@ observedmoments(
 \arguments{
 \item{x}{A vector of values, the distribution of which moments are to be calculated.}
 
-\item{type}{A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".}
+\item{type}{A character vector determining which moment-types are to be calculated. Permissible values are \code{"raw"}, \code{"central"}, and \code{"standardized"}.}
 
 \item{orders}{The number of moment-orders to be calculated for each of the moment-types.}
 
-\item{correct}{Whether to include bias correction in estimation of orders. Default is TRUE.}
+\item{correct}{Whether to include bias correction in estimation of orders. Default is \code{TRUE}.}
 }
 \value{
 A list of moment types, each a list of moment orders.

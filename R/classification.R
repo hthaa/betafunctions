@@ -27,16 +27,18 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Consistency and Accuracy based on Observed Test Scores and Test Reliability.
 #'
 #' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
-#' @param x A vector of observed scores for which a beta-distribution is to be fitted.
+#' @param x A vector of observed scores for which a beta-distribution is to be fitted, or a list of pre-defined true-score distribution parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location parameters, and \code{alpha} and \code{beta} for the shape parameters.
 #' @param reliability The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.
 #' @param min The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).
 #' @param max The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
-#' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..
+#' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves.
-#' @param grainsize The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).
 #' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
-#' @return A list containing the estimated parameters necessary for the approach, as well as the confusion matrix containing estimated proportion sof true/false pass/fail categorizations for a test, diagnostic performance statistics, and/or classification consistency indices.
+#' @param override Logical value indicating whether to override the automatic default to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE}.
+#' @param grainsize Outdated and inert. Maintained for compatibility. Will be removed completely in future update.
+#' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
+#' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the possibility of employing a two-parameter Beta error distribution in place of the binomial error distribution is not part of the original procedure. Third, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to calculating classification consistency outlined by Hanson (1991).
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
@@ -46,28 +48,49 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #'
 #' # Suppose the cutoff value for attaining a pass is 50 items correct, and
 #' # that the reliability of this test was estimated to 0.7. To estimate and
-#' # retrieve the necessary parameters and the confusion matrix with LL.CA():
+#' # retrieve the estimated parameters, confusion matrix, consistency and
+#' # accuracy statistics using LL.CA():
 #' LL.CA(x = testdata, reliability = .7, cut = 50, min = 0, max = 100)
+#'
+#' # Alternatively to supplying scores to which a true-score distribution is
+#' # to be fit, a list with true-score distribution parameter values can be
+#' # supplied manually, foregoing the need for actual data. The list entries
+#' # must be named. "l" is the lower-bound and "u" the upper bound location
+#' # parameters of the true-score distribution, and "alpha" and "beta" the
+#' # shape parameters.
+#' trueparams <- list("l" = 0.25, "u" = 0.75, "alpha" = 5, "beta" = 3)
+#' LL.CA(x = trueparams, reliability = .7, cut = 50, min = 0, max = 100)
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
 #' @export
-LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, grainsize = .001, output = c("accuracy", "consistency")) {
-  out <- list()
-  x <- (x - min) / (max - min)
-  params <- Beta.4p.fit(x)
-  if (params$l < 0) {
-    warning("Improper solution for lower-bound estimate of true-score distribution (< 0). Reverting to two-parameter solution.")
-    params$alpha <- AMS(base::mean(x), stats::var(x))
-    params$beta <- BMS(base::mean(x), stats::var(x))
-    params$l <- 0
-    params$u <- 1
+LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, output = c("accuracy", "consistency"), override = FALSE, grainsize = NULL) {
+  if (!is.null(grainsize)) {
+    warning("The grainsize argument is inert as of version 1.2.0 and will be removed in later updates. Scripts making use of the argument should be modified to avoid problems with future updates.")
   }
-  if (params$u > 1) {
-    warning("Improper solution for upper-bound estimate of true-score distribution (> 1). Reverting to two-parameter solution.")
-    params$alpha <- AMS(base::mean(x), stats::var(x))
-    params$beta <- BMS(base::mean(x), stats::var(x))
-    params$l <- 0
-    params$u <- 1
+  out <- base::list()
+  if (class(x) != "list") {
+    x <- (x - min) / (max - min)
+    params <- Beta.4p.fit(x)
+  } else {
+    params <- x
   }
+  if (override == FALSE & class(x) != "list") {
+    if (params$l < 0) {
+      warning("Improper solution for lower-bound estimate of true-score distribution (< 0). Reverting to two-parameter solution.")
+      params$alpha <- AMS(base::mean(x), stats::var(x))
+      params$beta <- BMS(base::mean(x), stats::var(x))
+      params$l <- 0
+      params$u <- 1
+    }
+    if (params$u > 1) {
+      warning("Improper solution for upper-bound estimate of true-score distribution (> 1). Reverting to two-parameter solution.")
+      params$alpha <- AMS(base::mean(x), stats::var(x))
+      params$beta <- BMS(base::mean(x), stats::var(x))
+      params$l <- 0
+      params$u <- 1
+    }
+  }
+
   #Calculate mean and variance for the true-score distribution.
   TpMoments <- betamoments(params$alpha, params$beta, params$l, params$u, types = c("raw", "central"), orders = 2)
   #Estimate the effective test-length based on true-score distribution and reliability.
@@ -76,51 +99,60 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
   if (base::is.null(truecut)) {
     truecut <- cut
   }
-  cut <- cut / max
-  truecut <- truecut / max
-  #Generate density distribution along the proportional scale.
-  xaxis <- base::seq(0, 1, grainsize)
-  sumdens <- base::sum(dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta))
-  density <- dBeta.4P(xaxis, params$l, params$u, params$alpha, params$beta) / sumdens
+  cut <- (cut - min) / (max - min)
+  truecut <- (truecut - min) / (max - min)
   #Calculate probabilities of producing passing and failing scores along the true-score distribution.
-  if (error.model == "beta") {
-    p.pass <- stats::pbeta(cut, xaxis * N, (1 - xaxis) * N, lower.tail = FALSE)
-  }
-  if (error.model == "binomial") {
+  if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
     N <- base::round(N)
-    p.pass <- stats::pbinom(cut * N, N, xaxis, lower.tail = FALSE)
   }
-  p.fail <- 1 - p.pass
   out[["effectivetestlength"]] <- N
   out[["parameters"]] <- params
-  if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") | any(output == "CA")) {
-    # Calculate proportions of true and false positives and negatives.
-    p.tf <- p.fail[base::which(xaxis < truecut)] * density[base::which(xaxis < truecut)]
-    p.fp <- p.pass[base::which(xaxis < truecut)] * density[base::which(xaxis < truecut)]
-    p.ff <- p.fail[base::which(xaxis >= truecut)] * density[base::which(xaxis >= truecut)]
-    p.tp <- p.pass[base::which(xaxis >= truecut)] * density[base::which(xaxis >= truecut)]
+  if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") | any(output == "CA") | any(output == "a") | any(output == "A")) {
+    if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
+      p.tp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) }, lower = truecut, upper = params$u)$value
+      p.fp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) }, lower = params$l, upper = params$u)$value - p.tp
+      p.tf <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x) }, lower = params$l, upper = truecut)$value
+      p.ff <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x) }, lower = params$l, upper = params$u)$value - p.tf
+    }
+    if (error.model == "beta" | error.model == "Beta") {
+      p.tp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = truecut, upper = params$u)$value
+      p.fp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = params$l, upper = params$u)$value - p.tp
+      p.tf <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x)) }, lower = params$l, upper = truecut)$value
+      p.ff <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x)) }, lower = params$l, upper = params$u)$value - p.tf
+    }
     # Calculate confusion matrix.
-    cmat <- base::matrix(nrow = 2, ncol = 2)
-    base::rownames(cmat) <- base::c("True", "False")
-    base::colnames(cmat) <- base::c("Fail", "Pass")
-    cmat["True", "Fail"] <- base::sum(p.tf)
-    cmat["True", "Pass"] <- base::sum(p.tp)
-    cmat["False", "Fail"] <- base::sum(p.ff)
-    cmat["False", "Pass"] <- base::sum(p.fp)
-    out[["confusionmatrix"]] <- cmat
+    camat <- base::matrix(nrow = 2, ncol = 2, dimnames = list(c("True", "False"), c("Fail", "Pass")))
+    camat["True", "Fail"] <- p.tf
+    camat["True", "Pass"] <- p.tp
+    camat["False", "Fail"] <- p.ff
+    camat["False", "Pass"] <- p.fp
+    out[["confusionmatrix"]] <- camat
     # Calculate classification accuracy indices.
-    ca <- caStats(cmat[1, 1], cmat[1, 2], cmat[2, 1], cmat[2, 2])
-    out[["classification.accuracy"]] <- ca
+    out[["classification.accuracy"]] <- caStats(camat[1, 1], camat[1, 2], camat[2, 1], camat[2, 2])
   }
-  if (any(output == "consistency") | any(output == "Consistency" )| any(output == "cc") | any(output == "CC")) {
+  if (any(output == "consistency") | any(output == "Consistency" ) | any(output == "cc") | any(output == "CC") | any(output == "c") | any(output == "C")) {
     # Calculate classification consistency indices.
-    cc.p <- sum(p.fail[base::which(xaxis < truecut)]^2 * density[base::which(xaxis < truecut)]) +
-      sum(p.pass[base::which(xaxis >= truecut)]^2 * density[base::which(xaxis >= truecut)])
-    cc.p_c <- sum(p.fail[base::which(xaxis < truecut)]^2 * density[base::which(xaxis < truecut)]^2) +
-      sum(p.pass[base::which(xaxis >= truecut)]^2 * density[base::which(xaxis >= truecut)]^2)
-    cc.Kappa <- (cc.p - cc.p_c) / (1 - cc.p_c)
-    out[["classification.consistency"]] <- list("p" = cc.p, "p_c" = cc.p_c, "Kappa" = cc.Kappa)
-  }
+    if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
+      p.ii <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE))^2 }, lower = params$l, upper = params$u)$value
+      p.ij <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE)) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) }, lower = params$l, upper = params$u)$value
+      p.jj <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE)^2 }, lower = params$l, upper = params$u)$value
+      p.ji <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE)) }, lower = params$l, upper = params$u)$value
+    }
+    if (error.model == "beta" | error.model == "Beta") {
+      p.ii <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE))^2 }, lower = params$l, upper = params$u)$value
+      p.ij <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = params$l, upper = params$u)$value
+      p.jj <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)^2 }, lower = params$l, upper = params$u)$value
+      p.ji <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)) }, lower = params$l, upper = params$u)$value
+    }
+    ccmat <- base::matrix(nrow = 2, ncol = 2, dimnames = list(c("i", "j"), c("i", "j")))
+    ccmat["i", "i"] <- p.ii
+    ccmat["i", "j"] <- p.ij
+    ccmat["j", "i"] <- p.ji
+    ccmat["j", "j"] <- p.jj
+    out[["consistencymatrix"]] <- ccmat
+    # Calculate classification consistency indices.
+    out[["classification.consistency"]] <- ccStats(ccmat["i", "i"], ccmat["i", "j"], ccmat["j", "i"], ccmat["j", "j"])
+    }
   return(out)
 }
 
@@ -166,6 +198,40 @@ caStats <- function(tp, tn, fp, fn) {
              "Youden.J" = J, "Accuracy" = accuracy)
 }
 
+#' Classification Consistency Statistics.
+#'
+#' @description Provides a set of statistics often used for conveying information regarding the consistency of classifications based on tests.
+#' @param ii The frequency or rate of consistent classifications into category "i".
+#' @param ij The frequency or rate of inconsistent classifications into categories "i" and "j".
+#' @param ji The frequency or rate of inconsistent classifications into categories "j" and "i".
+#' @param jj The frequency or rate of consistent classifications into category "j".
+#' @return A list of classification consistency statistics. Specifically, the coefficient of consistent classification (p), the coefficient of consistent classification by chance (p_c), and Cohen's Kappa coefficient.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # Suppose the cutoff value for attaining a pass is 50 items correct, and
+#' # that the reliability of this test was estimated to 0.7. First, compute the
+#' # estimated consistency matrix using LL.CA():
+#' cmat <- LL.CA(x = testdata, reliability = .7, cut = 50, min = 0,
+#' max = 100)$consistencymatrix
+#'
+#' # To estimate and retrieve diagnostic performance statistics using caStats(),
+#' # feed it the appropriate entries of the consistency matrix.
+#' ccStats(ii = cmat["i", "i"], ij = cmat["i", "j"],
+#' ji = cmat["j", "i"], jj = cmat["j", "j"])
+#' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
+#' @export
+ccStats <- function(ii, ij, ji, jj) {
+  p <- (ii + jj) / (ii + ij + ji + jj)
+  p_c <- (ii + ij) * (ii + ji) + (ij + jj) * (ji + jj)
+  Kappa <- (p - p_c) / (1 - p_c)
+  base::list("p" = p, "p_c" = p_c, "Kappa" = Kappa)
+}
+
 #' ROC curves for the Livingston and Lewis approach.
 #'
 #' @description Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.
@@ -174,10 +240,10 @@ caStats <- function(tp, tn, fp, fn) {
 #' @param max The maximum possible value to attain on the observed-score scale. Default is 1 (assuming \code{x} represent proportions).
 #' @param reliability The reliability coefficient of the test.
 #' @param truecut The true point along the x-scale that marks the categorization-threshold.
-#' @param AUC Calculate and include the area under the curve? Default is FALSE.
-#' @param maxJ Mark the point along the curve where Youden's J statistic is maximized? Default is FALSE.
-#' @param raw.out Give raw coordinates as output rather than plot? Default is FALSE.
-#' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is TRUE.
+#' @param AUC Calculate and include the area under the curve? Default is \code{FALSE}.
+#' @param maxJ Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
+#' @param raw.out Give raw coordinates as output rather than plot? Default is \code{FALSE}.
+#' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
@@ -269,11 +335,11 @@ AUC <- function(FPR, TPR) {
 
 #' Calculate Cronbach's Alpha from supplied variables.
 #'
-#' @description Calculates Cronbach's Alpha, a very commonly used index for assessing the reliability / internal consistency of a sumscore. Often interpreted as the mean correlation across all possible split-half alternate forms of the test.
+#' @description Calculates Cronbach's Alpha, a very commonly used index for assessing the reliability / internal consistency of a sum-score. Often interpreted as the mean correlation across all possible split-half alternate forms of the test.
 #' @param x A data-frame or matrix of numerical values where rows are across-items within-respondent observation vectors, and columns are within-item across-respondents observation vectors.
 #' @note Missing values are treated by passing \code{na.rm = TRUE} to the \code{var} function call.
 #' @note Be aware that this function does not issue a warning if there are negative correlations between variables in the supplied data-set.
-#' @return Cronbach's Alpha for the sumscore of supplied variables.
+#' @return Cronbach's Alpha for the sum-score of supplied variables.
 #' @references Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. Psychometrika 16, 297–334. doi: 10.1007/BF02310555
 #' @examples
 #' # Generate some fictional data. Say 100 students take a 50-item long test

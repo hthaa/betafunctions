@@ -7,9 +7,9 @@
 MLA(a, b, x = NULL, n = NULL)
 }
 \arguments{
-\item{a}{Observed alpha value for fitted Standard Beta PDD.}
+\item{a}{Observed alpha-parameter value for fitted Standard Beta PDD.}
 
-\item{b}{Observed beta value for fitted Standard Beta PDD.}
+\item{b}{Observed beta-parameter value for fitted Standard Beta PDD.}
 
 \item{x}{Observed proportion-correct outcome.}
 
@@ -19,7 +19,7 @@ MLA(a, b, x = NULL, n = NULL)
 The Alpha shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.
 }
 \description{
-Given a fitted Standard Distribution, return the Alpha value where the observed mean becomes the mode.
+Given a fitted Standard (two-parameter) Beta Distribution, return the alpha shape-parameter value where the observed mean becomes the mode.
 }
 \examples{
 # Assuming a prior Standard (two-parameter) Beta distribution is fit, which

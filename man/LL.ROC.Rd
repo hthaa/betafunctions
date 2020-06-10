@@ -26,14 +26,14 @@ LL.ROC(
 
 \item{truecut}{The true point along the x-scale that marks the categorization-threshold.}
 
-\item{AUC}{Calculate and include the area under the curve? Default is FALSE.}
+\item{AUC}{Calculate and include the area under the curve? Default is \code{FALSE}.}
 
-\item{maxJ}{Mark the point along the curve where Youden's J statistic is maximized? Default is FALSE.}
+\item{maxJ}{Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.}
 
-\item{raw.out}{Give raw coordinates as output rather than plot? Default is FALSE.}
+\item{raw.out}{Give raw coordinates as output rather than plot? Default is \code{FALSE}.}
 }
 \value{
-A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is TRUE.
+A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
 }
 \description{
 Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.

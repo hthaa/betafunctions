@@ -2,12 +2,12 @@
 % Please edit documentation in R/betafunctions.R
 \name{qBeta.4P}
 \alias{qBeta.4P}
-\title{Quantile Given Probability Under the Four-Parameter Beta Probability Density Distribution.}
+\title{Quantile Given Probability Under the Four-Parameter Beta Distribution.}
 \usage{
 qBeta.4P(p, l, u, alpha, beta, lt = TRUE)
 }
 \arguments{
-\item{p}{A vector (or single value) of proportions or probabilities for which the corresponding value of x (i.e., the quantiles) are to be calculated.}
+\item{p}{A vector (or single value) of proportions or probabilities for which the corresponding value of \code{x} (i.e., the quantiles) are to be calculated.}
 
 \item{l}{The first (lower) location parameter.}
 
@@ -17,13 +17,13 @@ qBeta.4P(p, l, u, alpha, beta, lt = TRUE)
 
 \item{beta}{The second shape parameter.}
 
-\item{lt}{Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is TRUE (lower tail).}
+\item{lt}{Logical. Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).}
 }
 \value{
 A vector of quantiles for specified probabilities or proportions of observations under the four-parameter beta distribution.
 }
 \description{
-Function for calculating the quantile (i.e., value of x) for a given proportion (i.e., the value of y) under the four-parameter beta distribution.
+Function for calculating the quantile (i.e., value of \code{x}) for a given proportion (i.e., the value of \code{y}) under the Four-Parameter Beta Distribution.
 }
 \examples{
 # Assume some variable follows a four-parameter beta distribution with

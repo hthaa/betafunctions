@@ -18,10 +18,10 @@ rBeta.4P(n, l, u, alpha, beta)
 \item{beta}{The second shape parameter.}
 }
 \value{
-A vector with length \code{n} of random values drawn from the four-parameter beta distribution.
+A vector with length \code{n} of random values drawn from the Four-Parameter Beta Distribution.
 }
 \description{
-Function for generating random numbers from a specified four-parameter beta distribution.
+Function for generating random numbers from a specified Four-Parameter Beta Distribution.
 }
 \examples{
 # Assume some variable follows a four-parameter beta distribution with

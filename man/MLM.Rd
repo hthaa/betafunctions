@@ -19,7 +19,7 @@ MLM(a, b, x = NULL, n = NULL)
 The expected mean of the Standard Beta probability density distribution, for which the observed mean is the most likely value.
 }
 \description{
-Assuming a prior standard Beta distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
+Assuming a prior Standard (two-parameter) Beta Distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
 }
 \examples{
 # Assuming a prior Standard (two-parameter) Beta distribution is fit, which

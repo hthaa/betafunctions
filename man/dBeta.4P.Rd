@@ -18,7 +18,7 @@ dBeta.4P(x, l, u, alpha, beta)
 \item{beta}{The second shape parameter.}
 }
 \value{
-The value for the probability density at specified values of X.
+The value for the probability density at specified values of \code{x}.
 }
 \description{
 Gives the density at desired values of \code{x} under the Four-Parameter Beta PDD.

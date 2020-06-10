@@ -7,7 +7,7 @@
 Beta.gfx.poly.pdf(from, to, by, alpha, beta, l = 0, u = 1)
 }
 \arguments{
-\item{from}{The point of the x-axis from where to start producing y-density values.}
+\item{from}{The point of the \code{x}-axis from where to start producing \code{y}-density values.}
 
 \item{to}{The point of the x-axis to where y-density values are to be produced.}
 

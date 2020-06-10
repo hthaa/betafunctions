@@ -17,13 +17,13 @@ pBeta.4P(q, l, u, alpha, beta, lt = TRUE)
 
 \item{beta}{The second shape parameter.}
 
-\item{lt}{Whether the proportion to be calculated is to be under the lower or upper tail. Default is TRUE (lower tail).}
+\item{lt}{Whether the proportion to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).}
 }
 \value{
 A vector of proportions of observations falling under specified quantiles under the four-parameter beta distribution.
 }
 \description{
-Function for calculating the proportion of observations up to a specifiable quantile under the four-parameter beta distribution.
+Function for calculating the proportion of observations up to a specifiable quantile under the Four-Parameter Beta Distribution.
 }
 \examples{
 # Assume some variable follows a four-parameter beta distribution with

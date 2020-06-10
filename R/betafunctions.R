@@ -55,9 +55,9 @@ betamoments <- function(a, b, l = 0, u = 1, types = c("raw", "central", "standar
 #'
 #' @description Computes Raw, Central, or Standardized moment properties of a vector of observed scores.
 #' @param x A vector of values, the distribution of which moments are to be calculated.
-#' @param type A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
+#' @param type A character vector determining which moment-types are to be calculated. Permissible values are \code{"raw"}, \code{"central"}, and \code{"standardized"}.
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
-#' @param correct Whether to include bias correction in estimation of orders. Default is TRUE.
+#' @param correct Whether to include bias correction in estimation of orders. Default is \code{TRUE}.
 #' @return A list of moment types, each a list of moment orders.
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
@@ -235,7 +235,7 @@ dBetaMS <- function(x, mean, var = NULL, sd = NULL) {
 #' @param mean The mean of the target Standard Beta probability density distribution.
 #' @param var The variance of the target Standard Beta probability density distribution.
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
-#' @param lt Logical. Specifies which end of the tail for which to calculate quantile. Default is TRUE (meaning, find q for lower tail.)
+#' @param lt Logical. Specifies which end of the tail for which to calculate quantile. Default is \code{TRUE} (meaning, find q for lower tail.)
 #' @return A numeric value representing the quantile for which the specified proportion of observations fall within.
 #' @examples
 #' # To compute the quantile at a specific point (e.g., .5) along the Standard
@@ -532,7 +532,7 @@ pBeta.4P <- function(q, l, u, alpha, beta, lt = TRUE) {
 #' @param u The second (upper) location parameter.
 #' @param alpha The first shape parameter.
 #' @param beta The second shape parameter.
-#' @param lt Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).
+#' @param lt Logical. Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).
 #' @return A vector of quantiles for specified probabilities or proportions of observations under the four-parameter beta distribution.
 #' @examples
 #' # Assume some variable follows a four-parameter beta distribution with
@@ -582,3 +582,83 @@ Beta.4p.fit <- function(scores) {
   return(base::list("alpha" = a, "beta" = b, "l" = l, "u" = u))
 }
 
+#' An implementation of the Beta-density Compound Cumulative-Binomial Distribution.
+#'
+#' @description The Beta Compound Binomial distribution: The product of the four-parameter Beta probability density function and the binomial cumulative probability mass function. Used in the Livingston and Lewis approach to classification accuracy and consistency, the output can be interpreted as the population density of passing scores produced at "x" (a value of true-score).
+#' @param x x-axis input for which \code{p} (proportion or probability) is to be computed.
+#' @param l The lower-bound of the four-parameter Beta distribution.
+#' @param u The upper-bound of the four-parameter Beta distribution.
+#' @param a The alpha shape-parameter of the Beta distribution.
+#' @param b The beta shape-parameter of the Beta distribution.
+#' @param n The number of trials for the Binomial distribution.
+#' @param c The "true-cut" (proportion) of on the Binomial distribution.
+#' @param lower.tail Logical. Whether to compute the lower or upper tail of the Binomial distribution. Default is \code{FALSE} (i.e., upper tail).
+#' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.
+#' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @references Lord, Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
+#' @examples
+#' # Given a four-parameter Beta distribution with parameters l = 0.25, u = 0.75,
+#' # alpha = 5, and beta = 3, and a Binomial error distribution with number of
+#' # trials (n) = 10 and a cutoff-point (c) at 50% correct (i.e., proportion correct
+#' # of 0.5), the population density of passing scores produced at true-score
+#' # (x) = 0 can be calculated as:
+#' dBeta.pBinom(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5)
+#'
+#' # Conversely, the density of failing scores produced at x can be calculated
+#' # by passing the additional argument "lower.tail = TRUE" to the function.
+#' # That is:
+#' dBeta.pBinom(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5, lower.tail = TRUE)
+#'
+#' #By integration, the population proportion of (e.g.) passing scores in some
+#' #region of the true-score distribution (e.g. between 0.25 and 0.5) can be
+#' #calculated as:
+#' integrate(function(x) { dBeta.pBinom(x, 0.25, .75, 5, 3, 10, 0.5) }, lower = 0.25, upper = 0.5)
+#' @export
+dBeta.pBinom <- function(x, l, u, a, b, n, c, lower.tail = FALSE) {
+  if (!lower.tail) {
+    (1 / beta(a, b)) *
+    dBeta.4P(x, l, u, a, b) * stats::pbinom(n * c, n, x, lower.tail = lower.tail)
+  } else {
+    dBeta.4P(x, l, u, a, b) * (1 - stats::pbinom(n * c, n, x, lower.tail = lower.tail))
+  }
+}
+
+#' An implementation of the Beta-density Compound Cumulative-Beta Distribution.
+#'
+#' @description The Beta Compound Beta distribution: The product of the four-parameter Beta probability density function and the beta cumulative probability function. Used in the Livingston and Lewis approach to classification accuracy and consistency, the output can be interpreted as the population density of passing scores produced at "x" (a value of true-score).
+#' @param x x-axis input for which \code{p} (proportion or probability) is to be computed.
+#' @param l The lower-bound of the four-parameter Beta distribution.
+#' @param u The upper-bound of the four-parameter Beta distribution.
+#' @param a The alpha shape-parameter of the Beta density distribution.
+#' @param b The beta shape-parameter of the Beta density distribution.
+#' @param n The number of trials for the Beta cumulative probability distribution.
+#' @param c The "true-cut" (proportion) of on the Beta cumulative probability distribution.
+#' @param lower.tail Logical. Whether to compute the lower or upper tail of the Beta cumulative probability distribution. Default is \code{FALSE} (i.e., upper tail).
+#' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.
+#' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @references Lord, Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
+#' @examples
+#' # Given a four-parameter Beta distribution with parameters l = 0.25, u = 0.75,
+#' # alpha = 5, and beta = 3, and a Beta error distribution with number of
+#' # trials (n) = 10 and a cutoff-point (c) at 50% correct (i.e., proportion correct
+#' # of 0.5), the population density of passing scores produced at true-score
+#' # (x) = 0.5 can be calculated as:
+#' dBeta.pBeta(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5)
+#'
+#' # Conversely, the density of failing scores produced at x can be calculated
+#' # by passing the additional argument "lower.tail = TRUE" to the function.
+#' # That is:
+#' dBeta.pBeta(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5, lower.tail = TRUE)
+#'
+#' # By integration, the population proportion of (e.g.) passing scores in some
+#' # region of the true-score distribution (e.g. between 0.25 and 0.5) can be
+#' # calculated as:
+#' integrate(function(x) { dBeta.pBeta(x, 0.25, .75, 5, 3, 10, 0.5) }, lower = 0.25, upper = 0.5)
+#' @export
+dBeta.pBeta <- function(x, l, u, a, b, n, c, lower.tail = FALSE) {
+  if(!lower.tail) {
+    dBeta.4P(x, l, u, a, b) * stats::pbeta(c, x * n, (1 - x) * n, lower.tail = FALSE)
+  } else {
+    dBeta.4P(x, l, u, a, b) * (1 - stats::pbeta(c, x * n, (1 - x) * n, lower.tail = FALSE))
+  }
+}

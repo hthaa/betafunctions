@@ -2,7 +2,7 @@
 % Please edit documentation in R/classification.R
 \name{LL.CA}
 \alias{LL.CA}
-\title{An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Accuracy based on Observed Test Scores and Test Reliability.}
+\title{An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Consistency and Accuracy based on Observed Test Scores and Test Reliability.}
 \usage{
 LL.CA(
   x = NULL,
@@ -12,13 +12,15 @@ LL.CA(
   max = 1,
   error.model = "binomial",
   truecut = NULL,
-  grainsize = 0.001
+  output = c("accuracy", "consistency"),
+  override = FALSE,
+  grainsize = NULL
 )
 }
 \arguments{
-\item{x}{A vector of observed scores for which a beta-distribution is to be fitted.}
+\item{x}{A vector of observed scores for which a beta-distribution is to be fitted, or a list of pre-defined true-score distribution parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location parameters, and \code{alpha} and \code{beta} for the shape parameters.}
 
-\item{reliability}{The observed-score squared correlation with the true-score.}
+\item{reliability}{The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.}
 
 \item{cut}{The cutoff value for classifying observations into pass or fail categories.}
 
@@ -26,17 +28,24 @@ LL.CA(
 
 \item{max}{The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).}
 
-\item{error.model}{The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{beta} and \code{binomial}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length..}
+\item{error.model}{The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.}
 
 \item{truecut}{Optional specification of a "true" cutoff. Useful for producing ROC curves.}
 
-\item{grainsize}{The size of the steps for which probabilities along the score distribution are to be calculated. Default is .001 (1001 points).}
+\item{output}{Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.}
+
+\item{override}{Logical value indicating whether to override the automatic default to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE}.}
+
+\item{grainsize}{Outdated and inert. Maintained for compatibility. Will be removed completely in future update.}
 }
 \value{
-A list containing the estimated parameters necessary for the approach, as well as the confusion matrix estimating the proportion of true/false pass/fail categorizations for a test, given a specific distribution of observed scores.
+A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 }
 \description{
-An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to four-parameter beta distributions, and errors of measurement binomial distribution distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
+An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
+}
+\note{
+It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the possibility of employing a two-parameter Beta error distribution in place of the binomial error distribution is not part of the original procedure. Third, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to calculating classification consistency outlined by Hanson (1991).
 }
 \examples{
 # Generate some fictional data. Say, 100 individuals take a test with a
@@ -47,9 +56,21 @@ hist(testdata, xlim = c(0, 100))
 
 # Suppose the cutoff value for attaining a pass is 50 items correct, and
 # that the reliability of this test was estimated to 0.7. To estimate and
-# retrieve the necessary parameters and the confusion matrix with LL.CA():
+# retrieve the estimated parameters, confusion matrix, consistency and
+# accuracy statistics using LL.CA():
 LL.CA(x = testdata, reliability = .7, cut = 50, min = 0, max = 100)
+
+# Alternatively to supplying scores to which a true-score distribution is
+# to be fit, a list with true-score distribution parameter values can be
+# supplied manually, foregoing the need for actual data. The list entries
+# must be named. "l" is the lower-bound and "u" the upper bound location
+# parameters of the true-score distribution, and "alpha" and "beta" the
+# shape parameters.
+trueparams <- list("l" = 0.25, "u" = 0.75, "alpha" = 5, "beta" = 3)
+LL.CA(x = trueparams, reliability = .7, cut = 50, min = 0, max = 100)
 }
 \references{
 Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+
+Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
 }

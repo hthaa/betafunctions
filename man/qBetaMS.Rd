@@ -15,13 +15,13 @@ qBetaMS(p, mean, var = NULL, sd = NULL, lt = TRUE)
 
 \item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
 
-\item{lt}{Logical. Specifies which end of the tail for which to calculate quantile. Default is TRUE (meaning, find q for lower tail.)}
+\item{lt}{Logical. Specifies which end of the tail for which to calculate quantile. Default is \code{TRUE} (meaning, find q for lower tail.)}
 }
 \value{
 A numeric value representing the quantile for which the specified proportion of observations fall within.
 }
 \description{
-Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (LT = TRUE) or [x, 1] (LT = FALSE) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
+Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (\code{lt = TRUE}) or [x, 1] (\code{lt = FALSE}) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }
 \examples{
 # To compute the quantile at a specific point (e.g., .5) along the Standard

@@ -10,10 +10,10 @@ cba(x)
 \item{x}{A data-frame or matrix of numerical values where rows are across-items within-respondent observation vectors, and columns are within-item across-respondents observation vectors.}
 }
 \value{
-Cronbach's Alpha for the sumscore of supplied variables.
+Cronbach's Alpha for the sum-score of supplied variables.
 }
 \description{
-Calculates Cronbach's Alpha, a very commonly used index for assessing the reliability / internal consistency of a sumscore. Often interpreted as the mean correlation across all possible split-half alternate forms of the test.
+Calculates Cronbach's Alpha, a very commonly used index for assessing the reliability / internal consistency of a sum-score. Often interpreted as the mean correlation across all possible split-half alternate forms of the test.
 }
 \note{
 Missing values are treated by passing \code{na.rm = TRUE} to the \code{var} function call.
