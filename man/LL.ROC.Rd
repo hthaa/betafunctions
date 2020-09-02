@@ -12,7 +12,8 @@ LL.ROC(
   truecut,
   AUC = FALSE,
   maxJ = FALSE,
-  raw.out = FALSE
+  raw.out = FALSE,
+  grainsize = 100
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ LL.ROC(
 \item{maxJ}{Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.}
 
 \item{raw.out}{Give raw coordinates as output rather than plot? Default is \code{FALSE}.}
+
+\item{grainsize}{Specify the number of cutoff-points for which the ROC curve is to be calculated. The greater this number the greater the accuracy. Default is 100 points.}
 }
 \value{
 A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
@@ -41,6 +44,7 @@ Generate a ROC curve plotting the false-positive rate against the true-positive 
 \examples{
 # Generate some fictional data. Say, 100 individuals take a test with a
 # maximum score of 100 and a minimum score of 0.
+set.seed(1234)
 testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 

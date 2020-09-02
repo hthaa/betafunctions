@@ -34,7 +34,7 @@ hist(testdata, xlim = c(0, 100))
 cmat <- LL.CA(x = testdata, reliability = .7, cut = 50, min = 0,
 max = 100)$consistencymatrix
 
-# To estimate and retrieve diagnostic performance statistics using caStats(),
+# To estimate and retrieve consistency statistics using caStats(),
 # feed it the appropriate entries of the consistency matrix.
 ccStats(ii = cmat["i", "i"], ij = cmat["i", "j"],
 ji = cmat["j", "i"], jj = cmat["j", "j"])

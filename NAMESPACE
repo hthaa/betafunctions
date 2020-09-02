@@ -3,6 +3,7 @@
 export(AMS)
 export(AUC)
 export(BMS)
+export(Beta.2p.fit)
 export(Beta.4p.fit)
 export(Beta.gfx.poly.cdf)
 export(Beta.gfx.poly.pdf)

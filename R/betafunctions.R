@@ -552,7 +552,7 @@ qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
 
 #' Method of Moment Estimates of Shape- and Location Parameters of the Four-Parameter Beta Distribution.
 #'
-#' @description An implementation of the method of moments estimation of four-parameter beta distribution parameters presented by Hanson (1991). Given a string of values, calculates the shape- and location parameters required to produce a four-parameter beta distribution with the same mean, variance, skewness and kurtosis (i.e., the first four moments) as the observed-score distribution.
+#' @description An implementation of the method of moments estimation of four-parameter beta distribution parameters presented by Hanson (1991). Given a vector of values, calculates the shape- and location parameters required to produce a four-parameter beta distribution with the same mean, variance, skewness and kurtosis (i.e., the first four moments) as the observed-score distribution.
 #' @param scores A vector of values to which the four-parameter beta distribution is to be fitted.
 #' @return A list of parameter-values required to produce a four-parameter beta distribution with the same first four moments as the observed distribution.
 #' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.
@@ -562,11 +562,12 @@ qBeta.4P <- function(p, l, u, alpha, beta, lt = TRUE) {
 #' # maximum score of 100 and a minimum score of 0.
 #' set.seed(1234)
 #' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
-#' hist(testdata, xlim = c(0, 100))
+#' hist(testdata, xlim = c(0, 100), freq = FALSE)
 #'
 #' # To fit and retrieve the parameters for a four-parameter beta distribution
 #' # to the observed-score distribution using Beta.4p.fit():
-#' Beta.4p.fit(testdata)
+#' (params.4p <- Beta.4p.fit(testdata))
+#' curve(dBeta.4P(x, params.4p$l, params.4p$u, params.4p$alpha, params.4p$beta), add = TRUE)
 #' @export
 Beta.4p.fit <- function(scores) {
   m <- observedmoments(scores)
@@ -580,6 +581,35 @@ Beta.4p.fit <- function(scores) {
   l <- m1 - ((a * base::sqrt(s2 * (a + b + 1))) / base::sqrt(a * b))
   u <- m1 + ((b * base::sqrt(s2 * (a + b + 1))) / base::sqrt(a * b))
   return(base::list("alpha" = a, "beta" = b, "l" = l, "u" = u))
+}
+
+#' Method of Moment Estimates of Shape-Parameters of the Two-Parameter (Standard) Beta Distribution.
+#'
+#' @description An implementation of the method of moments estimation of two-parameter beta distribution parameters. Given a vector of values, calculates the shape- and location parameters required to produce a four-parameter beta distribution with the same mean, variance, skewness and kurtosis (i.e., the first four moments) as the observed-score distribution.
+#' @param scores A vector of values to which the two-parameter beta distribution is to be fitted. The values ought to fall within the [0, 1] interval.
+#' @return A list of parameter-values required to produce a four-parameter beta distribution with the same first four moments as the observed distribution.
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3)) / 100
+#' hist(testdata, xlim = c(0, 1), freq = FALSE)
+#'
+#' # To fit and retrieve the parameters for a two-parameter beta distribution
+#' # to the observed-score distribution using Beta.2p.fit():
+#' (params.2p <- Beta.2p.fit(testdata))
+#' curve(dbeta(x, params.2p$alpha, params.2p$beta), add = TRUE)
+#' @export
+Beta.2p.fit <- function(scores) {
+  if (max(scores) > 1 | min(scores) < 0) {
+    warning("Input values outside the range of the Standard Beta distribution (i.e., there are values falling outside the [0, 1] interval).")
+  }
+  m <- observedmoments(scores)
+  m1 <- m$raw[[1]]
+  s2 <- m$central[[2]]
+  a <- AMS(m1, s2)
+  b <- BMS(m1, s2)
+  return(base::list("alpha" = a, "beta" = b, "l" = 0, "u" = 1))
 }
 
 #' An implementation of the Beta-density Compound Cumulative-Binomial Distribution.

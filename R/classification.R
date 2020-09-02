@@ -55,7 +55,7 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' # Alternatively to supplying scores to which a true-score distribution is
 #' # to be fit, a list with true-score distribution parameter values can be
 #' # supplied manually, foregoing the need for actual data. The list entries
-#' # must be named. "l" is the lower-bound and "u" the upper bound location
+#' # must be named. "l" is the lower-bound and "u" the upper-bound location
 #' # parameters of the true-score distribution, and "alpha" and "beta" the
 #' # shape parameters.
 #' trueparams <- list("l" = 0.25, "u" = 0.75, "alpha" = 5, "beta" = 3)
@@ -109,16 +109,16 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
   out[["parameters"]] <- params
   if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") | any(output == "CA") | any(output == "a") | any(output == "A")) {
     if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
-      p.tp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) }, lower = truecut, upper = params$u)$value
-      p.fp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) }, lower = params$l, upper = params$u)$value - p.tp
-      p.tf <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x) }, lower = params$l, upper = truecut)$value
-      p.ff <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x) }, lower = params$l, upper = params$u)$value - p.tf
+      p.tp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(cut * N, N, x, lower.tail = FALSE) }, lower = truecut, upper = 1)$value
+      p.fp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(cut * N, N, x, lower.tail = FALSE) }, lower = 0, upper = 1)$value - p.tp
+      p.ff <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(cut * N, N, x) }, lower = truecut, upper = 1)$value
+      p.tf <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(cut * N, N, x) }, lower = 0, upper = 1)$value - p.ff
     }
     if (error.model == "beta" | error.model == "Beta") {
-      p.tp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = truecut, upper = params$u)$value
-      p.fp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = params$l, upper = params$u)$value - p.tp
-      p.tf <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x)) }, lower = params$l, upper = truecut)$value
-      p.ff <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x)) }, lower = params$l, upper = params$u)$value - p.tf
+      p.tp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(cut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = truecut, upper = 1)$value
+      p.fp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(cut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = 0, upper = 1)$value - p.tp
+      p.ff <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(cut, N * x, N * (1 - x)) }, lower = truecut, upper = 1)$value
+      p.tf <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(cut, N * x, N * (1 - x)) }, lower = 0, upper = 1)$value - p.ff
     }
     # Calculate confusion matrix.
     camat <- base::matrix(nrow = 2, ncol = 2, dimnames = list(c("True", "False"), c("Fail", "Pass")))
@@ -133,16 +133,16 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
   if (any(output == "consistency") | any(output == "Consistency" ) | any(output == "cc") | any(output == "CC") | any(output == "c") | any(output == "C")) {
     # Calculate classification consistency indices.
     if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
-      p.ii <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE))^2 }, lower = params$l, upper = params$u)$value
-      p.ij <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE)) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) }, lower = params$l, upper = params$u)$value
-      p.jj <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE)^2 }, lower = params$l, upper = params$u)$value
-      p.ji <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE)) }, lower = params$l, upper = params$u)$value
+      p.ii <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE))^2 }, lower = 0, upper = 1)$value
+      p.ij <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE)) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) }, lower = 0, upper = 1)$value
+      p.jj <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE)^2 }, lower = 0, upper = 1)$value
+      p.ji <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(truecut * N, N, x, lower.tail = FALSE) * (1 - stats::pbinom(truecut * N, N, x, lower.tail = FALSE)) }, lower = 0, upper = 1)$value
     }
     if (error.model == "beta" | error.model == "Beta") {
-      p.ii <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE))^2 }, lower = params$l, upper = params$u)$value
-      p.ij <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = params$l, upper = params$u)$value
-      p.jj <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)^2 }, lower = params$l, upper = params$u)$value
-      p.ji <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)) }, lower = params$l, upper = params$u)$value
+      p.ii <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE))^2 }, lower = 0, upper = 1)$value
+      p.ij <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = 0, upper = 1)$value
+      p.jj <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)^2 }, lower = 0, upper = 1)$value
+      p.ji <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE) * (1 - stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = FALSE)) }, lower = 0, upper = 1)$value
     }
     ccmat <- base::matrix(nrow = 2, ncol = 2, dimnames = list(c("i", "j"), c("i", "j")))
     ccmat["i", "i"] <- p.ii
@@ -152,9 +152,10 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "b
     out[["consistencymatrix"]] <- ccmat
     # Calculate classification consistency indices.
     out[["classification.consistency"]] <- ccStats(ccmat["i", "i"], ccmat["i", "j"], ccmat["j", "i"], ccmat["j", "j"])
-    }
+  }
   return(out)
 }
+
 
 #' Classification Accuracy Statistics.
 #'
@@ -219,7 +220,7 @@ caStats <- function(tp, tn, fp, fn) {
 #' cmat <- LL.CA(x = testdata, reliability = .7, cut = 50, min = 0,
 #' max = 100)$consistencymatrix
 #'
-#' # To estimate and retrieve diagnostic performance statistics using caStats(),
+#' # To estimate and retrieve consistency statistics using caStats(),
 #' # feed it the appropriate entries of the consistency matrix.
 #' ccStats(ii = cmat["i", "i"], ij = cmat["i", "j"],
 #' ji = cmat["j", "i"], jj = cmat["j", "j"])
@@ -243,10 +244,12 @@ ccStats <- function(ii, ij, ji, jj) {
 #' @param AUC Calculate and include the area under the curve? Default is \code{FALSE}.
 #' @param maxJ Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
 #' @param raw.out Give raw coordinates as output rather than plot? Default is \code{FALSE}.
+#' @param grainsize Specify the number of cutoff-points for which the ROC curve is to be calculated. The greater this number the greater the accuracy. Default is 100 points.
 #' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
 #' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
@@ -257,20 +260,19 @@ ccStats <- function(ii, ij, ji, jj) {
 #' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
 #' AUC = TRUE, maxJ = TRUE)
 #' @export
-LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE) {
+LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE, grainsize = 100) {
   oldpar <- graphics::par(no.readonly = TRUE)
   base::on.exit(graphics::par(oldpar))
-  for (i in 1:length(seq(0, 1, .01))) {
+  for (i in 1:(grainsize + 1)) {
     if (i == 1) {
-      cuts <- seq(min, max, (max - min) / 100)
-      outputmatrix <- matrix(nrow = length(seq(0, 1, .01)), ncol = 4)
+      cuts <- seq(min, max, (max - min) / grainsize)
+      outputmatrix <- matrix(nrow = grainsize + 1, ncol = 4)
+      outputmatrix[, 4] <- cuts
     }
-    cmat <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut)$confusionmatrix
-    axval <- caStats(cmat[1, 1], cmat[1, 2], cmat[2, 1], cmat[2, 2])
+    axval <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut, output = "a")$classification.accuracy
     outputmatrix[i, 1] <- 1 - axval$Specificity
     outputmatrix[i, 2] <- axval$Sensitivity
     outputmatrix[i, 3] <- axval$Youden.J
-    outputmatrix[, 4] <- cuts
     colnames(outputmatrix) <- c("FPR", "TPR", "Youden.J", "Cutoff")
     outputmatrix[which(is.na(outputmatrix[, 1])), 1] <- 0
     outputmatrix[which(is.na(outputmatrix[, 2])), 2] <- 1
@@ -340,7 +342,7 @@ AUC <- function(FPR, TPR) {
 #' @note Missing values are treated by passing \code{na.rm = TRUE} to the \code{var} function call.
 #' @note Be aware that this function does not issue a warning if there are negative correlations between variables in the supplied data-set.
 #' @return Cronbach's Alpha for the sum-score of supplied variables.
-#' @references Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. Psychometrika 16, 297–334. doi: 10.1007/BF02310555
+#' @references Cronbach, L.J. (1951). Coefficient alpha and the internal structure of tests. Psychometrika 16, 297--334. doi: 10.1007/BF02310555
 #' @examples
 #' # Generate some fictional data. Say 100 students take a 50-item long test
 #' # where all items are equally difficult.

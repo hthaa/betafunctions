@@ -1,7 +1,7 @@
 Package: betafunctions
 Type: Package
 Title: Functions for Working with Two- And Four-Parameter Beta Probability Distributions
-Version: 1.2.0
+Version: 1.2.1
 Author: Haakon Haakstad
 Maintainer: Haakon Haakstad <h.t.haakstad@cemo.uio.no>
 Description: Package providing a number of functions for working with the Two- and Four-

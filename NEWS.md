@@ -1,3 +1,9 @@
+betafunctions v. 1.2.1
+- Fixed the LL.ROC() function which stopped working after the previous update.
+-- Included possibility of specifying the number of points for which the ROC curve is drawn and the AUC statistic is calculated.
+
+
+
 betafunctions v. 1.2.0
 - Added functionality for calculating consistency statistics by way of the new ccStats() function.
 - Substantial developments concerning primarily the LL.CA() function, adding functionality and improving performance.

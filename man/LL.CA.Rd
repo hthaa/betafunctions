@@ -63,7 +63,7 @@ LL.CA(x = testdata, reliability = .7, cut = 50, min = 0, max = 100)
 # Alternatively to supplying scores to which a true-score distribution is
 # to be fit, a list with true-score distribution parameter values can be
 # supplied manually, foregoing the need for actual data. The list entries
-# must be named. "l" is the lower-bound and "u" the upper bound location
+# must be named. "l" is the lower-bound and "u" the upper-bound location
 # parameters of the true-score distribution, and "alpha" and "beta" the
 # shape parameters.
 trueparams <- list("l" = 0.25, "u" = 0.75, "alpha" = 5, "beta" = 3)
