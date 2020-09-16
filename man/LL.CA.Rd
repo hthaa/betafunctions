@@ -13,8 +13,7 @@ LL.CA(
   error.model = "binomial",
   truecut = NULL,
   output = c("accuracy", "consistency"),
-  override = FALSE,
-  grainsize = NULL
+  override = FALSE
 )
 }
 \arguments{
@@ -35,8 +34,6 @@ LL.CA(
 \item{output}{Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.}
 
 \item{override}{Logical value indicating whether to override the automatic default to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE}.}
-
-\item{grainsize}{Outdated and inert. Maintained for compatibility. Will be removed completely in future update.}
 }
 \value{
 A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).

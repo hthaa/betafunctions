@@ -36,7 +36,6 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves.
 #' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
 #' @param override Logical value indicating whether to override the automatic default to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE}.
-#' @param grainsize Outdated and inert. Maintained for compatibility. Will be removed completely in future update.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the possibility of employing a two-parameter Beta error distribution in place of the binomial error distribution is not part of the original procedure. Third, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to calculating classification consistency outlined by Hanson (1991).
 #' @examples
@@ -63,31 +62,21 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
 #' @export
-LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, output = c("accuracy", "consistency"), override = FALSE, grainsize = NULL) {
-  if (!is.null(grainsize)) {
-    warning("The grainsize argument is inert as of version 1.2.0 and will be removed in later updates. Scripts making use of the argument should be modified to avoid problems with future updates.")
-  }
+LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, output = c("accuracy", "consistency"), override = FALSE) {
   out <- base::list()
   if (class(x) != "list") {
+    if ((base::min(x) < min) | (base::max(x) > max)) {
+      warning(paste("Observed values not within the specified [", min, ", ", max, "] bounds (observed min = ", min(x), ", observed max = ", max(x), ").", sep = ""))
+    }
     x <- (x - min) / (max - min)
     params <- Beta.4p.fit(x)
   } else {
     params <- x
   }
   if (override == FALSE & class(x) != "list") {
-    if (params$l < 0) {
-      warning("Improper solution for lower-bound estimate of true-score distribution (< 0). Reverting to two-parameter solution.")
-      params$alpha <- AMS(base::mean(x), stats::var(x))
-      params$beta <- BMS(base::mean(x), stats::var(x))
-      params$l <- 0
-      params$u <- 1
-    }
-    if (params$u > 1) {
-      warning("Improper solution for upper-bound estimate of true-score distribution (> 1). Reverting to two-parameter solution.")
-      params$alpha <- AMS(base::mean(x), stats::var(x))
-      params$beta <- BMS(base::mean(x), stats::var(x))
-      params$l <- 0
-      params$u <- 1
+    if ((params$l < 0) | (params$u > 1) | any(is.na(params))) {
+      warning(paste("Improper solution for true-score distribution location parameters (l = ", params$l, ", u = ", params$u, "). Reverting to two-parameter solution.", sep = ""))
+      params <- Beta.2p.fit(x)
     }
   }
 

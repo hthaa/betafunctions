@@ -10,10 +10,10 @@ Beta.2p.fit(scores)
 \item{scores}{A vector of values to which the two-parameter beta distribution is to be fitted. The values ought to fall within the [0, 1] interval.}
 }
 \value{
-A list of parameter-values required to produce a four-parameter beta distribution with the same first four moments as the observed distribution.
+A list of parameter-values required to produce a Standard two-parameter beta distribution with the same first two moments as the observed distribution.
 }
 \description{
-An implementation of the method of moments estimation of two-parameter beta distribution parameters. Given a vector of values, calculates the shape- and location parameters required to produce a four-parameter beta distribution with the same mean, variance, skewness and kurtosis (i.e., the first four moments) as the observed-score distribution.
+An implementation of the method of moments estimation of two-parameter beta distribution parameters. Given a vector of values, calculates the shape parameters required to produce a two-parameter beta distribution with the same mean and variance (i.e., the first two moments) as the observed-score distribution.
 }
 \examples{
 # Generate some fictional data. Say, 100 individuals take a test with a

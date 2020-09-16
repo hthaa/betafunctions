@@ -576,8 +576,13 @@ Beta.4p.fit <- function(scores) {
   g3 <- m$standardized[[3]]
   g4 <- m$standardized[[4]]
   r <- 6 * (g4 - g3^2 - 1) / (6 + 3 * g3^2 - 2 * g4)
-  a <- r / 2 * (1 + sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
-  b <- r / 2 * (1 - sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+  if (g3 < 0) {
+    a <- r / 2 * (1 + sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+    b <- r / 2 * (1 - sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+  } else {
+    b <- r / 2 * (1 + sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+    a <- r / 2 * (1 - sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+  }
   l <- m1 - ((a * base::sqrt(s2 * (a + b + 1))) / base::sqrt(a * b))
   u <- m1 + ((b * base::sqrt(s2 * (a + b + 1))) / base::sqrt(a * b))
   return(base::list("alpha" = a, "beta" = b, "l" = l, "u" = u))
@@ -585,9 +590,9 @@ Beta.4p.fit <- function(scores) {
 
 #' Method of Moment Estimates of Shape-Parameters of the Two-Parameter (Standard) Beta Distribution.
 #'
-#' @description An implementation of the method of moments estimation of two-parameter beta distribution parameters. Given a vector of values, calculates the shape- and location parameters required to produce a four-parameter beta distribution with the same mean, variance, skewness and kurtosis (i.e., the first four moments) as the observed-score distribution.
+#' @description An implementation of the method of moments estimation of two-parameter beta distribution parameters. Given a vector of values, calculates the shape parameters required to produce a two-parameter beta distribution with the same mean and variance (i.e., the first two moments) as the observed-score distribution.
 #' @param scores A vector of values to which the two-parameter beta distribution is to be fitted. The values ought to fall within the [0, 1] interval.
-#' @return A list of parameter-values required to produce a four-parameter beta distribution with the same first four moments as the observed distribution.
+#' @return A list of parameter-values required to produce a Standard two-parameter beta distribution with the same first two moments as the observed distribution.
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
