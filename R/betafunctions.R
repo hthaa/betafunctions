@@ -88,14 +88,14 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
     sigma <- base::list(base::rep(base::vector(length = 1), orders))
     for (i in 1:orders) {
       if (correct) {
-        sigma[i] <- stats::var(x)
+        sigma[i] <- base::sum((x - base::mean(x))^i)/(base::length(x) - 1)
       }
       else {
         sigma[i] <- base::sum((x - base::mean(x))^i)/(base::length(x))
       }
     }
-    momentorders[[length(momentorders) + 1]] <- sigma
-    names(momentorders)[types] <- "central"
+    momentorders[[base::length(momentorders) + 1]] <- sigma
+    base::names(momentorders)[types] <- "central"
     types <- types + 1
   }
   if (base::any(type == "standardized")) {
@@ -577,8 +577,8 @@ Beta.4p.fit <- function(scores) {
   g4 <- m$standardized[[4]]
   r <- 6 * (g4 - g3^2 - 1) / (6 + 3 * g3^2 - 2 * g4)
   if (g3 < 0) {
-    a <- r / 2 * (1 + sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
-    b <- r / 2 * (1 - sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+    a <- r / 2 * (1 + base::sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
+    b <- r / 2 * (1 - base::sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
   } else {
     b <- r / 2 * (1 + sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
     a <- r / 2 * (1 - sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * g4 - 3 * (r - 6) * (r + 1)))))
