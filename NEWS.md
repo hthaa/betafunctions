@@ -2,17 +2,19 @@
 
 - Fixed some typographical errors in documentation.
 
-- Minor modification to `LL.CA()` where the function now won't automatically terminate if `Beta.4P.fit()` produces `NaN` estimates.
+- Minor modification to `LL.CA()` where the function now won't automatically terminate if true-score distribution fitting procedure produces `NA` or `NaN` estimates.
 
-	- If `Beta.4P.fit()` produces `NaN` estimates, the default failsafe of reverting to a two-parameter solution is employed.
+	- True-score distribution fitting now performed using the new `Beta.tp.fit()` function.
 
 	- The `grainsize` argument is now fully removed from `LL.CA()`.
 
 	- Added additional checks and diagnostics in `LL.CA()`, issuing warnings for aberrant events.
 
+	- If a list of parameter values are supplied in place of a score-vector, it is now necessary to supply an `etl` (effective test length) parameter as well. See documentation for the `ETL()` function for more information.
+
 - Fixed an error in the fitting procedure of `Beta.4P.fit()` which occurred during positive skew.
 
-- Added the `RF.Beta.4P.fit()` function for estimating four-parameter Beta distribution parameters from data generated from a Beta compound Binomial model.
+- Added the `Beta.tp.fit()` function for estimating four-parameter Beta distribution parameters for an underlying true-score distribution, assuming that the observations are generated from data generated from a Beta-Binomial model.
 
 ---
 
