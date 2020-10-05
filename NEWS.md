@@ -1,4 +1,4 @@
-# `betafunctions` v. 1.3.1
+# betafunctions v. 1.3.1
 
 - Added `true.model` argument allowing for greater control over the true-score estimation procedure in `Beta.tp.fit()`, `LL.CA`, and `LL.ROC`.
 
@@ -6,13 +6,13 @@
 
 	- Currently, the options for the argument are "4P" and "2P". Further options might be added in the future.
 
-- Added the possibility of specifying a Beta error model for the `LL.ROC()` function by way of the `error.model` argument.
+- Added the possibility of specifying a Beta error model for the `LL.ROC()` function by way of the `true.model` argument.
 
 - Additional correction of typographical errors in documentation.
 
 ---
 
-# `betafunctions` v. 1.3.0
+# betafunctions v. 1.3.0
 
 - Fixed some typographical errors in documentation.
 
@@ -32,7 +32,7 @@
 
 ---
 
-# `betafunctions` v. 1.2.1
+# betafunctions v. 1.2.1
 
 - Fixed the `LL.ROC()` function which stopped working after the previous update.
 
@@ -40,7 +40,7 @@
 
 ---
 
-# `betafunctions` v. 1.2.0
+# betafunctions v. 1.2.0
 
 - Added functionality for calculating consistency statistics by way of the new `ccStats()` function.
 
@@ -60,7 +60,7 @@
 
 ---
 
-# `betafunctions` v. 1.1.0
+# betafunctions v. 1.1.0
 
 - Fixed small typographical errors in documentation.
 
