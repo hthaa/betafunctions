@@ -32,6 +32,7 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @param min The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).
 #' @param max The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
+#' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves (see documentation for the \code{LL.ROC()} function).
 #' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
@@ -63,14 +64,14 @@ ETL <- function(mean, variance, l = 0, u = 1, reliability) {
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
 #' @export
-LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, error.model = "binomial", truecut = NULL, output = c("accuracy", "consistency"), override = FALSE) {
+LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", error.model = "binomial", truecut = NULL, output = c("accuracy", "consistency"), override = FALSE) {
   out <- base::list()
   if (class(x) != "list") {
     if ((base::min(x) < min) | (base::max(x) > max)) {
       warning(paste("Observed values not within the specified [", min, ", ", max, "] bounds (observed min = ", min(x), ", observed max = ", max(x), ").", sep = ""))
     }
     N <- ETL(base::mean(x), stats::var(x), l = min, u = max, reliability = reliability)
-    params <- Beta.tp.fit(x, min = min, max = max, etl = N, failsafe = !override)
+    params <- Beta.tp.fit(x, min = min, max = max, etl = N, true.model = true.model, failsafe = !override)
     x <- (x - min) / (max - min)
   } else {
     params <- x
@@ -215,6 +216,8 @@ ccStats <- function(ii, ij, ji, jj) {
 #' @param max The maximum possible value to attain on the observed-score scale. Default is 1 (assuming \code{x} represent proportions).
 #' @param reliability The reliability coefficient of the test.
 #' @param truecut The true point along the x-scale that marks the categorization-threshold.
+#' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
+#' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.
 #' @param AUC Calculate and include the area under the curve? Default is \code{FALSE}.
 #' @param maxJ Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
 #' @param raw.out Give raw coordinates as output rather than plot? Default is \code{FALSE}.
@@ -234,7 +237,7 @@ ccStats <- function(ii, ij, ji, jj) {
 #' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
 #' AUC = TRUE, maxJ = TRUE)
 #' @export
-LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE, maxJ = FALSE, raw.out = FALSE, grainsize = 100) {
+LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", error.model = "Binomial", AUC = FALSE, maxJ = FALSE, raw.out = FALSE, grainsize = 100) {
   oldpar <- graphics::par(no.readonly = TRUE)
   base::on.exit(graphics::par(oldpar))
   for (i in 1:(grainsize + 1)) {
@@ -243,7 +246,7 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, AUC = FALSE
       outputmatrix <- matrix(nrow = grainsize + 1, ncol = 4)
       outputmatrix[, 4] <- cuts
     }
-    axval <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut, output = "a")$classification.accuracy
+    axval <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i], truecut = truecut, true.model = true.model, error.model = error.model, output = "a")$classification.accuracy
     outputmatrix[i, 1] <- 1 - axval$Specificity
     outputmatrix[i, 2] <- axval$Sensitivity
     outputmatrix[i, 3] <- axval$Youden.J
@@ -344,6 +347,7 @@ cba <- function(x) {
 #' @param min The minimum possible score to attain on the test.
 #' @param max The maximum possible score to attain on the test.
 #' @param etl The value of Livingston and Lewis' effective test length. See ?ETL().
+#' @param true.model The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis) and "2P" the two-parameter solution (with the same mean and variance).
 #' @param failsafe Logical. Whether to revert to a failsafe two-parameter solution should the four-parameter solution contain invalid parameter estimates.
 #' @return A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter.
 #' @note This estimator is based on the S-Plus code provided by Rogosa and Finkelman (2004). It includes an option for implementing a failsafe should the four-parameter solution be invalid (e.g., l < 0 or u > 1, alpha < 1 or beta < 1).
@@ -364,7 +368,7 @@ cba <- function(x) {
 #' # the draws from the binomial distribution:
 #' Beta.tp.fit(testdata, 0, 100, 100)
 #' @export
-Beta.tp.fit <- function(x, min, max, etl, failsafe = FALSE) {
+Beta.tp.fit <- function(x, min, max, etl, true.model = "4P", failsafe = FALSE) {
   x <- (x - min) / (max - min) * etl
   mu1 <- sum(x) / length(x)
   mu2 <- sum(x^2) / length(x)
@@ -379,18 +383,26 @@ Beta.tp.fit <- function(x, min, max, etl, failsafe = FALSE) {
   tp.s4 <- tp.m4 - 4 * tp.m1 * tp.m3 + 6 * tp.m1^2 * tp.m2 - 3 * tp.m1^4
   tp.g3 <- tp.s3 / (sqrt(tp.s2)^3)
   tp.g4 <- tp.s4 / (sqrt(tp.s2)^4)
-  phi <- (6 * (tp.g4 - tp.g3^2 - 1)) / (6 + 3 * tp.g3^2 - 2 * tp.g4)
-  if (tp.g3 < 0) {
-    alpha <- (phi / 2) * (1 + sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
-    beta <- (phi / 2) * (1 - sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
-  } else {
-    beta <- (phi / 2) * (1 + sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
-    alpha <- (phi / 2) * (1 - sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+  if (true.model == "4P" | true.model == "4p") {
+    phi <- (6 * (tp.g4 - tp.g3^2 - 1)) / (6 + 3 * tp.g3^2 - 2 * tp.g4)
+    if (tp.g3 < 0) {
+      alpha <- (phi / 2) * (1 + sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+      beta <- (phi / 2) * (1 - sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+    } else {
+      beta <- (phi / 2) * (1 + sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+      alpha <- (phi / 2) * (1 - sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+    }
+    l <- tp.m1 - (alpha * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
+    u <- tp.m1 + (beta * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
+    if (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha < 1 | beta < 1))) {
+      warning(paste("Failsafe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta, ". Reverting to a two-parameter solution for the true-score distribution.", sep = ""))
+      alpha <- AMS(tp.m1, tp.s2)
+      beta <- BMS(tp.m1, tp.s2)
+      l <- 0
+      u <- 1
+    }
   }
-  l <- tp.m1 - (alpha * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
-  u <- tp.m1 + (beta * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
-  if (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha < 1 | beta < 1))) {
-    warning(paste("Failsafe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta, ". Reverting to a two-parameter solution for the true-score distribution.", sep = ""))
+  if (true.model == "2P" | true.model == "2p") {
     alpha <- AMS(tp.m1, tp.s2)
     beta <- BMS(tp.m1, tp.s2)
     l <- 0

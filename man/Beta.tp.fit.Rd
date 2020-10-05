@@ -4,7 +4,7 @@
 \alias{Beta.tp.fit}
 \title{Estimate Beta true-score distribution based on observed-score raw-moments and the effective test length.}
 \usage{
-Beta.tp.fit(x, min, max, etl, failsafe = FALSE)
+Beta.tp.fit(x, min, max, etl, true.model = "4P", failsafe = FALSE)
 }
 \arguments{
 \item{x}{Vector of observed-scores.}
@@ -14,6 +14,8 @@ Beta.tp.fit(x, min, max, etl, failsafe = FALSE)
 \item{max}{The maximum possible score to attain on the test.}
 
 \item{etl}{The value of Livingston and Lewis' effective test length. See ?ETL().}
+
+\item{true.model}{The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis) and "2P" the two-parameter solution (with the same mean and variance).}
 
 \item{failsafe}{Logical. Whether to revert to a failsafe two-parameter solution should the four-parameter solution contain invalid parameter estimates.}
 }

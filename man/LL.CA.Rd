@@ -10,6 +10,7 @@ LL.CA(
   cut,
   min = 0,
   max = 1,
+  true.model = "4P",
   error.model = "binomial",
   truecut = NULL,
   output = c("accuracy", "consistency"),
@@ -26,6 +27,8 @@ LL.CA(
 \item{min}{The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).}
 
 \item{max}{The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).}
+
+\item{true.model}{The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.}
 
 \item{error.model}{The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.}
 

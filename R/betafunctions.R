@@ -278,7 +278,7 @@ rBetaMS <- function(n, mean, var = NULL, sd = NULL) {
 #' @param to The point of the x-axis to where y-density values are to be produced.
 #' @param by The resolution (or spacing) at which to produce y-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
-#' @param beta The Beta shape-parameter fort he Standard Beta probability density distribution.
+#' @param beta The Beta shape-parameter fo rhe Standard Beta probability density distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
 #' @param u The upper-bound location parameter of the Beta distribution.
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.
@@ -344,7 +344,7 @@ Beta.gfx.poly.qdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 #' @param to The point of the \code{x}-axis to where \code{y}-density values are to be produced.
 #' @param by The resolution (or spacing) at which to produce \code{y}-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta cumulative probability distribution.
-#' @param beta The Beta shape-parameter fort he Standard Beta cumulative probability distribution.
+#' @param beta The Beta shape-parameter for the Standard Beta cumulative probability distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
 #' @param u The upper-bound location parameter of the Beta distribution.
 #' @return A two-column matrix with cumulative probability-values of y to plot against corresponding location values of \code{x}.
