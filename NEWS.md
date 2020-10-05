@@ -1,4 +1,4 @@
-#### `betafunctions` v. 1.3.1
+# `betafunctions` v. 1.3.1
 
 - Added `true.model` argument allowing for greater control over the true-score estimation procedure in `Beta.tp.fit()`, `LL.CA`, and `LL.ROC`.
 
@@ -12,7 +12,7 @@
 
 ---
 
-#### `betafunctions` v. 1.3.0
+# `betafunctions` v. 1.3.0
 
 - Fixed some typographical errors in documentation.
 
@@ -28,11 +28,11 @@
 
 - Fixed an error in the fitting procedure of `Beta.4P.fit()` which occurred during positive skew.
 
-- Added the `Beta.tp.fit()` function for estimating four-parameter Beta distribution parameters for an underlying true-score distribution, assuming that the observations are generated from data generated from a Beta-Binomial model.
+- Added the `Beta.tp.fit()` function for estimating four-parameter Beta distribution parameters for an underlying true-score distribution, assuming that the observations are generated from a Beta-Binomial model.
 
 ---
 
-#### `betafunctions` v. 1.2.1
+# `betafunctions` v. 1.2.1
 
 - Fixed the `LL.ROC()` function which stopped working after the previous update.
 
@@ -40,7 +40,7 @@
 
 ---
 
-#### `betafunctions` v. 1.2.0
+# `betafunctions` v. 1.2.0
 
 - Added functionality for calculating consistency statistics by way of the new `ccStats()` function.
 
@@ -60,7 +60,7 @@
 
 ---
 
-#### `betafunctions` v. 1.1.0
+# `betafunctions` v. 1.1.0
 
 - Fixed small typographical errors in documentation.
 
