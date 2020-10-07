@@ -1,6 +1,6 @@
 # betafunctions v. 1.3.1
 
-- Added `true.model` argument allowing for greater control over the true-score estimation procedure in `Beta.tp.fit()`, `LL.CA`, and `LL.ROC`.
+- `Beta.tp.fit()`, `LL.CA()`, and `LL.ROC()`: Added `true.model` argument allowing for greater control over the true-score estimation procedure in.
 
 	- The `true.model` allows for specifying whether to fit four- or two-parameter Beta distribution to the estimated moments of the true-score distribution.
 
