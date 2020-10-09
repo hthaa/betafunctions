@@ -394,7 +394,7 @@ Beta.tp.fit <- function(x, min, max, etl, true.model = "4P", failsafe = FALSE) {
     }
     l <- tp.m1 - (alpha * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
     u <- tp.m1 + (beta * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
-    if (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha < 1 | beta < 1))) {
+    if (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | (alpha < 1 & beta < 1)))) {
       warning(paste("Failsafe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta, ". Reverting to a two-parameter solution for the true-score distribution.", sep = ""))
       alpha <- AMS(tp.m1, tp.s2)
       beta <- BMS(tp.m1, tp.s2)
