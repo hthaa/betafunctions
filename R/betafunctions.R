@@ -623,8 +623,8 @@ Beta.2p.fit <- function(scores) {
 #' @param x x-axis input for which \code{p} (proportion or probability) is to be computed.
 #' @param l The lower-bound of the four-parameter Beta distribution.
 #' @param u The upper-bound of the four-parameter Beta distribution.
-#' @param a The alpha shape-parameter of the Beta distribution.
-#' @param b The beta shape-parameter of the Beta distribution.
+#' @param alpha The alpha shape-parameter of the Beta distribution.
+#' @param beta The beta shape-parameter of the Beta distribution.
 #' @param n The number of trials for the Binomial distribution.
 #' @param c The "true-cut" (proportion) of on the Binomial distribution.
 #' @param lower.tail Logical. Whether to compute the lower or upper tail of the Binomial distribution. Default is \code{FALSE} (i.e., upper tail).
@@ -649,11 +649,11 @@ Beta.2p.fit <- function(scores) {
 #' #calculated as:
 #' integrate(function(x) { dBeta.pBinom(x, 0.25, .75, 5, 3, 10, 0.5) }, lower = 0.25, upper = 0.5)
 #' @export
-dBeta.pBinom <- function(x, l, u, a, b, n, c, lower.tail = FALSE) {
+dBeta.pBinom <- function(x, l, u, alpha, beta, n, c, lower.tail = FALSE) {
   if (!lower.tail) {
-    dBeta.4P(x, l, u, a, b) * stats::pbinom(n * c, n, x, lower.tail = lower.tail)
+    dBeta.4P(x, l, u, alpha, beta) * stats::pbinom(n * c, n, x, lower.tail = FALSE)
   } else {
-    dBeta.4P(x, l, u, a, b) * (1 - stats::pbinom(n * c, n, x, lower.tail = FALSE))
+    dBeta.4P(x, l, u, alpha, beta) * (1 - stats::pbinom(n * c, n, x, lower.tail = FALSE))
   }
 }
 
@@ -663,8 +663,8 @@ dBeta.pBinom <- function(x, l, u, a, b, n, c, lower.tail = FALSE) {
 #' @param x x-axis input for which \code{p} (proportion or probability) is to be computed.
 #' @param l The lower-bound of the four-parameter Beta distribution.
 #' @param u The upper-bound of the four-parameter Beta distribution.
-#' @param a The alpha shape-parameter of the Beta density distribution.
-#' @param b The beta shape-parameter of the Beta density distribution.
+#' @param alpha The alpha shape-parameter of the Beta density distribution.
+#' @param beta The beta shape-parameter of the Beta density distribution.
 #' @param n The number of trials for the Beta cumulative probability distribution.
 #' @param c The "true-cut" (proportion) of on the Beta cumulative probability distribution.
 #' @param lower.tail Logical. Whether to compute the lower or upper tail of the Beta cumulative probability distribution. Default is \code{FALSE} (i.e., upper tail).
@@ -689,10 +689,10 @@ dBeta.pBinom <- function(x, l, u, a, b, n, c, lower.tail = FALSE) {
 #' # calculated as:
 #' integrate(function(x) { dBeta.pBeta(x, 0.25, .75, 5, 3, 10, 0.5) }, lower = 0.25, upper = 0.5)
 #' @export
-dBeta.pBeta <- function(x, l, u, a, b, n, c, lower.tail = FALSE) {
+dBeta.pBeta <- function(x, l, u, alpha, beta, n, c, lower.tail = FALSE) {
   if(!lower.tail) {
-    dBeta.4P(x, l, u, a, b) * stats::pbeta(c, x * n, (1 - x) * n, lower.tail = FALSE)
+    dBeta.4P(x, l, u, alpha, beta) * stats::pbeta(c, x * n, (1 - x) * n, lower.tail = FALSE)
   } else {
-    dBeta.4P(x, l, u, a, b) * (1 - stats::pbeta(c, x * n, (1 - x) * n, lower.tail = FALSE))
+    dBeta.4P(x, l, u, alpha, beta) * (1 - stats::pbeta(c, x * n, (1 - x) * n, lower.tail = FALSE))
   }
 }
