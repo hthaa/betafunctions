@@ -653,7 +653,7 @@ dBeta.pBinom <- function(x, l, u, a, b, n, c, lower.tail = FALSE) {
   if (!lower.tail) {
     dBeta.4P(x, l, u, a, b) * stats::pbinom(n * c, n, x, lower.tail = lower.tail)
   } else {
-    dBeta.4P(x, l, u, a, b) * (1 - stats::pbinom(n * c, n, x, lower.tail = lower.tail))
+    dBeta.4P(x, l, u, a, b) * (1 - stats::pbinom(n * c, n, x, lower.tail = FALSE))
   }
 }
 
