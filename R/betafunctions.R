@@ -651,7 +651,6 @@ Beta.2p.fit <- function(scores) {
 #' @export
 dBeta.pBinom <- function(x, l, u, a, b, n, c, lower.tail = FALSE) {
   if (!lower.tail) {
-    (1 / beta(a, b)) *
     dBeta.4P(x, l, u, a, b) * stats::pbinom(n * c, n, x, lower.tail = lower.tail)
   } else {
     dBeta.4P(x, l, u, a, b) * (1 - stats::pbinom(n * c, n, x, lower.tail = lower.tail))

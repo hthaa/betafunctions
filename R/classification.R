@@ -368,7 +368,7 @@ cba <- function(x) {
 #' # the draws from the binomial distribution:
 #' Beta.tp.fit(testdata, 0, 100, 100)
 #' @export
-Beta.tp.fit <- function(x, min, max, etl, true.model = "4P", failsafe = FALSE) {
+Beta.tp.fit <- function(x, min, max, etl, true.model = "4P", failsafe = FALSE, output = "parameters") {
   x <- (x - min) / (max - min) * etl
   mu1 <- sum(x) / length(x)
   mu2 <- sum(x^2) / length(x)
@@ -379,34 +379,36 @@ Beta.tp.fit <- function(x, min, max, etl, true.model = "4P", failsafe = FALSE) {
   tp.m3 <- (mu3 - 3 * mu2 + 2 * mu1)/(etl * (etl - 1) * (etl - 2))
   tp.m4 <-  (mu4 - 6 * mu3 + 11 * mu2 - 6 * mu1) / (etl * (etl - 1) * (etl - 2) * (etl - 3))
   tp.s2 <- tp.m2 - tp.m1^2
-  tp.s3 <- tp.m3 - 3 * tp.m1 * tp.m2 + 2 * tp.m1^3
-  tp.s4 <- tp.m4 - 4 * tp.m1 * tp.m3 + 6 * tp.m1^2 * tp.m2 - 3 * tp.m1^4
-  tp.g3 <- tp.s3 / (sqrt(tp.s2)^3)
-  tp.g4 <- tp.s4 / (sqrt(tp.s2)^4)
-  if (true.model == "4P" | true.model == "4p") {
-    phi <- (6 * (tp.g4 - tp.g3^2 - 1)) / (6 + 3 * tp.g3^2 - 2 * tp.g4)
-    if (tp.g3 < 0) {
-      alpha <- (phi / 2) * (1 + sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
-      beta <- (phi / 2) * (1 - sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
-    } else {
-      beta <- (phi / 2) * (1 + sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
-      alpha <- (phi / 2) * (1 - sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+  tp.g3 <- (tp.m3 - 3 * tp.m1 * tp.m2 + 2 * tp.m1^3) / (sqrt(tp.s2)^3)
+  tp.g4 <- (tp.m4 - 4 * tp.m1 * tp.m3 + 6 * tp.m1^2 * tp.m2 - 3 * tp.m1^4) / (sqrt(tp.s2)^4)
+  if (output == "parameters") {
+    if (true.model == "4P" | true.model == "4p") {
+      phi <- (6 * (tp.g4 - tp.g3^2 - 1)) / (6 + 3 * tp.g3^2 - 2 * tp.g4)
+      if (tp.g3 < 0) {
+        alpha <- (phi / 2) * (1 + sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+        beta <- (phi / 2) * (1 - sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+      } else {
+        beta <- (phi / 2) * (1 + sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+        alpha <- (phi / 2) * (1 - sqrt(1 - (24 * (phi + 1) / (tp.g4 * (phi + 2) * (phi + 3) - 3 * (phi - 6) * (phi + 1)))))
+      }
+      l <- tp.m1 - (alpha * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
+      u <- tp.m1 + (beta * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
+      if (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | (alpha < 1 & beta < 1)))) {
+        warning(paste("Fail-safe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta, ". Reverting to a two-parameter solution for the true-score distribution.", sep = ""))
+        alpha <- AMS(tp.m1, tp.s2)
+        beta <- BMS(tp.m1, tp.s2)
+        l <- 0
+        u <- 1
+      }
     }
-    l <- tp.m1 - (alpha * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
-    u <- tp.m1 + (beta * sqrt(tp.s2 * (alpha + beta + 1)) / sqrt(alpha * beta))
-    if (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | (alpha < 1 & beta < 1)))) {
-      warning(paste("Failsafe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta, ". Reverting to a two-parameter solution for the true-score distribution.", sep = ""))
+    if (true.model == "2P" | true.model == "2p") {
       alpha <- AMS(tp.m1, tp.s2)
       beta <- BMS(tp.m1, tp.s2)
       l <- 0
       u <- 1
     }
+    return(list("l" = l, "u" = u, "alpha" = alpha, "beta" = beta))
+  } else {
+    return(list("mean" = m1, "variance" = s2, "skewness" = g3, "kurtosis" = g4))
   }
-  if (true.model == "2P" | true.model == "2p") {
-    alpha <- AMS(tp.m1, tp.s2)
-    beta <- BMS(tp.m1, tp.s2)
-    l <- 0
-    u <- 1
-  }
-  return(list("l" = l, "u" = u, "alpha" = alpha, "beta" = beta))
 }
