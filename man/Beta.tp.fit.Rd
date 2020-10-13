@@ -4,7 +4,15 @@
 \alias{Beta.tp.fit}
 \title{Estimate Beta true-score distribution based on observed-score raw-moments and the effective test length.}
 \usage{
-Beta.tp.fit(x, min, max, etl, true.model = "4P", failsafe = FALSE)
+Beta.tp.fit(
+  x,
+  min,
+  max,
+  etl,
+  true.model = "4P",
+  failsafe = FALSE,
+  output = "parameters"
+)
 }
 \arguments{
 \item{x}{Vector of observed-scores.}

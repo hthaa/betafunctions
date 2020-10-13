@@ -4,7 +4,7 @@
 \alias{dBeta.pBinom}
 \title{An implementation of the Beta-density Compound Cumulative-Binomial Distribution.}
 \usage{
-dBeta.pBinom(x, l, u, a, b, n, c, lower.tail = FALSE)
+dBeta.pBinom(x, l, u, alpha, beta, n, c, lower.tail = FALSE)
 }
 \arguments{
 \item{x}{x-axis input for which \code{p} (proportion or probability) is to be computed.}
@@ -13,9 +13,9 @@ dBeta.pBinom(x, l, u, a, b, n, c, lower.tail = FALSE)
 
 \item{u}{The upper-bound of the four-parameter Beta distribution.}
 
-\item{a}{The alpha shape-parameter of the Beta distribution.}
+\item{alpha}{The alpha shape-parameter of the Beta distribution.}
 
-\item{b}{The beta shape-parameter of the Beta distribution.}
+\item{beta}{The beta shape-parameter of the Beta distribution.}
 
 \item{n}{The number of trials for the Binomial distribution.}
 

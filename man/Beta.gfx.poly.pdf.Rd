@@ -15,7 +15,7 @@ Beta.gfx.poly.pdf(from, to, by, alpha, beta, l = 0, u = 1)
 
 \item{alpha}{The Alpha shape-parameter value for the Standard Beta probability density distribution.}
 
-\item{beta}{The Beta shape-parameter fort he Standard Beta probability density distribution.}
+\item{beta}{The Beta shape-parameter fo rhe Standard Beta probability density distribution.}
 
 \item{l}{The lower-bound location parameter of the Beta distribution.}
 

@@ -89,23 +89,23 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
   out[["parameters"]] <- params
   if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") | any(output == "CA") | any(output == "a") | any(output == "A")) {
     if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
-      p.tp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(floor(cut * N), N, x, lower.tail = FALSE) }, lower = truecut, upper = 1)$value
-      p.fp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(floor(cut * N), N, x, lower.tail = FALSE) }, lower = 0, upper = 1)$value - p.tp
-      p.ff <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(floor(cut * N), N, x) }, lower = truecut, upper = 1)$value
-      p.tf <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(floor(cut * N), N, x) }, lower = 0, upper = 1)$value - p.ff
+      p.tp <- stats::integrate(function(x) { dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut) }, lower = truecut, upper = 1)$value
+      p.fp <- stats::integrate(function(x) { dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut) }, lower = 0, upper = truecut)$value
+      p.ff <- stats::integrate(function(x) { dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) }, lower = truecut, upper = 1)$value
+      p.tf <- stats::integrate(function(x) { dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) }, lower = 0, upper = truecut)$value
     }
     if (error.model == "beta" | error.model == "Beta") {
-      p.tp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(cut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = truecut, upper = 1)$value
-      p.fp <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(cut, N * x, N * (1 - x), lower.tail = FALSE) }, lower = 0, upper = 1)$value - p.tp
-      p.ff <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(cut, N * x, N * (1 - x)) }, lower = truecut, upper = 1)$value
-      p.tf <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbeta(cut, N * x, N * (1 - x)) }, lower = 0, upper = 1)$value - p.ff
+      p.tp <- stats::integrate(function(x) { dBeta.pBeta(x, params$l, params$u, params$alpha, params$beta, N, cut) }, lower = truecut, upper = 1)$value
+      p.fp <- stats::integrate(function(x) { dBeta.pBeta(x, params$l, params$u, params$alpha, params$beta, N, cut) }, lower = 0, upper = truecut)$value
+      p.ff <- stats::integrate(function(x) { dBeta.pBeta(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) }, lower = truecut, upper = 1)$value
+      p.tf <- stats::integrate(function(x) { dBeta.pBeta(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) }, lower = 0, upper = truecut)$value
     }
     camat <- base::matrix(nrow = 2, ncol = 2, dimnames = list(c("True", "False"), c("Fail", "Pass")))
     camat["True", "Fail"] <- p.tf
     camat["True", "Pass"] <- p.tp
     camat["False", "Fail"] <- p.ff
     camat["False", "Pass"] <- p.fp
-    out[["confusionmatrix"]] <- camat
+    out[["confusionmatrix"]] <- camat / sum(camat)
     out[["classification.accuracy"]] <- caStats(camat[1, 1], camat[1, 2], camat[2, 1], camat[2, 2])
   }
   if (any(output == "consistency") | any(output == "Consistency" ) | any(output == "cc") | any(output == "CC") | any(output == "c") | any(output == "C")) {
