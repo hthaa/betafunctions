@@ -120,7 +120,7 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
 #'
 #' @description Calculates the Beta value required to produce a Beta probability density distribution with defined moments and parameters. Be advised that not all combinations of moments and parameters can be satisfied (e.g., specifying mean, variance, skewness and kurtosis uniquely determines both location-parameters, meaning that the value of the lower-location parameter will take on which ever value it must, and cannot be specified).
 #' @param mean The mean (first raw moment) of the target Standard Beta probability density distribution.
-#' @param variance The variance (second centrla moment) of the target Standard Beta probability density distribution.
+#' @param variance The variance (second central moment) of the target Standard Beta probability density distribution.
 #' @param skewness The skewness (third standardized moment) of the target Beta probability density distribution.
 #' @param kurtosis The kurtosis (fourth standardized moment) of the target Beta probability density distribution.
 #' @param l The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
@@ -181,7 +181,7 @@ AMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
 #'
 #' @description Calculates the Beta value required to produce a Beta probability density distribution with defined moments and parameters. Be advised that not all combinations of moments and parameters can be satisfied (e.g., specifying mean, variance, skewness and kurtosis uniquely determines both location-parameters, meaning that the value of the lower-location parameter will take on which ever value it must, and cannot be specified).
 #' @param mean The mean (first raw moment) of the target Standard Beta probability density distribution.
-#' @param variance The variance (second centrla moment) of the target Standard Beta probability density distribution.
+#' @param variance The variance (second central moment) of the target Standard Beta probability density distribution.
 #' @param skewness The skewness (third standardized moment) of the target Beta probability density distribution.
 #' @param kurtosis The kurtosis (fourth standardized moment) of the target Beta probability density distribution.
 #' @param l The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
@@ -249,7 +249,7 @@ BMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
 #' @param alpha The Alpha shape-parameter of the target Beta probability density distribution.
 #' @param beta The Beta shape-parameter of the target Beta probability density distribution.
 #' @param mean The mean (first raw moment) of the target Standard Beta probability density distribution.
-#' @param variance The variance (second centrla moment) of the target Standard Beta probability density distribution.
+#' @param variance The variance (second central moment) of the target Standard Beta probability density distribution.
 #' @param skewness The skewness (third standardized moment) of the target Beta probability density distribution.
 #' @param kurtosis The kurtosis (fourth standardized moment) of the target Beta probability density distribution.
 #' @param u The upper-bound of the Beta distribution. Default is NULL (i.e., does not take a specified u-parameter into account).
@@ -297,7 +297,7 @@ LABMSU <- function(alpha = NULL, beta = NULL, u = NULL, mean = NULL, variance = 
 #' @param alpha The Alpha shape-parameter of the target Beta probability density distribution.
 #' @param beta The beta shape-parameter of the target Beta probability density distribution.
 #' @param mean The mean (first raw moment) of the target Standard Beta probability density distribution.
-#' @param variance The variance (second centrla moment) of the target Standard Beta probability density distribution.
+#' @param variance The variance (second central moment) of the target Standard Beta probability density distribution.
 #' @param skewness The skewness (third standardized moment) of the target Beta probability density distribution.
 #' @param kurtosis The kurtosis (fourth standardized moment) of the target Beta probability density distribution.
 #' @param l The lower-bound of the Beta distribution. Default is NULL (i.e., does not take a specified l-parameter into account).
@@ -437,7 +437,7 @@ rBetaMS <- function(n, mean, variance = NULL, sd = NULL) {
 #' @param to The point of the x-axis to where y-density values are to be produced.
 #' @param by The resolution (or spacing) at which to produce y-density values.
 #' @param alpha The Alpha shape-parameter value for the Standard Beta probability density distribution.
-#' @param beta The Beta shape-parameter fo rhe Standard Beta probability density distribution.
+#' @param beta The Beta shape-parameter for the Standard Beta probability density distribution.
 #' @param l The lower-bound location parameter of the Beta distribution.
 #' @param u The upper-bound location parameter of the Beta distribution.
 #' @return A two-column matrix with density-values of y to plot against corresponding location values of x.

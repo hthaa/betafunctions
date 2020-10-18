@@ -24,7 +24,7 @@ LABMSU(
 
 \item{mean}{The mean (first raw moment) of the target Standard Beta probability density distribution.}
 
-\item{variance}{The variance (second centrla moment) of the target Standard Beta probability density distribution.}
+\item{variance}{The variance (second central moment) of the target Standard Beta probability density distribution.}
 
 \item{skewness}{The skewness (third standardized moment) of the target Beta probability density distribution.}
 

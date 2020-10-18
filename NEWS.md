@@ -30,7 +30,7 @@
 
 		- Now allows for specifying that the fitted distribution should estimate two parameters rather than the default of four. Estimates then the parameters necessary to produce a distribution with the same mean and variance as the estimated true-score distribution, given specified moments, shape- and location parameters (default is `l = 0` and `u = 1`).
 
-		- Added the option of specifying the true-score distribution moments (sans a functionial form) as output rather than the estimated parameters of the Beta true-score distribution in the new `output` argument. The default is to retrieve the estimated parameters of the Beta true-score distribution.
+		- Added the option of specifying the true-score distribution moments (sans a functional form) as output rather than the estimated parameters of the Beta true-score distribution in the new `output` argument. The default is to retrieve the estimated parameters of the Beta true-score distribution.
 
 		- When `parameters` is specified in the `output` argument, the effective test length is included as part of the output. As such, the default output of the `Beta.tp.fit()` function is now complete for the purposes of being used as input for the `LL.CA()` function.
 

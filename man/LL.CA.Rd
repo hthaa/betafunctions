@@ -45,7 +45,7 @@ LL.CA(
 
 \item{u}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure.}
 
-\item{override}{Inert artefact from betafunctions version 1.3.1 (replaced by the \code{failsafe} argument). Will be removed completely in a later update.}
+\item{override}{Inert artifact from betafunctions version 1.3.1 (replaced by the \code{failsafe} argument). Will be removed completely in a later update.}
 }
 \value{
 A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
@@ -93,10 +93,10 @@ LL.CA(testdata, 0.6287713, 12, 0, 25, true.model = "2p", l = 0.25, u = 1)
 # supplied manually along with the effective test length (see documentation
 # for the ETL() function), foregoing the need for actual data. The list
 # entries must be named. "l" is the lower-bound and "u" the upper-bound
-# location parameters of the true-score distribution, and "alpha" and "beta"
+# location parameters of the true-score distribution, "alpha" and "beta" for
 # the shape parameters, and "etl" for the effective test-length..
 trueparams <- list("l" = 0.25, "u" = 0.75, "alpha" = 5, "beta" = 3, "etl" = 50)
-LL.CA(x = trueparams, reliability = .7, cut = 50, min = 0, max = 100)
+LL.CA(x = trueparams, cut = 50, min = 0, max = 100)
 }
 \references{
 Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
