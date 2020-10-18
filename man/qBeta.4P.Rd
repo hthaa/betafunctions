@@ -4,7 +4,7 @@
 \alias{qBeta.4P}
 \title{Quantile Given Probability Under the Four-Parameter Beta Distribution.}
 \usage{
-qBeta.4P(p, l, u, alpha, beta, lt = TRUE)
+qBeta.4P(p, l, u, alpha, beta, lower.tail = TRUE)
 }
 \arguments{
 \item{p}{A vector (or single value) of proportions or probabilities for which the corresponding value of \code{x} (i.e., the quantiles) are to be calculated.}
@@ -17,7 +17,7 @@ qBeta.4P(p, l, u, alpha, beta, lt = TRUE)
 
 \item{beta}{The second shape parameter.}
 
-\item{lt}{Logical. Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).}
+\item{lower.tail}{Logical. Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).}
 }
 \value{
 A vector of quantiles for specified probabilities or proportions of observations under the four-parameter beta distribution.

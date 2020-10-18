@@ -9,8 +9,13 @@ Beta.tp.fit(
   min,
   max,
   etl,
+  reliability = NULL,
   true.model = "4P",
   failsafe = FALSE,
+  l = 0,
+  u = 1,
+  alpha = NA,
+  beta = NA,
   output = "parameters"
 )
 }
@@ -23,9 +28,21 @@ Beta.tp.fit(
 
 \item{etl}{The value of Livingston and Lewis' effective test length. See ?ETL().}
 
+\item{reliability}{Optional specification of the test-score reliability coefficient. If specified, overrides the input of the \code{etl} argument.}
+
 \item{true.model}{The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis) and "2P" the two-parameter solution (with the same mean and variance).}
 
 \item{failsafe}{Logical. Whether to revert to a failsafe two-parameter solution should the four-parameter solution contain invalid parameter estimates.}
+
+\item{l}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).}
+
+\item{u}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).}
+
+\item{alpha}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate).}
+
+\item{beta}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate).}
+
+\item{output}{Option to specify true-score distribution moments as output if the value of the output argument does not equal \code{"parameters"}.}
 }
 \value{
 A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter.
@@ -49,6 +66,26 @@ testdata <- rbinom(1000, 100, rBeta.4P(1000, .25, .75, 5, 3))
 # To estimate the four-parameter Beta distribution parameters underlying
 # the draws from the binomial distribution:
 Beta.tp.fit(testdata, 0, 100, 100)
+
+# Imagine a case where the fitting procedure produces an impermissible
+# estimate (e.g., l < 0 or u > 1).
+set.seed(1234)
+testdata <- rbinom(1000, 50, rBeta.4P(1000, .25, .75, 5, 3))
+Beta.tp.fit(testdata, 0, 50, 50)
+
+# This example produced an l-value estimate less than 0. One way of
+# dealing with such an occurance is to revert to a two-parameter
+# model, specifying the l and u parameters and estimating the
+# alpha and beta parameters necessary to produce a Beta distribution
+# with the same mean and variance as the observed-score distribution.
+
+# Suppose you have good theoretical reasons to fix the l parameter at a
+# value of 0.25 (e.g., the test is composed of multiple-choice questions
+# with four response-options, resulting in a 25\% chance of guessing the
+# correct answer). The l-parameter could be specified to this theoretically
+# justified value, and the u-parameter could be specified to be equal to the
+# estimate above (u = 0.7256552) as such:
+Beta.tp.fit(testdata, 0, 50, 50, true.model = "2P", l = 0.25, u = 0.7256552)
 }
 \references{
 Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf

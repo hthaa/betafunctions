@@ -4,10 +4,18 @@
 \alias{Beta.2p.fit}
 \title{Method of Moment Estimates of Shape-Parameters of the Two-Parameter (Standard) Beta Distribution.}
 \usage{
-Beta.2p.fit(scores)
+Beta.2p.fit(scores, mean = NULL, variance = NULL, l = 0, u = 1)
 }
 \arguments{
 \item{scores}{A vector of values to which the two-parameter beta distribution is to be fitted. The values ought to fall within the [0, 1] interval.}
+
+\item{mean}{The mean of the target Beta distribution. Alternative to feeding the function raw scores.}
+
+\item{variance}{The variance of the target Beta distribution. Alternative to feeding the function raw scores.}
+
+\item{l}{Optional specification of a lower-bound parameter of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard two-parameter Beta distribution).}
+
+\item{u}{Optional specification of an upper-bound parameter of the Beta distribution. Default is 1 (i.e., the lower-bound of the Standard two-parameter Beta distribution).}
 }
 \value{
 A list of parameter-values required to produce a Standard two-parameter beta distribution with the same first two moments as the observed distribution.

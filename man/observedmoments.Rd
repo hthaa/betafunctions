@@ -18,7 +18,7 @@ observedmoments(
 
 \item{orders}{The number of moment-orders to be calculated for each of the moment-types.}
 
-\item{correct}{Whether to include bias correction in estimation of orders. Default is \code{TRUE}.}
+\item{correct}{Logical. Whether to include bias correction in estimation of orders. Default is \code{TRUE}.}
 }
 \value{
 A list of moment types, each a list of moment orders.

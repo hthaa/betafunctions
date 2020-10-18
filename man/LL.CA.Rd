@@ -14,7 +14,10 @@ LL.CA(
   error.model = "binomial",
   truecut = NULL,
   output = c("accuracy", "consistency"),
-  override = FALSE
+  failsafe = FALSE,
+  l = 0,
+  u = 1,
+  override = NULL
 )
 }
 \arguments{
@@ -36,7 +39,13 @@ LL.CA(
 
 \item{output}{Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.}
 
-\item{override}{Logical value indicating whether to override the automatic default to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE}.}
+\item{failsafe}{Logical value indicating whether to engage the automatic failsafe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE} (i.e., the function will not engage failsafe, and will likely produce an error if impermissible parameter estimates were produced.}
+
+\item{l}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the )}
+
+\item{u}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure.}
+
+\item{override}{Inert artefact from betafunctions version 1.3.1 (replaced by the \code{failsafe} argument). Will be removed completely in a later update.}
 }
 \value{
 A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
@@ -51,7 +60,7 @@ It should be noted that this implementation differs from the original articulati
 # Generate some fictional data. Say, 100 individuals take a test with a
 # maximum score of 100 and a minimum score of 0.
 set.seed(1234)
-testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 
 # Suppose the cutoff value for attaining a pass is 50 items correct, and
@@ -59,6 +68,25 @@ hist(testdata, xlim = c(0, 100))
 # retrieve the estimated parameters, confusion matrix, consistency and
 # accuracy statistics using LL.CA():
 LL.CA(x = testdata, reliability = .7, cut = 50, min = 0, max = 100)
+
+# Suppose the true-score parameter estimation procedure arrived at
+# impermissible parameter estimates (i.e., l < 0, u > 1, alpha < 0, or
+# beta < 0). For example:
+set.seed(9)
+testdata <- rbinom(100, 25, rBeta.4P(100, 0.25, 1, 5, 3))
+Beta.tp.fit(testdata, 0, 25, 25, failsafe = TRUE)
+
+# Suppose further that you have good grounds for assuming that the lower-
+# bound parameter is equal to 0.25 (e.g., the test consists of multiple-
+# choice questions with four response options, leading to a 25\% probability
+# of guessing the correct answer per question), and good reason to believe
+# that the upper-bound parameter is equal to 1 (i.e., there is no reason to
+# believe that there are no members of the population who will attain a
+# perfect score across all possible test-forms.) To set these lower and
+# upper bounds for the fitting procedure in the LL.CA() function, set
+# the argument true.model = "2p", and specify the location parameters
+# l = 0.25 and u = 1:
+LL.CA(testdata, 0.6287713, 12, 0, 25, true.model = "2p", l = 0.25, u = 1)
 
 # Alternatively to supplying scores to which a true-score distribution is
 # to be fit, a list with true-score distribution parameter values can be

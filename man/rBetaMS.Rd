@@ -4,14 +4,14 @@
 \alias{rBetaMS}
 \title{Random Draw from the Standard Beta PDD With Specific Mean and Variance.}
 \usage{
-rBetaMS(n, mean, var = NULL, sd = NULL)
+rBetaMS(n, mean, variance = NULL, sd = NULL)
 }
 \arguments{
 \item{n}{Number of observations to be drawn from under the Standard Beta PDD.}
 
 \item{mean}{The mean of the target Standard Beta probability density distribution.}
 
-\item{var}{The variance of the target Standard Beta probability density distribution.}
+\item{variance}{The variance of the target Standard Beta probability density distribution.}
 
 \item{sd}{The standard deviation of the target Standard probability density distribution.}
 }

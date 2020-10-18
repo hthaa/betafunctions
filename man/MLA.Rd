@@ -4,12 +4,12 @@
 \alias{MLA}
 \title{Most Likely True Alpha Value Given Observed Outcome.}
 \usage{
-MLA(a, b, x = NULL, n = NULL)
+MLA(alpha, beta, x = NULL, n = NULL)
 }
 \arguments{
-\item{a}{Observed alpha-parameter value for fitted Standard Beta PDD.}
+\item{alpha}{Observed alpha-parameter value for fitted Standard Beta PDD.}
 
-\item{b}{Observed beta-parameter value for fitted Standard Beta PDD.}
+\item{beta}{Observed beta-parameter value for fitted Standard Beta PDD.}
 
 \item{x}{Observed proportion-correct outcome.}
 

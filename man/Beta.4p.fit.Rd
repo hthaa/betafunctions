@@ -4,10 +4,24 @@
 \alias{Beta.4p.fit}
 \title{Method of Moment Estimates of Shape- and Location Parameters of the Four-Parameter Beta Distribution.}
 \usage{
-Beta.4p.fit(scores)
+Beta.4p.fit(
+  scores,
+  mean = NULL,
+  variance = NULL,
+  skewness = NULL,
+  kurtosis = NULL
+)
 }
 \arguments{
 \item{scores}{A vector of values to which the four-parameter beta distribution is to be fitted.}
+
+\item{mean}{If scores are not supplied: specification of the mean for the target four-parameter Beta distribution.}
+
+\item{variance}{If scores are not supplied: specification of the variance for the target four-parameter Beta distribution.}
+
+\item{skewness}{If scores are not supplied: specification of the skewness for the target four-parameter Beta distribution.}
+
+\item{kurtosis}{If scores are not supplied: specification of the kurtosis for the target four-parameter Beta distribution.}
 }
 \value{
 A list of parameter-values required to produce a four-parameter beta distribution with the same first four moments as the observed distribution.

@@ -2,22 +2,41 @@
 % Please edit documentation in R/betafunctions.R
 \name{BMS}
 \alias{BMS}
-\title{Beta Shape Parameter Given Mean and Variance of a Standard Beta PDD.}
+\title{Beta Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Alpha Shape-Parameter of a Four-Parameter Beta PDD.}
 \usage{
-BMS(mean, var, sd = NULL)
+BMS(
+  mean = NULL,
+  variance = NULL,
+  skewness = NULL,
+  kurtosis = NULL,
+  l = 0,
+  u = 1,
+  alpha = NULL,
+  sd = NULL
+)
 }
 \arguments{
-\item{mean}{The mean of the target Standard Beta probability density distribution.}
+\item{mean}{The mean (first raw moment) of the target Standard Beta probability density distribution.}
 
-\item{var}{The variance of the target Standard Beta probability density distribution.}
+\item{variance}{The variance (second centrla moment) of the target Standard Beta probability density distribution.}
 
-\item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
+\item{skewness}{The skewness (third standardized moment) of the target Beta probability density distribution.}
+
+\item{kurtosis}{The kurtosis (fourth standardized moment) of the target Beta probability density distribution.}
+
+\item{l}{The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).}
+
+\item{u}{The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).}
+
+\item{alpha}{Optional specification of the Alpha shape-parameter of the target Beta distribution. Finds then the Beta parameter necessary to produce a distribution with the specified mean, given specified Alpha, l, and u parameters.}
+
+\item{sd}{Optional alternative to specifying \code{var}. The standard deviation of the target Standard Beta probability density distribution.}
 }
 \value{
-A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
+A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance, given specified lower- and upper bounds of the Beta distribution.
 }
 \description{
-Calculates the Beta value required to produce a Standard (two-parameter) Beta probability density distribution with defined mean and variance or standard deviation.
+Calculates the Beta value required to produce a Beta probability density distribution with defined moments and parameters. Be advised that not all combinations of moments and parameters can be satisfied (e.g., specifying mean, variance, skewness and kurtosis uniquely determines both location-parameters, meaning that the value of the lower-location parameter will take on which ever value it must, and cannot be specified).
 }
 \examples{
 # Generate some fictional data. Say, 100 individuals take a test with a
@@ -25,10 +44,15 @@ Calculates the Beta value required to produce a Standard (two-parameter) Beta pr
 # of maximum.
 set.seed(1234)
 testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3)) / 100
-hist(testdata, xlim = c(0, 100))
+hist(testdata, xlim = c(0, 1))
 
 # To find the beta shape-parameter of a Standard (two-parameter) Beta
 # distribution with the same mean and variance as the observed-score
 # distribution using BMS():
 BMS(mean(testdata), var(testdata))
+
+# To find the beta shape-parameter of a four-parameter Beta
+# distribution with specified lower- and upper-bounds of l = 0.25 and
+# u = 0.75 using BMS:
+BMS(mean(testdata), var(testdata), .25, .75)
 }

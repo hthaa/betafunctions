@@ -4,12 +4,12 @@
 \alias{MLB}
 \title{Most Likely True Beta Value Given Observed Outcome.}
 \usage{
-MLB(a, b, x = NULL, n = NULL)
+MLB(alpha, beta, x = NULL, n = NULL)
 }
 \arguments{
-\item{a}{Observed alpha-parameter value for fitted Standard Beta PDD.}
+\item{alpha}{Observed alpha-parameter value for fitted Standard Beta PDD.}
 
-\item{b}{Observed beta-parameter value for fitted Standard Beta PDD.}
+\item{beta}{Observed beta-parameter value for fitted Standard Beta PDD.}
 
 \item{x}{Observed proportion-correct outcome.}
 

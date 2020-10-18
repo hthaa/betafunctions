@@ -4,12 +4,12 @@
 \alias{MLM}
 \title{Most Likely Mean of the Standard Beta PDD, Given that the Observation is Considered the Most Likely Observation of the Standard Beta PDD (i.e., Mode).}
 \usage{
-MLM(a, b, x = NULL, n = NULL)
+MLM(alpha, beta, x = NULL, n = NULL)
 }
 \arguments{
-\item{a}{Observed alpha value for fitted Standard Beta PDD.}
+\item{alpha}{Observed alpha value for fitted Standard Beta PDD.}
 
-\item{b}{Observed beta value for fitted Standard Beta PDD.}
+\item{beta}{Observed beta value for fitted Standard Beta PDD.}
 
 \item{x}{Observed proportion-correct outcome.}
 

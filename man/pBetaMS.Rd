@@ -4,18 +4,18 @@
 \alias{pBetaMS}
 \title{Probability of Some Specific Observation under the Standard Beta PDD with Specific Mean and Variance.}
 \usage{
-pBetaMS(q, mean, var = NULL, sd = NULL, lt = TRUE)
+pBetaMS(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE)
 }
 \arguments{
 \item{q}{A specific point on the x-axis of the Standard Beta probability density distribution with a defined mean and variance.}
 
 \item{mean}{The mean of the target Standard Beta probability density distribution.}
 
-\item{var}{The variance of the target Standard Beta probability density distribution.}
+\item{variance}{The variance of the target Standard Beta probability density distribution.}
 
 \item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
 
-\item{lt}{Whether the density that should be considered is between the lower-end (i.e., [0 -> x]) or the higher-end of the distribution (i.e., [x -> 1]).}
+\item{lower.tail}{Whether the density that should be considered is between the lower-end (i.e., [0 -> x]) or the higher-end of the distribution (i.e., [x -> 1]).}
 }
 \value{
 A value representing the probability of a random draw from the Standard Beta probability density distribution with a defined mean and variance being from one of two defined intervals (i.e., [0 -> x] or [x -> 1]).
@@ -27,5 +27,5 @@ Calculates the probability of some specific observation falling under a specifie
 # To compute the proportion of the density under the lower-end tail of a
 # point along the Standard (two-parameter) PDD (e.g., .5) with mean of .6
 # and variance of .04:
-pBetaMS(q = .5, mean = .6, var = .04)
+pBetaMS(q = .5, mean = .6, variance = .04)
 }

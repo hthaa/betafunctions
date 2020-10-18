@@ -5,8 +5,8 @@
 \title{Compute Moments of Two-to-Four Parameter Beta Probability Density Distributions.}
 \usage{
 betamoments(
-  a,
-  b,
+  alpha,
+  beta,
   l = 0,
   u = 1,
   types = c("raw", "central", "standardized"),
@@ -14,9 +14,9 @@ betamoments(
 )
 }
 \arguments{
-\item{a}{The Alpha shape parameter of the PDD.}
+\item{alpha}{The Alpha shape parameter of the PDD.}
 
-\item{b}{The Beta shape parameter of the PDD.}
+\item{beta}{The Beta shape parameter of the PDD.}
 
 \item{l}{The first (lower) location parameter of a four-parameter distribution.}
 

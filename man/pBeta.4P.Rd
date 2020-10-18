@@ -4,7 +4,7 @@
 \alias{pBeta.4P}
 \title{Cumulative Probability Function under the Four-Parameter Beta Probability Density Distribution.}
 \usage{
-pBeta.4P(q, l, u, alpha, beta, lt = TRUE)
+pBeta.4P(q, l, u, alpha, beta, lower.tail = TRUE)
 }
 \arguments{
 \item{q}{The quantile or a vector of quantiles for which the proportion is to be calculated.}
@@ -17,7 +17,7 @@ pBeta.4P(q, l, u, alpha, beta, lt = TRUE)
 
 \item{beta}{The second shape parameter.}
 
-\item{lt}{Whether the proportion to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).}
+\item{lower.tail}{Whether the proportion to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).}
 }
 \value{
 A vector of proportions of observations falling under specified quantiles under the four-parameter beta distribution.
