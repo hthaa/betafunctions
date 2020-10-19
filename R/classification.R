@@ -561,7 +561,7 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
       if (is.na(alpha) & !is.na(beta) & !is.na(l) & !is.na(u)) {
         alpha <- AMS(mean = tp.m1, variance = tp.s2, l = l,u = u, beta = beta)
       }
-      if (!is.na(alpha) & !is.na(beta) & !is.na(l) & !is.na(u)) {
+      if (!is.na(alpha) & is.na(beta) & !is.na(l) & !is.na(u)) {
         beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = alpha)
       }
       if (is.na(alpha) & is.na(beta) & !is.na(l) & !is.na(u)) {
