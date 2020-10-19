@@ -30,13 +30,13 @@ Beta.tp.fit(
 
 \item{reliability}{Optional specification of the test-score reliability coefficient. If specified, overrides the input of the \code{etl} argument.}
 
-\item{true.model}{The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis) and "2P" the two-parameter solution (with the same mean and variance).}
+\item{true.model}{The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"}, \code{"3P"}, and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis), "3P" to a three-parameter solution (specifying one location parameter and finding the remaining three parameters to produce a distribution with the same skewness and kurtosis as the estimated true-score distribution), and "2P" the two-parameter solution where both location-parameters are specified (with the same mean and variance).}
 
 \item{failsafe}{Logical. Whether to revert to a failsafe two-parameter solution should the four-parameter solution contain invalid parameter estimates.}
 
-\item{l}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).}
+\item{l}{If \code{failsafe = TRUE} or \code{true.model = "2P"} or \code{true.model = "3P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).}
 
-\item{u}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).}
+\item{u}{If \code{failsafe = TRUE} or \code{true.model = "2P"} or \code{true.model = "3P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).}
 
 \item{alpha}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate).}
 
@@ -86,6 +86,14 @@ Beta.tp.fit(testdata, 0, 50, 50)
 # justified value, and the u-parameter could be specified to be equal to the
 # estimate above (u = 0.7256552) as such:
 Beta.tp.fit(testdata, 0, 50, 50, true.model = "2P", l = 0.25, u = 0.7256552)
+
+# Alternatively, one can choose not to specify a u-parameter, and have the
+# function find a three-parameter solution (specify the l-parameter, and
+# estimate the alpha, beta, and u parameters). To do this, specify that the
+# true-model is "3P", and set the u-parameter NA. This produces a Beta
+# distribution with the same skewness and kurtosis as the observed-score
+# distribution, given the specified lower-bound location parameter.
+Beta.tp.fit(testdata, 0, 50, 50, true.model = "3P", l = 0.25, u = NA)
 }
 \references{
 Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf
