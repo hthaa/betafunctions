@@ -142,6 +142,7 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
 #' AMS(mean(testdata), var(testdata))
 #' @export
 AMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, l = 0, u = 1, beta = NULL, sd = NULL) {
+  alpha <- NULL
   if (!is.null(sd)) {
     variance <- sd^2
   }
@@ -168,11 +169,15 @@ AMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
                         (mean - u) * beta * (beta * (l - mean) /
                                                (mean - u) + beta - 6))) -  beta - 1)
   }
-  if (!is.null(mean) & !is.null(variance)) {
+  if (!is.null(mean) & !is.null(variance) & !is.null(l) & !is.null(u)) {
     alpha <- ((l - mean) * (l * (mean - u) - mean^2 + mean * u - variance)) / (variance * (l - u))
   }
-  if(alpha <= 0) {
-    warning("Parameter out of bounds (Alpha <= 0).")
+  if(is.null(alpha)) {
+    warning("Insufficient information")
+  } else {
+    if (alpha <= 0) {
+      warning("Parameter out of bounds (Alpha <= 0).")
+    }
   }
   return(alpha)
 }
@@ -208,6 +213,7 @@ AMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
 #' BMS(mean(testdata), var(testdata), .25, .75)
 #' @export
 BMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, l = 0, u = 1, alpha = NULL, sd = NULL) {
+  beta <- NULL
   if (!is.null(sd)) {
     var <- sd^2
   }
@@ -234,11 +240,15 @@ BMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
                        (l - mean) * (alpha + alpha * (mean - u) / (l - mean) - 6))) - alpha - 1)
 
   }
-  if (!is.null(mean) & !is.null(variance)) {
+  if (!is.null(mean) & !is.null(variance) & !is.null(l) & !is.null(u)) {
     beta <- (mean - u) * (l * (u - mean) + mean^2 - mean * u + variance) / (variance * (u - l))
   }
-  if (beta <= 0) {
-    warning("Parameter out of bounds (Beta <= 0).")
+  if(is.null(beta)) {
+    warning("Insufficient information")
+  } else {
+    if (beta <= 0) {
+      warning("Parameter out of bounds (Beta <= 0).")
+    }
   }
   return(beta)
 }

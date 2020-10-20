@@ -479,7 +479,9 @@ cba <- function(x) {
 #' Beta.tp.fit(testdata, 0, 50, 50, true.model = "3P", l = 0.25, u = NA)
 #' @export
 Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P", failsafe = FALSE, l = 0, u = 1, alpha = NA, beta = NA, output = "parameters") {
-  moments <- list()
+  if(output != "parameters") {
+    moments <- list()
+  }
   l.save <- l
   u.save <- u
   alpha.save <- alpha
@@ -511,10 +513,27 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
       alpha <- params$alpha
       beta <- params$beta
     }
-    if (true.model == "3P" | true.model == "3p") {
-      if (!is.na(l) & !is.na(u)) {
+    if ((true.model == "3P" | true.model == "3p") | ((true.model == "4P" | true.model == "4p") & (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0))))) {
+      if ((failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
+        warning(paste("Fail-safe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta,
+                      ". Finding permissible solution for the true-score distribution in accordance with specifications.", sep = ""))
+        l <- l.save
+        u <- u.save
+        if (!is.na(l) & !is.na(u)) {
         warning(paste("3-parameter solution specified along with both location parameters. Using the lower-bound (l = " , l.save, "). Estimating the upper-bound (u) parameter.", sep = ""))
       }
+      if (is.na(l.save)) {
+        l <- 0
+      } else {
+        l <- l.save
+      }
+      if(is.na(u.save)) {
+        u <- 1
+      } else {
+        u <- u.save
+      }
+      alpha <- alpha.save
+      beta <- beta.save
       if(is.na(l.save)) {
         l <- LABMSU(skewness = tp.g3, kurtosis = tp.g4, mean = tp.m1, u = u.save)
         u <- u.save
@@ -527,24 +546,25 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
         alpha <- AMS(skewness = tp.g3, kurtosis = tp.g4)
         beta <- BMS(skewness = tp.g3, kurtosis = tp.g4)
       }
+      }
     }
     if ((true.model == "2P" | true.model == "2p") | (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
       if ((failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
         warning(paste("Fail-safe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta,
                       ". Finding permissible solution for the true-score distribution in accordance with specifications.", sep = ""))
-        if (is.na(l.save)) {
-          l <- 0
+      }
+      if ((true.model != "2p" & true.model != "2P") & is.na(l.save)) {
+        l <- 0
         } else {
           l <- l.save
         }
-        if(is.na(u.save)) {
-          u <- 1
+      if ((true.model != "2p" & true.model != "2P") & is.na(u.save)) {
+        u <- 1
         } else {
           u <- u.save
         }
-        alpha <- alpha.save
-        beta <- beta.save
-      }
+      alpha <- alpha.save
+      beta <- beta.save
       if (!is.na(alpha) & !is.na(beta) & is.na(l) & is.na(u)) {
         l <- LABMSU(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2)
         u <- UABMSL(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2)
@@ -565,8 +585,8 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
         beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = alpha)
       }
       if (is.na(alpha) & is.na(beta) & !is.na(l) & !is.na(u)) {
-        alpha <- AMS(mean = tp.m1, variance = tp.s2, l = l, u = u)
-        beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u)
+        alpha <- AMS(mean = tp.m1, variance = tp.s2, l = l, u = u, beta = NULL)
+        beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = NULL)
       }
     }
     return(list("l" = l, "u" = u, "alpha" = alpha, "beta" = beta, "etl" = etl))
