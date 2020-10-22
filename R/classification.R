@@ -3,8 +3,8 @@
 #' @description  According to Livingston and Lewis (1995), "The effective test length corresponding to a test score is the number of discrete, dichotomously scored, locally independent, equally difficult items required to produce a total score of the same reliability."
 #' @param mean The mean of the observed-score distribution.
 #' @param variance The variance of the observed-score distribution.
-#' @param l The lower-bound of the observed-score distribution. Default is 0 (assuming observed scores represent proportions).
-#' @param u The upper-bound of the observed-score distribution. Default is 1 (assuming observed scores represent proportions).
+#' @param min The lower-bound (minimum possible value) of the observed-score distribution. Default is 0 (assuming observed scores represent proportions).
+#' @param max The upper-bound (maximum possible value) of the observed-score distribution. Default is 1 (assuming observed scores represent proportions).
 #' @param reliability The reliability of the observed scores (proportion of observed-score distribution variance shared with true-score distribution).
 #' @return An estimate of the effective length of a test, given the stability of the observations it produces.
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
@@ -17,11 +17,11 @@
 #'
 #' # Suppose the reliability of this test was estimated to 0.7. To estimate and
 #' # retrieve the effective test length using ETL():
-#' ETL(mean = mean(testdata), variance = var(testdata), l = 0, u = 100,
+#' ETL(mean = mean(testdata), variance = var(testdata), min = 0, max = 100,
 #' reliability = .7)
 #' @export
-ETL <- function(mean, variance, l = 0, u = 1, reliability) {
-  ((mean - l) * (u - mean) - (reliability * variance)) / (variance * (1 - reliability))
+ETL <- function(mean, variance, min = 0, max = 1, reliability) {
+  ((mean - min) * (max - mean) - (reliability * variance)) / (variance * (1 - reliability))
 }
 
 #' An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Consistency and Accuracy based on Observed Test Scores and Test Reliability.
@@ -97,7 +97,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
       warning(paste("Observed values not within the specified [", min, ", ", max, "] bounds (observed min = ",
                     min(x), ", observed max = ", max(x), ").", sep = ""))
     }
-    N <- ETL(base::mean(x), stats::var(x), l = min, u = max, reliability = reliability)
+    N <- ETL(base::mean(x), stats::var(x), min = min, max = max, reliability = reliability)
     params <- Beta.tp.fit(x, min = min, max = max, etl = N, true.model = true.model, failsafe = failsafe, l = l, u = u)
     if (params$l < 0 | params$u > 1 | params$alpha < 0 | params$beta < 0) {
       warning(paste("Parameter out of bounds: l = ", round(params$l, 4), ", u = ", round(params$u, 4), ", alpha = ", round(params$alpha, 4), ", beta = ", round(params$beta, 4),

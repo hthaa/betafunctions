@@ -1,3 +1,11 @@
+# betafunctions v. 1.4.1
+
+- The `true.model` argument of the `Beta.tp.fit()` function now includes a `"3P"` option, allowing for the specification of one location-parameter (l or u) and estimating the remaining location-parameter and the shape-parameters (alpha and beta) so as to make the resulting distribution have the same skewness and kurtosis as the estimated true-score ditribution.
+
+- The `AMS()` and `BMS()` functions now issue warnings if there was not enough information supplied to calculate the target parameter.
+
+- The `ETL()` function: For the sake of argument consistency, the `l` and `u` arguments are not renamed `min` and `max`, respectively.
+
 # betafunctions v. 1.4.0
 
 - Added a number of new functions for working with Beta distributions.

@@ -4,16 +4,16 @@
 \alias{ETL}
 \title{Livingston and Lewis' "Effective Test Length".}
 \usage{
-ETL(mean, variance, l = 0, u = 1, reliability)
+ETL(mean, variance, min = 0, max = 1, reliability)
 }
 \arguments{
 \item{mean}{The mean of the observed-score distribution.}
 
 \item{variance}{The variance of the observed-score distribution.}
 
-\item{l}{The lower-bound of the observed-score distribution. Default is 0 (assuming observed scores represent proportions).}
+\item{min}{The lower-bound (minimum possible value) of the observed-score distribution. Default is 0 (assuming observed scores represent proportions).}
 
-\item{u}{The upper-bound of the observed-score distribution. Default is 1 (assuming observed scores represent proportions).}
+\item{max}{The upper-bound (maximum possible value) of the observed-score distribution. Default is 1 (assuming observed scores represent proportions).}
 
 \item{reliability}{The reliability of the observed scores (proportion of observed-score distribution variance shared with true-score distribution).}
 }
@@ -32,7 +32,7 @@ hist(testdata, xlim = c(0, 100))
 
 # Suppose the reliability of this test was estimated to 0.7. To estimate and
 # retrieve the effective test length using ETL():
-ETL(mean = mean(testdata), variance = var(testdata), l = 0, u = 100,
+ETL(mean = mean(testdata), variance = var(testdata), min = 0, max = 100,
 reliability = .7)
 }
 \references{
