@@ -21,7 +21,7 @@ LL.CA(
 )
 }
 \arguments{
-\item{x}{A vector of observed scores for which a beta-distribution is to be fitted, or a list of pre-defined true-score distribution parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location parameters, and \code{alpha} and \code{beta} for the shape parameters.}
+\item{x}{A vector of observed scores for which a Beta true-score distribution is to be estimated, or a list of pre-defined true-score distribution parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location parameters, \code{alpha} and \code{beta} for the shape parameters, and \code{etl} for the effective test length (see documentation for the \code{ETL} function).}
 
 \item{reliability}{The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.}
 
@@ -41,9 +41,9 @@ LL.CA(
 
 \item{failsafe}{Logical value indicating whether to engage the automatic failsafe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE} (i.e., the function will not engage failsafe, and will likely produce an error if impermissible parameter estimates were produced.}
 
-\item{l}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the )}
+\item{l}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).}
 
-\item{u}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure.}
+\item{u}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).}
 
 \item{override}{Inert artifact from betafunctions version 1.3.1 (replaced by the \code{failsafe} argument). Will be removed completely in a later update.}
 }
