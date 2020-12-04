@@ -291,6 +291,9 @@ ccStats <- function(ii, ij, ji, jj) {
 #' @param truecut The true point along the x-scale that marks the categorization-threshold.
 #' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.
+#' @param failsafe If true-model == "4P": Whether to engage a fail-safe reverting to a two-parameter true-score distribution solution should the four-parameter fitting procedure produce impermissible results.
+#' @param l If true-model == "2P" or failsafe == TRUE: The lower-bound location parameter of the two-parameter true-score distribution solution.
+#' @param u If true-model == "2P" or failsafe == TRUE: The upper-bound location parameter of the two-parameter true-score distribution solution.
 #' @param AUC Calculate and include the area under the curve? Default is \code{FALSE}.
 #' @param maxJ Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
 #' @param raw.out Give raw coordinates as output rather than plot? Default is \code{FALSE}.
@@ -310,7 +313,7 @@ ccStats <- function(ii, ij, ji, jj) {
 #' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
 #' AUC = TRUE, maxJ = TRUE)
 #' @export
-LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", error.model = "Binomial", AUC = FALSE, maxJ = FALSE, raw.out = FALSE, grainsize = 100) {
+LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", error.model = "Binomial", failsafe = FALSE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, raw.out = FALSE, grainsize = 100) {
   oldpar <- graphics::par(no.readonly = TRUE)
   base::on.exit(graphics::par(oldpar))
   for (i in 1:(grainsize + 1)) {
@@ -321,7 +324,7 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
     }
     axval <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i],
                    truecut = truecut, true.model = true.model, error.model = error.model,
-                   output = "a")$classification.accuracy
+                   output = "a", l = l, u = u)$classification.accuracy
     outputmatrix[i, 1] <- 1 - axval$Specificity
     outputmatrix[i, 2] <- axval$Sensitivity
     outputmatrix[i, 3] <- axval$Youden.J
@@ -424,10 +427,10 @@ cba <- function(x) {
 #' @param max The maximum possible score to attain on the test.
 #' @param etl The value of Livingston and Lewis' effective test length. See ?ETL().
 #' @param reliability Optional specification of the test-score reliability coefficient. If specified, overrides the input of the \code{etl} argument.
-#' @param true.model The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"}, \code{"3P"}, and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis), "3P" to a three-parameter solution (specifying one location parameter and finding the remaining three parameters to produce a distribution with the same skewness and kurtosis as the estimated true-score distribution), and "2P" the two-parameter solution where both location-parameters are specified (with the same mean and variance).
+#' @param true.model The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis), and "2P" the two-parameter solution where both location-parameters are specified (with the same mean and variance).
 #' @param failsafe Logical. Whether to revert to a failsafe two-parameter solution should the four-parameter solution contain invalid parameter estimates.
-#' @param l If \code{failsafe = TRUE} or \code{true.model = "2P"} or \code{true.model = "3P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
-#' @param u If \code{failsafe = TRUE} or \code{true.model = "2P"} or \code{true.model = "3P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).
+#' @param l If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
+#' @param u If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).
 #' @param alpha If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate).
 #' @param beta If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate).
 #' @param output Option to specify true-score distribution moments as output if the value of the output argument does not equal \code{"parameters"}.
@@ -457,10 +460,10 @@ cba <- function(x) {
 #' Beta.tp.fit(testdata, 0, 50, 50)
 #'
 #' # This example produced an l-value estimate less than 0. One way of
-#' # dealing with such an occurance is to revert to a two-parameter
+#' # dealing with such an occurrence is to revert to a two-parameter
 #' # model, specifying the l and u parameters and estimating the
 #' # alpha and beta parameters necessary to produce a Beta distribution
-#' # with the same mean and variance as the observed-score distribution.
+#' # with the same mean and variance as the estimated true-score distribution.
 #'
 #' # Suppose you have good theoretical reasons to fix the l parameter at a
 #' # value of 0.25 (e.g., the test is composed of multiple-choice questions
@@ -469,14 +472,6 @@ cba <- function(x) {
 #' # justified value, and the u-parameter could be specified to be equal to the
 #' # estimate above (u = 0.7256552) as such:
 #' Beta.tp.fit(testdata, 0, 50, 50, true.model = "2P", l = 0.25, u = 0.7256552)
-#'
-#' # Alternatively, one can choose not to specify a u-parameter, and have the
-#' # function find a three-parameter solution (specify the l-parameter, and
-#' # estimate the alpha, beta, and u parameters). To do this, specify that the
-#' # true-model is "3P", and set the u-parameter NA. This produces a Beta
-#' # distribution with the same skewness and kurtosis as the observed-score
-#' # distribution, given the specified lower-bound location parameter.
-#' Beta.tp.fit(testdata, 0, 50, 50, true.model = "3P", l = 0.25, u = NA)
 #' @export
 Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P", failsafe = FALSE, l = 0, u = 1, alpha = NA, beta = NA, output = "parameters") {
   if(output != "parameters") {
@@ -512,41 +507,6 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
       u <- params$u
       alpha <- params$alpha
       beta <- params$beta
-    }
-    if ((true.model == "3P" | true.model == "3p") | ((true.model == "4P" | true.model == "4p") & (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0))))) {
-      if ((failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
-        warning(paste("Fail-safe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta,
-                      ". Finding permissible solution for the true-score distribution in accordance with specifications.", sep = ""))
-        l <- l.save
-        u <- u.save
-        if (!is.na(l) & !is.na(u)) {
-        warning(paste("3-parameter solution specified along with both location parameters. Using the lower-bound (l = " , l.save, "). Estimating the upper-bound (u) parameter.", sep = ""))
-      }
-      if (is.na(l.save)) {
-        l <- 0
-      } else {
-        l <- l.save
-      }
-      if(is.na(u.save)) {
-        u <- 1
-      } else {
-        u <- u.save
-      }
-      alpha <- alpha.save
-      beta <- beta.save
-      if(is.na(l.save)) {
-        l <- LABMSU(skewness = tp.g3, kurtosis = tp.g4, mean = tp.m1, u = u.save)
-        u <- u.save
-        alpha <- AMS(skewness = tp.g3, kurtosis = tp.g4)
-        beta <- BMS(skewness = tp.g3, kurtosis = tp.g4)
-      }
-      if(!is.na(l.save)) {
-        l <- l.save
-        u <- UABMSL(skewness = tp.g3, kurtosis = tp.g4, mean = tp.m1, l = l.save)
-        alpha <- AMS(skewness = tp.g3, kurtosis = tp.g4)
-        beta <- BMS(skewness = tp.g3, kurtosis = tp.g4)
-      }
-      }
     }
     if ((true.model == "2P" | true.model == "2p") | (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
       if ((failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
