@@ -205,6 +205,47 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
   return(out)
 }
 
+#' Confusion matrix
+#'
+#' @description Organizes supplied values of true and false positives and negatives into a confusion matrix.
+#' @param tp The frequency or rate of true-positive classifications.
+#' @param tn The frequency or rate of true-negative classifications.
+#' @param fp The frequency or rate of false-positive classifications.
+#' @param fn The frequency or rate of false-negative classifications.
+#' @param output Whether the returned output reflects frequencies or proportions. Defaults to returning frequencies.
+#' @return A confusion matrix organizing the input values of true and false positive and negatives.
+#' @examples
+#' # Generate some true and observed conditions.
+#' set.seed(1234)
+#' true.ability <- rbeta(50, 4, 4)
+#' true.category <- ifelse(true.ability < 0.5, 0, 1)
+#' observed.score <- rbinom(50, 50, true.ability)
+#' observed.category <- ifelse(observed.score < 25, 0, 1)
+#' # Calculate the frequencies of true and false positives and negatives based on the true and
+#' # observed conditions.
+#' TP <- sum(ifelse(observed.category == 0 & true.category == 0, 1, 0))
+#' FP <- sum(ifelse(observed.category == 0 & true.category != 0, 1, 0))
+#' TN <- sum(ifelse(observed.category == 1 & true.category == 1, 1, 0))
+#' FN <- sum(ifelse(observed.category == 1 & true.category != 1, 1, 0))
+#' # Organize the above values in a confusion matrix using the confmat function:
+#' confmat(tp = TP, fp = FP, tn = TN, fn = FN)
+confmat <- function(tp, tn, fp, fn, output = "freq") {
+  mat <- matrix(nrow = 3, ncol = 3)
+  rownames(mat) <- c("True", "False", "Total")
+  colnames(mat) <- c("Positive", "Negative", "Total")
+  tot <- sum(tp, tn, fp, fn)
+  mat[1, 1] <- tp
+  mat[1, 2] <- tn
+  mat[2, 1] <- fp
+  mat[2, 2] <- fn
+  mat[, 3] <- rowSums(mat[, -3])
+  mat[3, ] <- colSums(mat[-3, ])
+  if (output != "freq") {
+    mat <- mat / sum(tp, tn, fp, fn)
+  }
+  mat
+}
+
 #' Classification Accuracy Statistics.
 #'
 #' @description Provides a set of statistics often used for conveying information regarding the certainty of classifications based on tests.
@@ -485,14 +526,10 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
     etl <- ETL(base::mean(x), stats::var(x), min, max, reliability)
   }
   x <- (x - min) / (max - min) * etl
-  mu1 <- sum(x) / length(x)
-  mu2 <- sum(x^2) / length(x)
-  mu3 <- sum(x^3) / length(x)
-  mu4 <- sum(x^4) / length(x)
-  tp.m1 <- mu1 / etl
-  tp.m2 <- (mu2 - mu1)/(etl * (etl - 1))
-  tp.m3 <- (mu3 - 3 * mu2 + 2 * mu1)/(etl * (etl - 1) * (etl - 2))
-  tp.m4 <-  (mu4 - 6 * mu3 + 11 * mu2 - 6 * mu1) / (etl * (etl - 1) * (etl - 2) * (etl - 3))
+  tp.m1 <- tsm(x, 1, etl)
+  tp.m2 <- tsm(x, 2, etl)
+  tp.m3 <- tsm(x, 3, etl)
+  tp.m4 <- tsm(x, 4, etl)
   tp.s2 <- tp.m2 - tp.m1^2
   if (output != "parameters") {
     tp.s3 <- (tp.m3 - 3 * tp.m1 * tp.m2 + 2 * tp.m1^3)
@@ -556,4 +593,71 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
     moments[["Standardized"]] <- list(0, 1, tp.g3, tp.g4)
     return(moments)
   }
+}
+
+#' Descending (falling) factorial.
+#'
+#' @description Calculate the descending (or falling) factorial of a value \code{x} of order \code{r}.
+#' @param x A value for which the descending factorial is to be calculated.
+#' @param r The power \code{x} is to be raised to.
+#' @return The descending factorial of value \code{x} raised to the \code{r} power.
+#' @note This function implements the descending factorial by means of the Gamma distribution. As such, \code{x} does not have to be an integer. However, \code{x} cannot be a negative integer.
+#' @examples
+#' # To calculate the 4th descending factorial for a value (e.g., 3.14):
+#' dfac(x = 3.14, r = 4)
+#'
+#' # To calculate the 5th descending factorial for values 3.14, 2.72, and 0.58:
+#' dfac(x = c(3.14, 2.72, 0.58), r = 5)
+dfac <- function(x, r) {
+  gamma(x + 1) / gamma(x - r + 1)
+}
+
+#' Ascending (rising) factorial.
+#'
+#' @description Calculate the ascending (or rising) factorial of a value \code{x} of order \code{r}.
+#' @param x A value for which the ascending factorial is to be calculated.
+#' @param r The power \code{x} is to be raised to.
+#' @return The ascending factorial of value \code{x} raised to the \code{r} power.
+#' @note This function implements the ascending factorial by means of the Gamma distribution. As such, \code{x} does not have to be an integer. However, \code{x} cannot be a negative integer.
+#' @examples
+#' # To calculate the 4th ascending factorial for a value (e.g., 3.14):
+#' afac(x = 3.14, r = 4)
+#'
+#' # To calculate the 5th ascending factorial for values 3.14, 2.72, and 0.58:
+#' afac(x = c(3.14, 2.72, 0.58), r = 5)
+afac <- function(x, r) {
+  gamma(x + r) / gamma(x)
+}
+
+#' Proportional true-score distribution raw moments from Livingston and Lewis' effective test-score and effective test-length.
+#'
+#' @description An implementation of Lords (1965, p. 265) equation 37 for estimating the raw moments of the true-score distribution, modified to function for the Livingston and Lewis approach.
+#' @param x The effective test-score of test-takers.
+#' @param r The moment-order that is to be calculated (where 1 is the mean, 2 is the raw variance, 3 is the raw skewness, etc.).
+#' @param n The effective test-length.
+#' @references Lord, F. M. (1965). A strong true-score theory, with applications. Psychometrika. 30(3). pp. 239--270. doi: 10.1007/BF02289490
+#' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @examples
+#' # Examine the raw moments of the underlying Beta distribution that is to provide the basis for
+#' # observed-scores:
+#' betamoments(alpha = 5, beta = 3, l = .25, u = .75, types = "raw")
+#'
+#' # Generate observed-scores from true-scores by passing the true-scores as binomial probabilities
+#' # for the rbinom function.
+#' set.seed(1234)
+#' obs.scores <- rbinom(1000, 100, rBeta.4P(1000, .25, .75, 5, 3))
+#' # Examine the raw moments of the observed-score distribution.
+#' observedmoments(obs.scores, type = "raw")
+#'
+#' # First four estimated raw moment of the proportional true-score distribution from the observed-
+#' # score distribution. As all items are equally difficult, the effective test-length is equal to
+#' # the actual test-length.
+#' tsm(x = obs.scores, r = 1, n = 100)
+#' tsm(x = obs.scores, r = 2, n = 100)
+#' tsm(x = obs.scores, r = 3, n = 100)
+#' tsm(x = obs.scores, r = 4, n = 100)
+#' # Which is fairly close to the true raw moments of the proportional true-score distribution
+#' # calculated above.
+tsm <- function(x, r, n) {
+  mean(dfac(x, r)) / mean(dfac(n-2, r-2)) / dfac(n, 2)
 }

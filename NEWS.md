@@ -1,3 +1,13 @@
+# betafunctions v. 1.4.3
+
+- Added possibility of calculating descending (falling) and ascending (rising) factorials by means of the `dfac()` and `afac()`functions.
+
+- Added `tsm()` argument for calculating raw moments of the true-score distribution under the Livingston and Lewis approach.
+
+- Added `confmat()` function for organizing supplied values of true and false positives and negatives into a confusion matrix.
+
+---
+
 # betafunctions v. 1.4.2
 
 - Changes to the `LL.ROC()` function. Now allows for specifying the lower- and upper-bound parameters of the true-score distribution should "2P" be specified.
@@ -6,6 +16,8 @@
 
 - The "3P" functionality of `Beta.tp.fit()`, `LL.CA()` and `LL.ROC` has been removed, as it did not perform satisfactorily. 
 
+---
+
 # betafunctions v. 1.4.1
 
 - The `true.model` argument of the `Beta.tp.fit()` function now includes a `"3P"` option, allowing for the specification of one location-parameter (l or u) and estimating the remaining location-parameter and the shape-parameters (alpha and beta) so as to make the resulting distribution have the same skewness and kurtosis as the estimated true-score distribution.
@@ -13,6 +25,8 @@
 - The `AMS()` and `BMS()` functions now issue warnings if there was not enough information supplied to calculate the target parameter.
 
 - The `ETL()` function: For the sake of argument consistency, the `l` and `u` arguments are not renamed `min` and `max`, respectively.
+
+---
 
 # betafunctions v. 1.4.0
 
