@@ -229,6 +229,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' FN <- sum(ifelse(observed.category == 1 & true.category != 1, 1, 0))
 #' # Organize the above values in a confusion matrix using the confmat function:
 #' confmat(tp = TP, fp = FP, tn = TN, fn = FN)
+#' @export
 confmat <- function(tp, tn, fp, fn, output = "freq") {
   mat <- matrix(nrow = 3, ncol = 3)
   rownames(mat) <- c("True", "False", "Total")
@@ -601,6 +602,7 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
 #' @param x A value for which the descending factorial is to be calculated.
 #' @param r The power \code{x} is to be raised to.
 #' @return The descending factorial of value \code{x} raised to the \code{r} power.
+#' @export
 #' @note This function implements the descending factorial by means of the Gamma distribution. As such, \code{x} does not have to be an integer. However, \code{x} cannot be a negative integer.
 #' @examples
 #' # To calculate the 4th descending factorial for a value (e.g., 3.14):
@@ -619,6 +621,7 @@ dfac <- function(x, r) {
 #' @param r The power \code{x} is to be raised to.
 #' @return The ascending factorial of value \code{x} raised to the \code{r} power.
 #' @note This function implements the ascending factorial by means of the Gamma distribution. As such, \code{x} does not have to be an integer. However, \code{x} cannot be a negative integer.
+#' @export
 #' @examples
 #' # To calculate the 4th ascending factorial for a value (e.g., 3.14):
 #' afac(x = 3.14, r = 4)
@@ -637,6 +640,7 @@ afac <- function(x, r) {
 #' @param n The effective test-length.
 #' @references Lord, F. M. (1965). A strong true-score theory, with applications. Psychometrika. 30(3). pp. 239--270. doi: 10.1007/BF02289490
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @export
 #' @examples
 #' # Examine the raw moments of the underlying Beta distribution that is to provide the basis for
 #' # observed-scores:
