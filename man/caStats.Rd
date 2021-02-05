@@ -36,8 +36,8 @@ max = 100)$confusionmatrix
 
 # To estimate and retrieve diagnostic performance statistics using caStats(),
 # feed it the appropriate entries of the confusion matrix.
-caStats(tp = cmat["True", "Fail"], tn = cmat["True", "Pass"],
-fp = cmat["False", "Fail"], fn = cmat["False", "Pass"])
+caStats(tp = cmat["True", "Positive"], tn = cmat["True", "Negative"],
+fp = cmat["False", "Positive"], fn = cmat["False", "Negative"])
 }
 \references{
 Glas et al. (2003). The Diagnostic Odds Ratio: A Single Indicator of Test Performance, Journal of Clinical Epidemiology, 1129-1135, 56(11). doi: 10.1016/S0895-4356(03)00177-X
