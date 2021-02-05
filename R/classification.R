@@ -149,12 +149,8 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
         dBeta.pBeta(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE)
         }, lower = 0, upper = truecut)$value
     }
-    camat <- base::matrix(nrow = 2, ncol = 2, dimnames = list(c("True", "False"), c("Fail", "Pass")))
-    camat["True", "Fail"] <- p.tf
-    camat["True", "Pass"] <- p.tp
-    camat["False", "Fail"] <- p.ff
-    camat["False", "Pass"] <- p.fp
-    out[["confusionmatrix"]] <- camat / sum(camat)
+    camat <- confmat(p.tf, p.tp, p.ff, p.fp, "prop")
+    out[["confusionmatrix"]] <- camat
     out[["classification.accuracy"]] <- caStats(camat[1, 1], camat[1, 2], camat[2, 1], camat[2, 2])
   }
   if (any(output == "consistency") | any(output == "Consistency" ) | any(output == "cc") |
@@ -478,7 +474,6 @@ cba <- function(x) {
 #' @param beta If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate).
 #' @param output Option to specify true-score distribution moments as output if the value of the output argument does not equal \code{"parameters"}.
 #' @return A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter.
-#' @note This estimator is based on the S-Plus code provided by Rogosa and Finkelman (2004). It includes an option for implementing a failsafe should the four-parameter solution be invalid (e.g., l < 0 or u > 1, alpha < 1 or beta < 1).
 #' @references Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf
 #' @references Lord, F. M. (1965). A strong true-score theory, with applications. Psychometrika. 30(3). pp. 239--270. doi: 10.1007/BF02289490
 #' @references Rogosa, D. &  Finkelman, M. (2004). How Accurate Are the STAR Scores for Individual Students? – An Interpretive Guide. Retrieved from http://statweb.stanford.edu/~rag/accguide/guide04.pdf
@@ -528,10 +523,14 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
     etl <- ETL(base::mean(x), stats::var(x), min, max, reliability)
   }
   x <- (x - min) / (max - min) * etl
-  tp.m1 <- tsm(x, 1, etl)
-  tp.m2 <- tsm(x, 2, etl)
-  tp.m3 <- tsm(x, 3, etl)
-  tp.m4 <- tsm(x, 4, etl)
+  m1 <- mean(x)
+  m2 <- mean(x^2)
+  m3 <- mean(x^3)
+  m4 <- mean(x^4)
+  tp.m1 <- mean(x) / etl
+  tp.m2 <- (m2 - m1) / (etl * (etl - 1))
+  tp.m3 <- (m3 - 3*m2 + 2*m1) / (etl * (etl - 1) * (etl - 2))
+  tp.m4 <- (m4 - 6*m3 + 11*m2 - 6*m1) / (etl * (etl - 1) * (etl - 2) * (etl - 3))
   tp.s2 <- tp.m2 - tp.m1^2
   if (output != "parameters") {
     tp.s3 <- (tp.m3 - 3 * tp.m1 * tp.m2 + 2 * tp.m1^3)
@@ -664,5 +663,5 @@ afac <- function(x, r) {
 #' # Which is fairly close to the true raw moments of the proportional true-score distribution
 #' # calculated above.
 tsm <- function(x, r, n) {
-  mean(dfac(x, r)) / mean(dfac(n-2, r-2)) / dfac(n, 2)
+  mean(dfac(x + r, r)) / mean(dfac(n + r-2, r-2)) / dfac(n + r, 2)
 }

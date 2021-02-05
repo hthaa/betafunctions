@@ -50,9 +50,6 @@ A list with the parameter values of a four-parameter Beta distribution. "l" is t
 \description{
 Estimator for the Beta true-score distribution shape-parameters from the observed-score distribution and Livingston and Lewis' effective test length. Returns a list with entries representing the lower- and upper shape parameters (l and u), and the shape parameters (alpha and beta) of the four-parameters beta distribution.
 }
-\note{
-This estimator is based on the S-Plus code provided by Rogosa and Finkelman (2004). It includes an option for implementing a failsafe should the four-parameter solution be invalid (e.g., l < 0 or u > 1, alpha < 1 or beta < 1).
-}
 \examples{
 # Generate some fictional data. Say 1000 individuals take a 100-item test
 # where all items are equally difficult, and the true-score distribution

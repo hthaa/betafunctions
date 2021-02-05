@@ -1,3 +1,9 @@
+# betafunctions v. 1.4.4
+
+- Fixed a bug with the true-score distribution fitting procedure in the `Beta.tp.fit()` that could occur for low integer values.
+
+- Minor changes to the documentation for various functions.
+
 # betafunctions v. 1.4.3
 
 - Added possibility of calculating descending (falling) and ascending (rising) factorials by means of the `dfac()` and `afac()`functions.
