@@ -36,18 +36,17 @@ ETL <- function(mean, variance, min = 0, max = 1, reliability) {
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves (see documentation for the \code{LL.ROC()} function).
 #' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
-#' @param failsafe Logical value indicating whether to engage the automatic failsafe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE} (i.e., the function will not engage failsafe, and will likely produce an error if impermissible parameter estimates were produced.
+#' @param failsafe Logical value indicating whether to engage the automatic failsafe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param override Inert artifact from betafunctions version 1.3.1 (replaced by the \code{failsafe} argument). Will be removed completely in a later update.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the possibility of employing a two-parameter Beta error distribution in place of the binomial error distribution is not part of the original procedure. Third, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to calculating classification consistency outlined by Hanson (1991).
 #' @note A shiny application providing a GUI for this method is available at https://hthaa.shinyapps.io/shinybeta/ .
 #' @examples
-#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # Generate some fictional data. Say, 1000 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
 #' set.seed(1234)
-#' testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
+#' testdata <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
 #' # Suppose the cutoff value for attaining a pass is 50 items correct, and
@@ -87,20 +86,16 @@ ETL <- function(mean, variance, min = 0, max = 1, reliability) {
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
 #' @export
-LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", error.model = "binomial", truecut = NULL, output = c("accuracy", "consistency"), failsafe = FALSE, l = 0, u = 1, override = NULL) {
-  if (!is.null(override)) {
-    warning("The override argument is rendered inert as of betafunctions v. 1.4.0, replaced by the failsafe argument.
-            The argument will be removed entirely in a future update.")
-  }
+LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", error.model = "binomial", truecut = NULL, output = c("accuracy", "consistency"), failsafe = TRUE, l = 0, u = 1) {
   out <- base::list()
   if (class(x) != "list") {
     if ((base::min(x) < min) | (base::max(x) > max)) {
       warning(paste("Observed values not within the specified [", min, ", ", max, "] bounds (observed min = ",
-                    min(x), ", observed max = ", max(x), ").", sep = ""))
+                    base::min(x), ", observed max = ", base::max(x), ").", sep = ""))
     }
     N <- ETL(base::mean(x), stats::var(x), min = min, max = max, reliability = reliability)
     params <- Beta.tp.fit(x, min = min, max = max, etl = N, true.model = true.model, failsafe = failsafe, l = l, u = u)
-    if (params$l < 0 | params$u > 1 | params$alpha < 0 | params$beta < 0) {
+    if (params$l < 0 | params$u > 1) {
       warning(paste("Parameter out of bounds: l = ", round(params$l, 4), ", u = ", round(params$u, 4), ", alpha = ", round(params$alpha, 4), ", beta = ", round(params$beta, 4),
                     ". Consider constraining the fitting procedure further (e.g., set the location-parameters).", sep = ""))
     }
@@ -114,14 +109,14 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
   }
   cut <- (cut - min) / (max - min)
   truecut <- (truecut - min) / (max - min)
-  if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
+  if (startsWith(tolower(error.model), "bi")) {
     N <- base::round(N)
+    params[["etl_rounded"]] <- N
   }
-  out[["effectivetestlength"]] <- N
   out[["parameters"]] <- params
   if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") |
       any(output == "CA") | any(output == "a") | any(output == "A")) {
-    if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
+    if (startsWith(tolower(error.model), "bi")) {
       p.tp <- stats::integrate(function(x) {
         dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut)
         }, lower = truecut, upper = 1)$value
@@ -135,7 +130,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
         dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE)
         }, lower = 0, upper = truecut)$value
     }
-    if (error.model == "beta" | error.model == "Beta") {
+    if (startsWith(tolower(error.model), "be")) {
       p.tp <- stats::integrate(function(x) {
         dBeta.pBeta(x, params$l, params$u, params$alpha, params$beta, N, cut)
         }, lower = truecut, upper = 1)$value
@@ -155,7 +150,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
   }
   if (any(output == "consistency") | any(output == "Consistency" ) | any(output == "cc") |
       any(output == "CC") | any(output == "c") | any(output == "C")) {
-    if (error.model == "binomial" | error.model == "Binomial" | error.model == "binom" | error.model == "Binom") {
+    if (startsWith(tolower(error.model), "bi")) {
       p.ii <- stats::integrate(function(x) {
         dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) *
           stats::pbinom(floor(cut * N), N, x, lower.tail = TRUE )
@@ -173,7 +168,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
           stats::pbinom(floor(cut * N), N, x, lower.tail = TRUE )
         }, lower = 0, upper = 1)$value
     }
-    if (error.model == "beta" | error.model == "Beta") {
+    if (startsWith(tolower(error.model), "be")) {
       p.ii <- stats::integrate(function(x) {
         dBeta.pBeta(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) *
           stats::pbeta(truecut, N * x, N * (1 - x), lower.tail = TRUE)
@@ -293,7 +288,7 @@ caStats <- function(tp, tn, fp, fn) {
 #' @param ij The frequency or rate of inconsistent classifications into categories "i" and "j".
 #' @param ji The frequency or rate of inconsistent classifications into categories "j" and "i".
 #' @param jj The frequency or rate of consistent classifications into category "j".
-#' @return A list of classification consistency statistics. Specifically, the coefficient of consistent classification (p), the coefficient of consistent classification by chance (p_c), and Cohen's Kappa coefficient.
+#' @return A list of classification consistency statistics. Specifically, the coefficient of consistent classification (p), the coefficient of consistent classification by chance (p_c), the proportion of positive classifications due to chance (p_c_pos), the proportion of negative classifications due to chance (p_c_neg), and Cohen's Kappa coefficient.
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
@@ -316,8 +311,10 @@ caStats <- function(tp, tn, fp, fn) {
 ccStats <- function(ii, ij, ji, jj) {
   p <- (ii + jj) / (ii + ij + ji + jj)
   p_c <- (ii + ij) * (ii + ji) + (ij + jj) * (ji + jj)
+  p_c_pos <- (ii + ij) * (ii + ji)
+  p_c_neg <- (ij + jj) * (ji + jj)
   Kappa <- (p - p_c) / (1 - p_c)
-  base::list("p" = p, "p_c" = p_c, "Kappa" = Kappa)
+  base::list("p" = p, "p_c" = p_c, "p_c_pos" = p_c_pos, "p_c_neg" = p_c_neg, "Kappa" = Kappa)
 }
 
 #' ROC curves for the Livingston and Lewis approach.
@@ -330,11 +327,13 @@ ccStats <- function(ii, ij, ji, jj) {
 #' @param truecut The true point along the x-scale that marks the categorization-threshold.
 #' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.
-#' @param failsafe If true-model == "4P": Whether to engage a fail-safe reverting to a two-parameter true-score distribution solution should the four-parameter fitting procedure produce impermissible results.
+#' @param failsafe If true-model == "4P": Whether to engage a fail-safe reverting to a two-parameter true-score distribution solution should the four-parameter fitting procedure produce impermissible results. Default is TRUE (engage fail-safe in the event of impermissible estimates).
 #' @param l If true-model == "2P" or failsafe == TRUE: The lower-bound location parameter of the two-parameter true-score distribution solution.
 #' @param u If true-model == "2P" or failsafe == TRUE: The upper-bound location parameter of the two-parameter true-score distribution solution.
 #' @param AUC Calculate and include the area under the curve? Default is \code{FALSE}.
-#' @param maxJ Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
+#' @param maxJ Logical. Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
+#' @param maxAcc Logical. Mark the point along the curve where the Accuracy statistic is maximized? Defailt is \code{FALSE}.
+#' @param locate Ask the function to locate the cut-point at which sensitivity or NPV is greater than or equal to some value, or specificity or PPV is lesser than or equal to some value. Take as input a character-vector of length 2, with the first argument being which index is to be found (e.g., "sensitivity"), and the second argument the value to locate (e.g., "0.75"). For example: c("sensitivity", "0.75").
 #' @param raw.out Give raw coordinates as output rather than plot? Default is \code{FALSE}.
 #' @param grainsize Specify the number of cutoff-points for which the ROC curve is to be calculated. The greater this number the greater the accuracy. Default is 100 points.
 #' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
@@ -351,14 +350,34 @@ ccStats <- function(ii, ij, ji, jj) {
 #' # points at which Youden's J. is maximized:
 #' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
 #' AUC = TRUE, maxJ = TRUE)
+#' # Or to locate the point at which accuracy is maximized:
+#' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
+#' AUC = TRUE, maxAcc = TRUE)
+#'
+#' # Using the example data above, the function can be instructed to locate the
+#' # operational cut-point at which sensitivity or specificity is equal to or
+#' # greater than some specified value by specifying the "locate" argument with
+#' # c("statistic", value). For example, to locate the operational cut-point at
+#' # which sensitivity is first equal to or greater than 0.8:
+#' LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
+#' AUC = TRUE, locate = c("sensitivity", .80))
+#' # For Negative Predictive value, the point at which it is equal or greater:
+#' LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
+#' AUC = TRUE, locate = c("specificity", .80))
+#' # For specificity, the point at which it is equal to or less than 0.8:
+#' LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
+#' AUC = TRUE, locate = c("specificity", .80))
+#' # For Positive Predictive Value, the point at which it is equal or less:
+#' LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
+#' AUC = TRUE, locate = c("PPV", .80))
 #' @export
-LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", error.model = "Binomial", failsafe = FALSE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, raw.out = FALSE, grainsize = 100) {
+LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", error.model = "Binomial", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = 100) {
   oldpar <- graphics::par(no.readonly = TRUE)
   base::on.exit(graphics::par(oldpar))
   for (i in 1:(grainsize + 1)) {
     if (i == 1) {
       cuts <- seq(min, max, (max - min) / grainsize)
-      outputmatrix <- matrix(nrow = grainsize + 1, ncol = 4)
+      outputmatrix <- matrix(nrow = grainsize + 1, ncol = 7)
       outputmatrix[, 4] <- cuts
     }
     axval <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i],
@@ -367,9 +386,14 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
     outputmatrix[i, 1] <- 1 - axval$Specificity
     outputmatrix[i, 2] <- axval$Sensitivity
     outputmatrix[i, 3] <- axval$Youden.J
-    colnames(outputmatrix) <- c("FPR", "TPR", "Youden.J", "Cutoff")
+    outputmatrix[i, 5] <- axval$Accuracy
+    outputmatrix[i, 6] <- axval$PPV
+    outputmatrix[i, 7] <- axval$NPV
+    colnames(outputmatrix) <- c("FPR", "TPR", "Youden.J", "Cutoff", "Accuracy", "PPV", "NPV")
     outputmatrix[which(is.na(outputmatrix[, 1])), 1] <- 0
     outputmatrix[which(is.na(outputmatrix[, 2])), 2] <- 1
+    outputmatrix[which(is.na(outputmatrix[, 6])), 6] <- 1
+    outputmatrix[which(is.na(outputmatrix[, 7])), 7] <- 1
   }
   if (raw.out) {
     return(outputmatrix)
@@ -391,10 +415,50 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
            outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2], cex = 1.5, pch = 19)
     graphics::text(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1] + .025,
          outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2] - .025,
-         labels = paste("Maximum Youden's J. at cutoff = ",
-                        round(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3]))[1], 4], 3),
-                        "\n(Max. Youden's J. = ", round(max(outputmatrix[, 3]), 3), ").", sep = ""),
+         labels = paste("Maximum Youden's J. ", "(", round(max(outputmatrix[, 3]), 3), ") ",  "at cut-off = ",
+                        round(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3]))[1], 4], 3), ".", sep = ""),
          adj = c(0, 1))
+  }
+  if (maxAcc) {
+    graphics::points(outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5])), 1],
+                     outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5])), 2], cex = 1.5, pch = 19)
+    graphics::text(outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5])), 1] + .025,
+                   outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5])), 2] - .025,
+                   labels = paste("Maximum Accuracy ", "(", round(max(outputmatrix[, 5]), 3), ") ",  "at cut-off = ",
+                                  round(outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5]))[1], 4], 3), ".", sep = ""),
+                   adj = c(0, 1))
+  }
+  if (!is.null(locate)) {
+    if (startsWith(tolower(locate[1]), "se")) {
+      rowloc <- which(outputmatrix[, "TPR"] >= as.numeric(locate[2]))[1]
+      colloc <- "TPR"
+      value <- outputmatrix[rowloc, "TPR"]
+      statistic <- "Sensitivity >= "
+    }
+    if (startsWith(tolower(locate[1]), "p")) {
+      rowloc <- which(outputmatrix[, "PPV"] <= as.numeric(locate[2]))[1]
+      colloc <- "PPV"
+      value <- outputmatrix[rowloc, "PPV"]
+      statistic <- "PPV <= "
+    }
+    if (startsWith(tolower(locate[1]), "n")) {
+      rowloc <- which(outputmatrix[, "NPV"] >= as.numeric(locate[2]))[1]
+      colloc <- "NPV"
+      value <- outputmatrix[rowloc, "NPV"]
+      statistic <- "NPV >= "
+    }
+    if (startsWith(tolower(locate[1]), "sp")) {
+      rowloc <- which(outputmatrix[, "FPR"] <= 1 - as.numeric(locate[2]))[length(which(outputmatrix[, "FPR"] <= 1 - as.numeric(locate[2])))]
+      colloc <- "FPR"
+      value <- 1 - outputmatrix[rowloc, "FPR"]
+      statistic <- "Specificity <= "
+    }
+    graphics::points(outputmatrix[rowloc, 1], outputmatrix[rowloc, 2], cex = 1.5, pch = 19)
+    graphics::text(outputmatrix[rowloc, 1] + .025,
+                   outputmatrix[rowloc, 2] - .025,
+                   labels = paste(statistic, as.numeric(locate[2]) , " (", round(value, 3), ")",
+                                  " at cut-off = ", outputmatrix[rowloc, 4], ".", sep = ""),
+                   adj = if (startsWith(tolower(locate[1]), "sp")) { c(0, 1) } else { c(0, 1) })
   }
 }
 
@@ -523,14 +587,10 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
     etl <- ETL(base::mean(x), stats::var(x), min, max, reliability)
   }
   x <- (x - min) / (max - min) * etl
-  m1 <- mean(x)
-  m2 <- mean(x^2)
-  m3 <- mean(x^3)
-  m4 <- mean(x^4)
-  tp.m1 <- mean(x) / etl
-  tp.m2 <- (m2 - m1) / (etl * (etl - 1))
-  tp.m3 <- (m3 - 3*m2 + 2*m1) / (etl * (etl - 1) * (etl - 2))
-  tp.m4 <- (m4 - 6*m3 + 11*m2 - 6*m1) / (etl * (etl - 1) * (etl - 2) * (etl - 3))
+  tp.m1 <- tsm(x, 1, etl)
+  tp.m2 <- tsm(x, 2, etl)
+  tp.m3 <- tsm(x, 3, etl)
+  tp.m4 <- tsm(x, 4, etl)
   tp.s2 <- tp.m2 - tp.m1^2
   if (output != "parameters") {
     tp.s3 <- (tp.m3 - 3 * tp.m1 * tp.m2 + 2 * tp.m1^3)
@@ -610,8 +670,25 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
 #'
 #' # To calculate the 5th descending factorial for values 3.14, 2.72, and 0.58:
 #' dfac(x = c(3.14, 2.72, 0.58), r = 5)
-dfac <- function(x, r) {
-  gamma(x + 1) / gamma(x - r + 1)
+dfac <- function(x, r, method = "product") {
+  if (method == "product") {
+    x <- ifelse(x < r, 0, x)
+    if (r <= 1) {
+      x^r
+    } else {
+      mat <- matrix(nrow = length(x), ncol = r)
+      for (i in 1:r) {
+        if (i == 1) {
+          mat[, 1] <- x
+        } else {
+          mat[, i] <- x - i + 1
+        }
+      }
+      apply(mat, 1, prod)
+    }
+  } else {
+    gamma(x + 1) / gamma(x - r + 1)
+  }
 }
 
 #' Ascending (rising) factorial.
@@ -628,8 +705,24 @@ dfac <- function(x, r) {
 #'
 #' # To calculate the 5th ascending factorial for values 3.14, 2.72, and 0.58:
 #' afac(x = c(3.14, 2.72, 0.58), r = 5)
-afac <- function(x, r) {
-  gamma(x + r) / gamma(x)
+afac <- function(x, r, method = "product") {
+  if (method == "product") {
+    if (r <= 1) {
+      x^r
+    } else {
+      mat <- matrix(nrow = length(x), ncol = r)
+      for (i in 1:r) {
+        if (i == 1) {
+          mat[, 1] <- x
+        } else {
+          mat[, i] <- x + i - 1
+        }
+      }
+      apply(mat, 1, prod)
+    }
+  } else {
+    gamma(x + r) / gamma(x)
+  }
 }
 
 #' Proportional true-score distribution raw moments from Livingston and Lewis' effective test-score and effective test-length.
@@ -662,6 +755,14 @@ afac <- function(x, r) {
 #' tsm(x = obs.scores, r = 4, n = 100)
 #' # Which is fairly close to the true raw moments of the proportional true-score distribution
 #' # calculated above.
-tsm <- function(x, r, n) {
-  mean(dfac(x + r, r)) / mean(dfac(n + r-2, r-2)) / dfac(n + r, 2)
+tsm <- function(x, r, n, method = "product") {
+  if (method != "product") {
+    mean(dfac(x, r, method)) / mean(dfac(n - 2, r - 2, method)) / dfac(n, 2, method)
+  } else {
+    if (r == 1) {
+      mean(x) / n
+    } else {
+      (mean(dfac(x, r)) / dfac(n - 2, r - 2)) * (1 / dfac(n, 2))
+    }
+  }
 }

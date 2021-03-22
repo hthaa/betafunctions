@@ -4,7 +4,7 @@
 \alias{dfac}
 \title{Descending (falling) factorial.}
 \usage{
-dfac(x, r)
+dfac(x, r, method = "product")
 }
 \arguments{
 \item{x}{A value for which the descending factorial is to be calculated.}

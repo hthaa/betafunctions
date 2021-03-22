@@ -1,8 +1,16 @@
+# betafunctions v. 1.4.5
+
+- Changes to the `LL.ROC()` function. Added the `locate` argument where it is possible to ask the function to locate the operational cut-point at which the values of sensitivity or specificity are greater than or equal to some value.
+
+---
+
 # betafunctions v. 1.4.4
 
 - Fixed a bug with the true-score distribution fitting procedure in the `Beta.tp.fit()` that could occur for low integer values.
 
 - Minor changes to the documentation for various functions.
+
+---
 
 # betafunctions v. 1.4.3
 

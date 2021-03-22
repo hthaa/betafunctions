@@ -12,11 +12,13 @@ LL.ROC(
   truecut,
   true.model = "4P",
   error.model = "Binomial",
-  failsafe = FALSE,
+  failsafe = TRUE,
   l = 0,
   u = 1,
   AUC = FALSE,
   maxJ = FALSE,
+  maxAcc = FALSE,
+  locate = NULL,
   raw.out = FALSE,
   grainsize = 100
 )
@@ -36,7 +38,7 @@ LL.ROC(
 
 \item{error.model}{The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.}
 
-\item{failsafe}{If true-model == "4P": Whether to engage a fail-safe reverting to a two-parameter true-score distribution solution should the four-parameter fitting procedure produce impermissible results.}
+\item{failsafe}{If true-model == "4P": Whether to engage a fail-safe reverting to a two-parameter true-score distribution solution should the four-parameter fitting procedure produce impermissible results. Default is TRUE (engage fail-safe in the event of impermissible estimates).}
 
 \item{l}{If true-model == "2P" or failsafe == TRUE: The lower-bound location parameter of the two-parameter true-score distribution solution.}
 
@@ -44,7 +46,11 @@ LL.ROC(
 
 \item{AUC}{Calculate and include the area under the curve? Default is \code{FALSE}.}
 
-\item{maxJ}{Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.}
+\item{maxJ}{Logical. Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.}
+
+\item{maxAcc}{Logical. Mark the point along the curve where the Accuracy statistic is maximized? Defailt is \code{FALSE}.}
+
+\item{locate}{Ask the function to locate the cut-point at which sensitivity or NPV is greater than or equal to some value, or specificity or PPV is lesser than or equal to some value. Take as input a character-vector of length 2, with the first argument being which index is to be found (e.g., "sensitivity"), and the second argument the value to locate (e.g., "0.75"). For example: c("sensitivity", "0.75").}
 
 \item{raw.out}{Give raw coordinates as output rather than plot? Default is \code{FALSE}.}
 
@@ -69,4 +75,24 @@ hist(testdata, xlim = c(0, 100))
 # points at which Youden's J. is maximized:
 LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
 AUC = TRUE, maxJ = TRUE)
+# Or to locate the point at which accuracy is maximized:
+LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
+AUC = TRUE, maxAcc = TRUE)
+
+# Using the example data above, the function can be instructed to locate the
+# operational cut-point at which sensitivity or specificity is equal to or
+# greater than some specified value by specifying the "locate" argument with
+# c("statistic", value). For example, to locate the operational cut-point at
+# which sensitivity is first equal to or greater than 0.8:
+LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
+AUC = TRUE, locate = c("sensitivity", .80))
+# For Negative Predictive value, the point at which it is equal or greater:
+LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
+AUC = TRUE, locate = c("specificity", .80))
+# For specificity, the point at which it is equal to or less than 0.8:
+LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
+AUC = TRUE, locate = c("specificity", .80))
+# For Positive Predictive Value, the point at which it is equal or less:
+LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
+AUC = TRUE, locate = c("PPV", .80))
 }

@@ -16,7 +16,7 @@ ccStats(ii, ij, ji, jj)
 \item{jj}{The frequency or rate of consistent classifications into category "j".}
 }
 \value{
-A list of classification consistency statistics. Specifically, the coefficient of consistent classification (p), the coefficient of consistent classification by chance (p_c), and Cohen's Kappa coefficient.
+A list of classification consistency statistics. Specifically, the coefficient of consistent classification (p), the coefficient of consistent classification by chance (p_c), the proportion of positive classifications due to chance (p_c_pos), the proportion of negative classifications due to chance (p_c_neg), and Cohen's Kappa coefficient.
 }
 \description{
 Provides a set of statistics often used for conveying information regarding the consistency of classifications based on tests.

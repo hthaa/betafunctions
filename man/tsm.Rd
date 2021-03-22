@@ -4,7 +4,7 @@
 \alias{tsm}
 \title{Proportional true-score distribution raw moments from Livingston and Lewis' effective test-score and effective test-length.}
 \usage{
-tsm(x, r, n)
+tsm(x, r, n, method = "product")
 }
 \arguments{
 \item{x}{The effective test-score of test-takers.}

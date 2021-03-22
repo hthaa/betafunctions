@@ -4,7 +4,7 @@
 \alias{afac}
 \title{Ascending (rising) factorial.}
 \usage{
-afac(x, r)
+afac(x, r, method = "product")
 }
 \arguments{
 \item{x}{A value for which the ascending factorial is to be calculated.}

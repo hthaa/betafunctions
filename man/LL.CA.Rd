@@ -14,10 +14,9 @@ LL.CA(
   error.model = "binomial",
   truecut = NULL,
   output = c("accuracy", "consistency"),
-  failsafe = FALSE,
+  failsafe = TRUE,
   l = 0,
-  u = 1,
-  override = NULL
+  u = 1
 )
 }
 \arguments{
@@ -39,13 +38,11 @@ LL.CA(
 
 \item{output}{Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.}
 
-\item{failsafe}{Logical value indicating whether to engage the automatic failsafe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{FALSE} (i.e., the function will not engage failsafe, and will likely produce an error if impermissible parameter estimates were produced.}
+\item{failsafe}{Logical value indicating whether to engage the automatic failsafe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).}
 
 \item{l}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).}
 
 \item{u}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).}
-
-\item{override}{Inert artifact from betafunctions version 1.3.1 (replaced by the \code{failsafe} argument). Will be removed completely in a later update.}
 }
 \value{
 A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
@@ -59,10 +56,10 @@ It should be noted that this implementation differs from the original articulati
 A shiny application providing a GUI for this method is available at https://hthaa.shinyapps.io/shinybeta/ .
 }
 \examples{
-# Generate some fictional data. Say, 100 individuals take a test with a
+# Generate some fictional data. Say, 1000 individuals take a test with a
 # maximum score of 100 and a minimum score of 0.
 set.seed(1234)
-testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
+testdata <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 
 # Suppose the cutoff value for attaining a pass is 50 items correct, and
