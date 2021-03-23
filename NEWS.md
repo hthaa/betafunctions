@@ -1,6 +1,20 @@
 # betafunctions v. 1.4.5
 
-- Changes to the `LL.ROC()` function. Added the `locate` argument where it is possible to ask the function to locate the operational cut-point at which the values of sensitivity or specificity are greater than or equal to some value.
+- Changes to the `LL.ROC()` function. 
+
+  - Added the `locate` argument where it is possible to ask the function to locate the operational cut-point at which the values of sensitivity or NPV are greater than or equal to some value, or specificity or PPV are lesser than or equal to some value.
+  
+  - Added the `maxAcc` argument to locate the cut-point at which the Accuracy statistic is maximized.
+  
+  - The raw-output print-out now contains the cut-point specific Accuracy, PPV, and NPV statistics as well.
+  
+- Changes to the `afac` and `dfac` functions.
+
+  - Due to the problems associated with calculating descending and ascending factorials for low-valued integers by means of the gamma function (particularly for descending factorials), a direct-arithmetic solution is implemented and set as the default method. In order to use the gamma function rather than direct arithmetic, specify any value other than "product" as part of the `method` argument.
+  
+- Changes to the `tsm` function.
+
+  - The `tsm` function now calls the `dfac` function with the direct-arithmetic method for calculating descending factorials as default. In order to use the gamma function rather than direct arithmetic, specify any value other than "product" as part of the `method` argument.
 
 ---
 
