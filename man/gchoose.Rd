@@ -7,9 +7,9 @@
 gchoose(n, k)
 }
 \arguments{
-\item{n}{In Binomial terms, the number of Binomial trials. Need not be an integer.}
+\item{n}{In Binomial terms, the number of Binomial "trials". Need not be an integer.}
 
-\item{k}{In Binomial terms, the number of successful trials. Need not be an integer.}
+\item{k}{In Binomial terms, the number of successful "trials". Need not be an integer.}
 }
 \description{
 Extends the Binomial coefficient for positive non-integers (including 0) by employing the Gamma rather than the factorial function.

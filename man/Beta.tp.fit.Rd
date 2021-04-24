@@ -26,21 +26,21 @@ Beta.tp.fit(
 
 \item{max}{The maximum possible score to attain on the test.}
 
-\item{etl}{The value of Livingston and Lewis' effective test length. See ?ETL().}
+\item{etl}{The value of Livingston and Lewis' effective test length. See \code{?ETL()}.}
 
 \item{reliability}{Optional specification of the test-score reliability coefficient. If specified, overrides the input of the \code{etl} argument.}
 
-\item{true.model}{The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis), and "2P" the two-parameter solution where both location-parameters are specified (with the same mean and variance).}
+\item{true.model}{The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where \code{"4P"} refers to the four-parameter (with the same mean, variance, skewness, and kurtosis), and \code{"2P"} the two-parameter solution where both location-parameters are specified (with the same mean and variance).}
 
-\item{failsafe}{Logical. Whether to revert to a failsafe two-parameter solution should the four-parameter solution contain invalid parameter estimates.}
+\item{failsafe}{Logical. Whether to revert to a fail-safe two-parameter solution should the four-parameter solution contain invalid parameter estimates.}
 
 \item{l}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).}
 
 \item{u}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).}
 
-\item{alpha}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate).}
+\item{alpha}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).}
 
-\item{beta}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate).}
+\item{beta}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).}
 
 \item{output}{Option to specify true-score distribution moments as output if the value of the output argument does not equal \code{"parameters"}.}
 }
@@ -53,10 +53,10 @@ Estimator for the Beta true-score distribution shape-parameters from the observe
 \examples{
 # Generate some fictional data. Say 1000 individuals take a 100-item test
 # where all items are equally difficult, and the true-score distribution
-# is a four-parameter Beta distribution with location parameters l = .25,
-# u = .75, alpha = 5, and beta = 3:
+# is a four-parameter Beta distribution with location parameters l = 0.25,
+# u = 0.75, alpha = 5, and beta = 3:
 set.seed(12)
-testdata <- rbinom(1000, 100, rBeta.4P(1000, .25, .75, 5, 3))
+testdata <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 
 # Since this test contains items which are all equally difficult, the true
 # effective test length (etl) is the actual test length. I.e., etl = 100.
@@ -67,7 +67,7 @@ Beta.tp.fit(testdata, 0, 100, 100)
 # Imagine a case where the fitting procedure produces an impermissible
 # estimate (e.g., l < 0 or u > 1).
 set.seed(1234)
-testdata <- rbinom(1000, 50, rBeta.4P(1000, .25, .75, 5, 3))
+testdata <- rbinom(1000, 50, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 Beta.tp.fit(testdata, 0, 50, 50)
 
 # This example produced an l-value estimate less than 0. One way of

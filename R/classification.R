@@ -36,7 +36,7 @@ ETL <- function(mean, variance, min = 0, max = 1, reliability) {
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves (see documentation for the \code{LL.ROC()} function).
 #' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
-#' @param failsafe Logical value indicating whether to engage the automatic failsafe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
+#' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
@@ -251,13 +251,13 @@ confmat <- function(tp, tn, fp, fn, output = "freq") {
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
 #' set.seed(1234)
-#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
 #' # Suppose the cutoff value for attaining a pass is 50 items correct, and
 #' # that the reliability of this test was estimated to 0.7. First, compute the
 #' # estimated confusion matrix using LL.CA():
-#' cmat <- LL.CA(x = testdata, reliability = .7, cut = 50, min = 0,
+#' cmat <- LL.CA(x = testdata, reliability = 0.7, cut = 50, min = 0,
 #' max = 100)$confusionmatrix
 #'
 #' # To estimate and retrieve diagnostic performance statistics using caStats(),
@@ -325,51 +325,51 @@ ccStats <- function(ii, ij, ji, jj) {
 #' @param max The maximum possible value to attain on the observed-score scale. Default is 1 (assuming \code{x} represent proportions).
 #' @param reliability The reliability coefficient of the test.
 #' @param truecut The true point along the x-scale that marks the categorization-threshold.
-#' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
+#' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The \code{"4P"} method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the \code{"2P"} method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
 #' @param error.model The probability distribution to be used for producing the sampling distributions at different points of the true-score scale. Options are \code{binomial} and \code{beta}. The binomial distribution is discrete, and is the distribution used originally by Livingston and Lewis. Use of the binomial distribution involves a rounding of the effective test length to the nearest integer value. The Beta distribution is continuous, and does not involve rounding of the effective test length.
 #' @param failsafe If true-model == "4P": Whether to engage a fail-safe reverting to a two-parameter true-score distribution solution should the four-parameter fitting procedure produce impermissible results. Default is TRUE (engage fail-safe in the event of impermissible estimates).
-#' @param l If true-model == "2P" or failsafe == TRUE: The lower-bound location parameter of the two-parameter true-score distribution solution.
-#' @param u If true-model == "2P" or failsafe == TRUE: The upper-bound location parameter of the two-parameter true-score distribution solution.
+#' @param l If \code{true.model == "2P"} or \code{failsafe == TRUE}: The lower-bound location parameter of the two-parameter true-score distribution solution.
+#' @param u If \code{true.model == "2P"} or \code{failsafe == TRUE}: The upper-bound location parameter of the two-parameter true-score distribution solution.
 #' @param AUC Calculate and include the area under the curve? Default is \code{FALSE}.
 #' @param maxJ Logical. Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
-#' @param maxAcc Logical. Mark the point along the curve where the Accuracy statistic is maximized? Defailt is \code{FALSE}.
+#' @param maxAcc Logical. Mark the point along the curve where the Accuracy statistic is maximized? Default is \code{FALSE}.
 #' @param locate Ask the function to locate the cut-point at which sensitivity or NPV is greater than or equal to some value, or specificity or PPV is lesser than or equal to some value. Take as input a character-vector of length 2, with the first argument being which index is to be found (e.g., "sensitivity"), and the second argument the value to locate (e.g., "0.75"). For example: c("sensitivity", "0.75").
-#' @param raw.out Give raw coordinates as output rather than plot? Default is \code{FALSE}.
+#' @param raw.out Give raw coordinates as output rather than plot? Default is \code{FALSE}
 #' @param grainsize Specify the number of cutoff-points for which the ROC curve is to be calculated. The greater this number the greater the accuracy. Default is 100 points.
 #' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
 #' @examples
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
 #' set.seed(1234)
-#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
 #' # Suppose the cutoff value for attaining a pass is 50 items correct, and
 #' # that the reliability of this test was estimated to 0.7. To produce a plot
 #' # with an ROC curve using LL.ROC(), along with the AUC statistics and the
 #' # points at which Youden's J. is maximized:
-#' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
+#' LL.ROC(x = testdata, reliability = 0.7, truecut = 50, min = 0, max = 100,
 #' AUC = TRUE, maxJ = TRUE)
 #' # Or to locate the point at which accuracy is maximized:
-#' LL.ROC(x = testdata, reliability = .7, truecut = 50, min = 0, max = 100,
+#' LL.ROC(x = testdata, reliability = 0.7, truecut = 50, min = 0, max = 100,
 #' AUC = TRUE, maxAcc = TRUE)
 #'
 #' # Using the example data above, the function can be instructed to locate the
 #' # operational cut-point at which sensitivity or specificity is equal to or
 #' # greater than some specified value by specifying the "locate" argument with
 #' # c("statistic", value). For example, to locate the operational cut-point at
-#' # which sensitivity is first equal to or greater than 0.8:
-#' LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
-#' AUC = TRUE, locate = c("sensitivity", .80))
+#' # which sensitivity is first equal to or greater than 0.9:
+#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
+#' AUC = TRUE, locate = c("sensitivity", 0.9))
 #' # For Negative Predictive value, the point at which it is equal or greater:
-#' LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
-#' AUC = TRUE, locate = c("specificity", .80))
-#' # For specificity, the point at which it is equal to or less than 0.8:
-#' LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
-#' AUC = TRUE, locate = c("specificity", .80))
+#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
+#' AUC = TRUE, locate = c("NPV", 0.9))
+#' # For specificity, the point at which it is equal to or less than 0.9:
+#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
+#' AUC = TRUE, locate = c("specificity", 0.9))
 #' # For Positive Predictive Value, the point at which it is equal or less:
-#' LL.ROC(x = testdata, reliability = .7, min = 0, max = 100, truecut = 50,
-#' AUC = TRUE, locate = c("PPV", .80))
+#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
+#' AUC = TRUE, locate = c("PPV", 0.90))
 #' @export
 LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", error.model = "Binomial", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = 100) {
   oldpar <- graphics::par(no.readonly = TRUE)
@@ -473,7 +473,7 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
 #' # Generate some fictional data. Say, 100 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
 #' set.seed(1234)
-#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
 #' # Suppose the cutoff value for attaining a pass is 50 items correct, and
@@ -506,7 +506,7 @@ AUC <- function(FPR, TPR) {
 #' # Generate some fictional data. Say 100 students take a 50-item long test
 #' # where all items are equally difficult.
 #' set.seed(1234)
-#' p.success <- rBeta.4P(100, .25, .75, 5, 3)
+#' p.success <- rBeta.4P(100, 0.25, 0.75, 5, 3)
 #' for (i in 1:50) {
 #'   if (i == 1) {
 #'     rawdata <- matrix(nrow = 100, ncol = 50)
@@ -528,14 +528,14 @@ cba <- function(x) {
 #' @param x Vector of observed-scores.
 #' @param min The minimum possible score to attain on the test.
 #' @param max The maximum possible score to attain on the test.
-#' @param etl The value of Livingston and Lewis' effective test length. See ?ETL().
+#' @param etl The value of Livingston and Lewis' effective test length. See \code{?ETL()}.
 #' @param reliability Optional specification of the test-score reliability coefficient. If specified, overrides the input of the \code{etl} argument.
-#' @param true.model The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where "4P" refers to the four-parameter (with the same mean, variance, skewness, and kurtosis), and "2P" the two-parameter solution where both location-parameters are specified (with the same mean and variance).
-#' @param failsafe Logical. Whether to revert to a failsafe two-parameter solution should the four-parameter solution contain invalid parameter estimates.
+#' @param true.model The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where \code{"4P"} refers to the four-parameter (with the same mean, variance, skewness, and kurtosis), and \code{"2P"} the two-parameter solution where both location-parameters are specified (with the same mean and variance).
+#' @param failsafe Logical. Whether to revert to a fail-safe two-parameter solution should the four-parameter solution contain invalid parameter estimates.
 #' @param l If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
 #' @param u If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).
-#' @param alpha If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate).
-#' @param beta If \code{failsafe = TRUE} or \code{true.model = "2P"}: The Beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate).
+#' @param alpha If \code{failsafe = TRUE} or \code{true.model = "2P"}: The alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).
+#' @param beta If \code{failsafe = TRUE} or \code{true.model = "2P"}: The beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).
 #' @param output Option to specify true-score distribution moments as output if the value of the output argument does not equal \code{"parameters"}.
 #' @return A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter.
 #' @references Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf
@@ -544,10 +544,10 @@ cba <- function(x) {
 #' @examples
 #' # Generate some fictional data. Say 1000 individuals take a 100-item test
 #' # where all items are equally difficult, and the true-score distribution
-#' # is a four-parameter Beta distribution with location parameters l = .25,
-#' # u = .75, alpha = 5, and beta = 3:
+#' # is a four-parameter Beta distribution with location parameters l = 0.25,
+#' # u = 0.75, alpha = 5, and beta = 3:
 #' set.seed(12)
-#' testdata <- rbinom(1000, 100, rBeta.4P(1000, .25, .75, 5, 3))
+#' testdata <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 #'
 #' # Since this test contains items which are all equally difficult, the true
 #' # effective test length (etl) is the actual test length. I.e., etl = 100.
@@ -558,7 +558,7 @@ cba <- function(x) {
 #' # Imagine a case where the fitting procedure produces an impermissible
 #' # estimate (e.g., l < 0 or u > 1).
 #' set.seed(1234)
-#' testdata <- rbinom(1000, 50, rBeta.4P(1000, .25, .75, 5, 3))
+#' testdata <- rbinom(1000, 50, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 #' Beta.tp.fit(testdata, 0, 50, 50)
 #'
 #' # This example produced an l-value estimate less than 0. One way of
@@ -662,9 +662,9 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
 #' @description Calculate the descending (or falling) factorial of a value \code{x} of order \code{r}.
 #' @param x A value for which the descending factorial is to be calculated.
 #' @param r The power \code{x} is to be raised to.
-#' @return The descending factorial of value \code{x} raised to the \code{r} power.
+#' @return The descending factorial of value \code{x} raised to the \code{r}'th power.
+#' @param method The method by which the descending factorials are to be calculated. Default is \code{"product"} which uses direct arithmetic. Alternative is "gamma" which calculates the ascending factorial using the Gamma function. The alternative method might be faster but might fail because the Gamma function is not defined for negative integers (returning Inf).
 #' @export
-#' @note This function implements the descending factorial by means of the Gamma distribution. As such, \code{x} does not have to be an integer. However, \code{x} cannot be a negative integer.
 #' @examples
 #' # To calculate the 4th descending factorial for a value (e.g., 3.14):
 #' dfac(x = 3.14, r = 4)
@@ -697,8 +697,8 @@ dfac <- function(x, r, method = "product") {
 #' @description Calculate the ascending (or rising) factorial of a value \code{x} of order \code{r}.
 #' @param x A value for which the ascending factorial is to be calculated.
 #' @param r The power \code{x} is to be raised to.
-#' @return The ascending factorial of value \code{x} raised to the \code{r} power.
-#' @note This function implements the ascending factorial by means of the Gamma distribution. As such, \code{x} does not have to be an integer. However, \code{x} cannot be a negative integer.
+#' @param method The method by which the descending factorials are to be calculated. Default is \code{"product"} which uses direct arithmetic. Alternative is "gamma" which calculates the descending factorial using the Gamma function. The alternative method might be faster but might fail because the Gamma function is not defined for negative integers (returning Inf).
+#' @return The ascending factorial of value \code{x} raised to the \code{r}'th power.
 #' @export
 #' @examples
 #' # To calculate the 4th ascending factorial for a value (e.g., 3.14):
@@ -732,18 +732,19 @@ afac <- function(x, r, method = "product") {
 #' @param x The effective test-score of test-takers.
 #' @param r The moment-order that is to be calculated (where 1 is the mean, 2 is the raw variance, 3 is the raw skewness, etc.).
 #' @param n The effective test-length.
+#' @param method The method by which the descending factorials are to be calculated. Default is \code{"product"} which uses direct arithmetic. Alternative is "gamma" which calculates the descending factorial using the Gamma function. The alternative method might be faster but might fail because the Gamma function is not defined for negative integers (returning Inf).
 #' @references Lord, F. M. (1965). A strong true-score theory, with applications. Psychometrika. 30(3). pp. 239--270. doi: 10.1007/BF02289490
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @export
 #' @examples
 #' # Examine the raw moments of the underlying Beta distribution that is to provide the basis for
 #' # observed-scores:
-#' betamoments(alpha = 5, beta = 3, l = .25, u = .75, types = "raw")
+#' betamoments(alpha = 5, beta = 3, l = 0.25, u = 0.75, types = "raw")
 #'
 #' # Generate observed-scores from true-scores by passing the true-scores as binomial probabilities
 #' # for the rbinom function.
 #' set.seed(1234)
-#' obs.scores <- rbinom(1000, 100, rBeta.4P(1000, .25, .75, 5, 3))
+#' obs.scores <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 #' # Examine the raw moments of the observed-score distribution.
 #' observedmoments(obs.scores, type = "raw")
 #'

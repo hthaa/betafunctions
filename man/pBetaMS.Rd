@@ -25,7 +25,7 @@ Calculates the probability of some specific observation falling under a specifie
 }
 \examples{
 # To compute the proportion of the density under the lower-end tail of a
-# point along the Standard (two-parameter) PDD (e.g., .5) with mean of .6
-# and variance of .04:
-pBetaMS(q = .5, mean = .6, variance = .04)
+# point along the Standard (two-parameter) PDD (e.g., 0.5) with mean of 0.6
+# and variance of 0.04:
+pBetaMS(q = 0.5, mean = 0.6, variance = 0.04)
 }

@@ -25,13 +25,13 @@ Provides a set of statistics often used for conveying information regarding the 
 # Generate some fictional data. Say, 100 individuals take a test with a
 # maximum score of 100 and a minimum score of 0.
 set.seed(1234)
-testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 
 # Suppose the cutoff value for attaining a pass is 50 items correct, and
 # that the reliability of this test was estimated to 0.7. First, compute the
 # estimated confusion matrix using LL.CA():
-cmat <- LL.CA(x = testdata, reliability = .7, cut = 50, min = 0,
+cmat <- LL.CA(x = testdata, reliability = 0.7, cut = 50, min = 0,
 max = 100)$confusionmatrix
 
 # To estimate and retrieve diagnostic performance statistics using caStats(),

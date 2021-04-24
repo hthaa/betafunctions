@@ -40,12 +40,14 @@ dBeta.pBinom(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5)
 # Conversely, the density of failing scores produced at x can be calculated
 # by passing the additional argument "lower.tail = TRUE" to the function.
 # That is:
-dBeta.pBinom(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5, lower.tail = TRUE)
+dBeta.pBinom(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5,
+lower.tail = TRUE)
 
 #By integration, the population proportion of (e.g.) passing scores in some
 #region of the true-score distribution (e.g. between 0.25 and 0.5) can be
 #calculated as:
-integrate(function(x) { dBeta.pBinom(x, 0.25, .75, 5, 3, 10, 0.5) }, lower = 0.25, upper = 0.5)
+integrate(function(x) { dBeta.pBinom(x, 0.25, .75, 5, 3, 10, 0.5) },
+lower = 0.25, upper = 0.5)
 }
 \references{
 Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.

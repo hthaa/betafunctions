@@ -13,7 +13,7 @@ pGammaBinom(q, size, prob, lower.tail = TRUE)
 
 \item{prob}{Probability of "success" on each "trial". Need not be integer.}
 
-\item{lower.tail}{Logical. If TRUE (default), probabilities are P[X<x], otherwise, P[X >= x]. Note that this differs from base-R binom functions.}
+\item{lower.tail}{Logical. If TRUE (default), probabilities are P[X<x], otherwise, P[X >= x]. Note that this differs from base-R \code{binom()} functions.}
 }
 \description{
 Extends the cumulative Binomial probability mass function to positive non-integers, effectively turning the mass-function into a density-function.

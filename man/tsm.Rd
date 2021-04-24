@@ -12,6 +12,8 @@ tsm(x, r, n, method = "product")
 \item{r}{The moment-order that is to be calculated (where 1 is the mean, 2 is the raw variance, 3 is the raw skewness, etc.).}
 
 \item{n}{The effective test-length.}
+
+\item{method}{The method by which the descending factorials are to be calculated. Default is \code{"product"} which uses direct arithmetic. Alternative is "gamma" which calculates the descending factorial using the Gamma function. The alternative method might be faster but might fail because the Gamma function is not defined for negative integers (returning Inf).}
 }
 \description{
 An implementation of Lords (1965, p. 265) equation 37 for estimating the raw moments of the true-score distribution, modified to function for the Livingston and Lewis approach.
@@ -19,12 +21,12 @@ An implementation of Lords (1965, p. 265) equation 37 for estimating the raw mom
 \examples{
 # Examine the raw moments of the underlying Beta distribution that is to provide the basis for
 # observed-scores:
-betamoments(alpha = 5, beta = 3, l = .25, u = .75, types = "raw")
+betamoments(alpha = 5, beta = 3, l = 0.25, u = 0.75, types = "raw")
 
 # Generate observed-scores from true-scores by passing the true-scores as binomial probabilities
 # for the rbinom function.
 set.seed(1234)
-obs.scores <- rbinom(1000, 100, rBeta.4P(1000, .25, .75, 5, 3))
+obs.scores <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 # Examine the raw moments of the observed-score distribution.
 observedmoments(obs.scores, type = "raw")
 

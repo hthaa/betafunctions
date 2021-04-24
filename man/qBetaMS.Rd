@@ -24,7 +24,7 @@ A numeric value representing the quantile for which the specified proportion of 
 Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (\code{lt = TRUE}) or [x, 1] (\code{lt = FALSE}) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }
 \examples{
-# To compute the quantile at a specific point (e.g., .5) along the Standard
-# (two-parameter) PDD with mean of .6 and variance of .04:
-qBetaMS(p = .5, mean =.6, variance = .04)
+# To compute the quantile at a specific point (e.g., 0.5) along the Standard
+# (two-parameter) PDD with mean of 0.6 and variance of 0.04:
+qBetaMS(p = 0.5, mean = 0.6, variance = 0.04)
 }

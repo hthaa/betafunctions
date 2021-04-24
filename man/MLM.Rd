@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{MLM}
 \alias{MLM}
-\title{Most Likely Mean of the Standard Beta PDD, Given that the Observation is Considered the Most Likely Observation of the Standard Beta PDD (i.e., Mode).}
+\title{Most Likely Mean of the Standard Beta PDD, Given that the Observation is Considered the Most Likely Observation of the Standard Beta PDD (i.e., the mode).}
 \usage{
 MLM(alpha, beta, x = NULL, n = NULL)
 }

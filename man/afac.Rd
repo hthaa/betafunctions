@@ -10,15 +10,14 @@ afac(x, r, method = "product")
 \item{x}{A value for which the ascending factorial is to be calculated.}
 
 \item{r}{The power \code{x} is to be raised to.}
+
+\item{method}{The method by which the descending factorials are to be calculated. Default is \code{"product"} which uses direct arithmetic. Alternative is "gamma" which calculates the descending factorial using the Gamma function. The alternative method might be faster but might fail because the Gamma function is not defined for negative integers (returning Inf).}
 }
 \value{
-The ascending factorial of value \code{x} raised to the \code{r} power.
+The ascending factorial of value \code{x} raised to the \code{r}'th power.
 }
 \description{
 Calculate the ascending (or rising) factorial of a value \code{x} of order \code{r}.
-}
-\note{
-This function implements the ascending factorial by means of the Gamma distribution. As such, \code{x} does not have to be an integer. However, \code{x} cannot be a negative integer.
 }
 \examples{
 # To calculate the 4th ascending factorial for a value (e.g., 3.14):

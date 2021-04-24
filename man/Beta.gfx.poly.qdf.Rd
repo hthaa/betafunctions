@@ -13,9 +13,9 @@ Beta.gfx.poly.qdf(from, to, by, alpha, beta, l = 0, u = 1)
 
 \item{by}{The resolution (or spacing) at which to produce \code{y}-density values.}
 
-\item{alpha}{The Alpha shape-parameter value for the Standard Beta probability distribution.}
+\item{alpha}{The alpha shape-parameter value for the Standard Beta probability distribution.}
 
-\item{beta}{The Beta shape-parameter for the Standard Beta probability distribution.}
+\item{beta}{The beta shape-parameter for the Standard Beta probability distribution.}
 
 \item{l}{The lower-bound location parameter of the Beta distribution.}
 
@@ -28,11 +28,11 @@ A two-column matrix with quantile-values of \code{y} to plot against correspondi
 Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability quantile function.
 }
 \examples{
-# To box in an area under a four-parameter beta quantile distribution with
-# location parameters l = .25 and u = 75, and shape parameters
-# alpha = 5 and beta = 3, from .4 to .6:
+# To box in an area under a four-parameter Beta quantile distribution with
+# location parameters l = .25 and u = 75, and shape parameters alpha = 5 and
+# beta = 3, from .4 to .6:
 plot(NULL, xlim = c(0, 1), ylim = c(0, 1))
-coords <- Beta.gfx.poly.qdf(from = .4, to = .6, by = .001, alpha = 5,
-beta = 3, l = .25, u = .75)
+coords <- Beta.gfx.poly.qdf(from = 0.4, to = 0.6, by = 0.001, alpha = 5,
+beta = 3, l = 0.25, u = 0.75)
 polygon(coords)
 }

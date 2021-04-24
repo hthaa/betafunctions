@@ -25,8 +25,10 @@ Generalized Binomial probability density function (Gamma-Binomial) extended to p
 # at a specific point (e.g., 7.5 "successes"):
 dGammaBinom(x = 7.5, size = 10.5, prob = 0.75)
 
-# Including a normalizing constant:
+# Including a normalizing constant (then diverges from binomial dist.):
 dGammaBinom(x = 7.5, size = 10.5, prob = 0.75, nc = TRUE)
+dGammaBinom(x = 7, size = 10, prob = 0.75) == dbinom(7, 10, 0.75)
+dGammaBinom(x = 7, size = 10, prob = 0.75, nc = TRUE) == dbinom(7, 10, 0.75)
 }
 \references{
 Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).

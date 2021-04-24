@@ -16,7 +16,7 @@ UABMSL(
 )
 }
 \arguments{
-\item{alpha}{The Alpha shape-parameter of the target Beta probability density distribution.}
+\item{alpha}{The alpha shape-parameter of the target Beta probability density distribution.}
 
 \item{beta}{The beta shape-parameter of the target Beta probability density distribution.}
 
@@ -41,7 +41,7 @@ Calculates the upper-bound value required to produce a Beta probability density 
 \examples{
 # Generate some fictional data.
 set.seed(1234)
-testdata <- rBeta.4P(100000, .25, .75, 5, 3)
+testdata <- rBeta.4P(100000, 0.25, 0.75, 5, 3)
 hist(testdata, xlim = c(0, 1), freq = FALSE)
 
 # Suppose you know three of the four necessary parameters to fit a four-
@@ -55,5 +55,5 @@ S2 <- var(testdata)
 # distribution with the target mean, variance, and u, alpha, and beta
 # parameters using the LMSBAU() function:
 (u <- UABMSL(alpha = 5, beta = 3, mean = M, variance = S2, l = 0.25))
-curve(dBeta.4P(x, .25, u, 5, 3), add = TRUE, lwd = 2)
+curve(dBeta.4P(x, 0.25, u, 5, 3), add = TRUE, lwd = 2)
 }

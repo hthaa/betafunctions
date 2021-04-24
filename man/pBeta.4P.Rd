@@ -20,16 +20,16 @@ pBeta.4P(q, l, u, alpha, beta, lower.tail = TRUE)
 \item{lower.tail}{Whether the proportion to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).}
 }
 \value{
-A vector of proportions of observations falling under specified quantiles under the four-parameter beta distribution.
+A vector of proportions of observations falling under specified quantiles under the four-parameter Beta distribution.
 }
 \description{
 Function for calculating the proportion of observations up to a specifiable quantile under the Four-Parameter Beta Distribution.
 }
 \examples{
-# Assume some variable follows a four-parameter beta distribution with
-# location parameters l = 0.25 and u = .75, and shape
-# parameters alpha = 5 and beta = 3. To compute the
-# cumulative probability at a specific point of the distribution (e.g., .5)
+# Assume some variable follows a four-parameter Beta distribution with
+# location parameters l = 0.25 and u = 0.75, and shape parameters alpha = 5
+# and beta = 3. To compute the cumulative probability at a specific point of
+# the distribution (e.g., 0.5)
 # using pBeta.4P():
-pBeta.4P(q = .5, l = .25, u = .75, alpha = 5, beta = 3)
+pBeta.4P(q = 0.5, l = 0.25, u = 0.75, alpha = 5, beta = 3)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{dBeta.pGammaBinom}
 \alias{dBeta.pGammaBinom}
-\title{An implementation of the Beta-density Compound Cumulative Gamma-Binomial Distribution.}
+\title{An implementation of a Beta-density Compound Cumulative Gamma-Binomial Distribution.}
 \usage{
 dBeta.pGammaBinom(x, l, u, alpha, beta, n, c, lower.tail = FALSE)
 }
@@ -43,7 +43,7 @@ lower.tail = TRUE)
 #By integration, the population proportion of (e.g.) passing scores in some
 #region of the true-score distribution (e.g. between 0.25 and 0.5) can be
 #calculated as:
-integrate(function(x) { dBeta.pGammaBinom(x, 0.25, .75, 5, 3, 10, 0.5) },
+integrate(function(x) { dBeta.pGammaBinom(x, 0.25, 0.75, 5, 3, 10, 0.5) },
 lower = 0.25, upper = 0.5)
 }
 \references{

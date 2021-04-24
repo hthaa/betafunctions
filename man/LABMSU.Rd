@@ -16,9 +16,9 @@ LABMSU(
 )
 }
 \arguments{
-\item{alpha}{The Alpha shape-parameter of the target Beta probability density distribution.}
+\item{alpha}{The alpha (first) shape-parameter of the target Beta probability density distribution.}
 
-\item{beta}{The Beta shape-parameter of the target Beta probability density distribution.}
+\item{beta}{The beta (second) shape-parameter of the target Beta probability density distribution.}
 
 \item{u}{The upper-bound of the Beta distribution. Default is NULL (i.e., does not take a specified u-parameter into account).}
 
@@ -41,7 +41,7 @@ Calculates the lower-bound value required to produce a Beta probability density 
 \examples{
 # Generate some fictional data.
 set.seed(1234)
-testdata <- rBeta.4P(100000, .25, .75, 5, 3)
+testdata <- rBeta.4P(100000, 0.25, 0.75, 5, 3)
 hist(testdata, xlim = c(0, 1), freq = FALSE)
 
 # Suppose you know three of the four necessary parameters to fit a four-

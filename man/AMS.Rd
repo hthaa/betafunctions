@@ -43,7 +43,7 @@ Calculates the Beta value required to produce a Beta probability density distrib
 # maximum score of 100 and a minimum score of 0, rescaled to proportion
 # of maximum.
 set.seed(1234)
-testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3)) / 100
+testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3)) / 100
 hist(testdata, xlim = c(0, 1))
 
 # To find the alpha shape-parameter of a Standard (two-parameter) Beta

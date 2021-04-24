@@ -17,7 +17,7 @@ rGammaBinom(n, size, prob)
 Random number generation under the generalized Binomial distribution (Gamma-Binomial) extended to non-integers.
 }
 \note{
-Calls qGammaBinom(), which makes the random draw slower than what one might be used to (since qGammaBinom() calls pGammaBinom() and employs a search-algorithm to find the appropriate value).
+Calls \code{qGammaBinom()}, which makes the random draw slower than what one might be used to (since \code{qGammaBinom()} calls \code{pGammaBinom()} and employs a search-algorithm to find the appropriate value down to a specifiable level of precision).
 }
 \examples{
 # Assume some variable follows a Gamma-Binomial distribution with

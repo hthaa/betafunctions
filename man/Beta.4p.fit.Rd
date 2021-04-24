@@ -13,7 +13,7 @@ Beta.4p.fit(
 )
 }
 \arguments{
-\item{scores}{A vector of values to which the four-parameter beta distribution is to be fitted.}
+\item{scores}{A vector of values to which the four-parameter Beta distribution is to be fitted.}
 
 \item{mean}{If scores are not supplied: specification of the mean for the target four-parameter Beta distribution.}
 
@@ -24,19 +24,19 @@ Beta.4p.fit(
 \item{kurtosis}{If scores are not supplied: specification of the kurtosis for the target four-parameter Beta distribution.}
 }
 \value{
-A list of parameter-values required to produce a four-parameter beta distribution with the same first four moments as the observed distribution.
+A list of parameter-values required to produce a four-parameter Beta distribution with the same first four moments as the observed distribution.
 }
 \description{
-An implementation of the method of moments estimation of four-parameter beta distribution parameters presented by Hanson (1991). Given a vector of values, calculates the shape- and location parameters required to produce a four-parameter beta distribution with the same mean, variance, skewness and kurtosis (i.e., the first four moments) as the observed-score distribution.
+An implementation of the method of moments estimation of four-parameter Beta distribution parameters presented by Hanson (1991). Given a vector of values, calculates the shape- and location parameters required to produce a four-parameter Beta distribution with the same mean, variance, skewness and kurtosis (i.e., the first four moments) as the observed-score distribution.
 }
 \examples{
 # Generate some fictional data. Say, 100 individuals take a test with a
 # maximum score of 100 and a minimum score of 0.
 set.seed(1234)
-testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
 hist(testdata, xlim = c(0, 100), freq = FALSE)
 
-# To fit and retrieve the parameters for a four-parameter beta distribution
+# To fit and retrieve the parameters for a four-parameter Beta distribution
 # to the observed-score distribution using Beta.4p.fit():
 (params.4p <- Beta.4p.fit(testdata))
 curve(dBeta.4P(x, params.4p$l, params.4p$u, params.4p$alpha, params.4p$beta), add = TRUE)

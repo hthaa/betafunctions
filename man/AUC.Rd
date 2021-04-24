@@ -24,7 +24,7 @@ Script originally retrieved and modified from https://blog.revolutionanalytics.c
 # Generate some fictional data. Say, 100 individuals take a test with a
 # maximum score of 100 and a minimum score of 0.
 set.seed(1234)
-testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
 hist(testdata, xlim = c(0, 100))
 
 # Suppose the cutoff value for attaining a pass is 50 items correct, and

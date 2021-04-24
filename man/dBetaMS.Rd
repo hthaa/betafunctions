@@ -16,13 +16,13 @@ dBetaMS(x, mean, variance = NULL, sd = NULL)
 \item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
 }
 \value{
-A numeric value representing the required value for the Beta Shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
+A numeric value representing the required value for the beta Shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 }
 \description{
 Calculates the density under specific points of the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 }
 \examples{
-# To compute the density at a specific point (e.g., .5) along the Standard
-# (two-parameter) PDD with mean of .6 and variance of .04:
-dBetaMS(x = .5, mean =.6, variance = .04)
+# To compute the density at a specific point (e.g., 0.5) along the Standard
+# (two-parameter) PDD with mean of 0.6 and variance of 0.04:
+dBetaMS(x = 0.5, mean = 0.6, variance = 0.04)
 }

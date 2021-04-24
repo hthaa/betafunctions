@@ -13,9 +13,9 @@ rBeta.4P(n, l, u, alpha, beta)
 
 \item{u}{The second (upper) location parameter.}
 
-\item{alpha}{The first shape parameter.}
+\item{alpha}{The alpha (first) shape parameter.}
 
-\item{beta}{The second shape parameter.}
+\item{beta}{The beta (second) shape parameter.}
 }
 \value{
 A vector with length \code{n} of random values drawn from the Four-Parameter Beta Distribution.
@@ -24,9 +24,9 @@ A vector with length \code{n} of random values drawn from the Four-Parameter Bet
 Function for generating random numbers from a specified Four-Parameter Beta Distribution.
 }
 \examples{
-# Assume some variable follows a four-parameter beta distribution with
-# location parameters l = 0.25 and u = .75, and shape
-# parameters alpha = 5 and beta = 3. To draw a random
-# value from this distribution using rBeta.4P():
-rBeta.4P(n = 1, l = .25, u = .75, alpha = 5, beta = 3)
+# Assume some variable follows a four-parameter Beta distribution with
+# location parameters l = 0.25 and u = 0.75, and shape parameters alpha = 5
+# and beta = 3. To draw a random value from this distribution using
+# rBeta.4P():
+rBeta.4P(n = 1, l = 0.25, u = 0.75, alpha = 5, beta = 3)
 }

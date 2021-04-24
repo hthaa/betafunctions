@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{dBeta.pBeta}
 \alias{dBeta.pBeta}
-\title{An implementation of the Beta-density Compound Cumulative-Beta Distribution.}
+\title{An implementation of a Beta-density Compound Cumulative-Beta Distribution.}
 \usage{
 dBeta.pBeta(x, l, u, alpha, beta, n, c, lower.tail = FALSE)
 }
@@ -24,7 +24,7 @@ dBeta.pBeta(x, l, u, alpha, beta, n, c, lower.tail = FALSE)
 \item{lower.tail}{Logical. Whether to compute the lower or upper tail of the Beta cumulative probability distribution. Default is \code{FALSE} (i.e., upper tail).}
 }
 \description{
-The Beta Compound Beta distribution: The product of the four-parameter Beta probability density function and the beta cumulative probability function. Used in the Livingston and Lewis approach to classification accuracy and consistency, the output can be interpreted as the population density of passing scores produced at "x" (a value of true-score).
+The Beta Compound Beta distribution: The product of the four-parameter Beta probability density function and the Beta cumulative probability function. Used in the Livingston and Lewis approach to classification accuracy and consistency, the output can be interpreted as the population density of passing scores produced at "x" (a value of true-score).
 }
 \examples{
 # Given a four-parameter Beta distribution with parameters l = 0.25, u = 0.75,
@@ -37,12 +37,14 @@ dBeta.pBeta(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5)
 # Conversely, the density of failing scores produced at x can be calculated
 # by passing the additional argument "lower.tail = TRUE" to the function.
 # That is:
-dBeta.pBeta(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5, lower.tail = TRUE)
+dBeta.pBeta(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5,
+lower.tail = TRUE)
 
 # By integration, the population proportion of (e.g.) passing scores in some
 # region of the true-score distribution (e.g. between 0.25 and 0.5) can be
 # calculated as:
-integrate(function(x) { dBeta.pBeta(x, 0.25, .75, 5, 3, 10, 0.5) }, lower = 0.25, upper = 0.5)
+integrate(function(x) { dBeta.pBeta(x, 0.25, 0.75, 5, 3, 10, 0.5) },
+lower = 0.25, upper = 0.5)
 }
 \references{
 Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.

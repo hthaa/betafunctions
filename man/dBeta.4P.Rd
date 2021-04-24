@@ -24,10 +24,9 @@ The value for the probability density at specified values of \code{x}.
 Gives the density at desired values of \code{x} under the Four-Parameter Beta PDD.
 }
 \examples{
-# Assume some variable follows a four-parameter beta distribution with
-# location parameters l = 0.25 and u = .75, and shape
-# parameters alpha = 5 and beta = 3. To compute the
-# probability density at a specific point of the distribution (e.g., .5)
-# using dBeta.4P():
-dBeta.4P(x = .5, l = .25, u = .75, alpha = 5, beta = 3)
+# Assume some variable follows a four-parameter Beta distribution with
+# location parameters l = 0.25 and u = 0.75, and shape parameters alpha = 5
+# and beta = 3. To compute the probability density at a specific point of
+# the distribution (e.g., 0.5) using dBeta.4P():
+dBeta.4P(x = 0.5, l = 0.25, u = 0.75, alpha = 5, beta = 3)
 }

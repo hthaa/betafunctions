@@ -24,7 +24,7 @@ Be aware that this function does not issue a warning if there are negative corre
 # Generate some fictional data. Say 100 students take a 50-item long test
 # where all items are equally difficult.
 set.seed(1234)
-p.success <- rBeta.4P(100, .25, .75, 5, 3)
+p.success <- rBeta.4P(100, 0.25, 0.75, 5, 3)
 for (i in 1:50) {
   if (i == 1) {
     rawdata <- matrix(nrow = 100, ncol = 50)

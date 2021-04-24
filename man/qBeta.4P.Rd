@@ -20,16 +20,15 @@ qBeta.4P(p, l, u, alpha, beta, lower.tail = TRUE)
 \item{lower.tail}{Logical. Whether the quantile(s) to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).}
 }
 \value{
-A vector of quantiles for specified probabilities or proportions of observations under the four-parameter beta distribution.
+A vector of quantiles for specified probabilities or proportions of observations under the four-parameter Beta distribution.
 }
 \description{
 Function for calculating the quantile (i.e., value of \code{x}) for a given proportion (i.e., the value of \code{y}) under the Four-Parameter Beta Distribution.
 }
 \examples{
-# Assume some variable follows a four-parameter beta distribution with
-# location parameters l = 0.25 and u = .75, and shape
-# parameters alpha = 5 and beta = 3. To compute the
-# quantile at a specific point of the distribution (e.g., .5)
-# using qBeta.4P():
-qBeta.4P(p = .5, l = .25, u = .75, alpha = 5, beta = 3)
+# Assume some variable follows a four-parameter Beta distribution with
+# location parameters l = 0.25 and u = 0.75, and shape parameters alpha = 5
+# and beta = 3. To compute the quantile at a specific point of the
+# distribution (e.g., 0.5) using qBeta.4P():
+qBeta.4P(p = 0.5, l = 0.25, u = 0.75, alpha = 5, beta = 3)
 }
