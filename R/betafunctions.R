@@ -21,37 +21,85 @@
 betamoments <- function(alpha, beta, l = 0, u = 1, types = c("raw", "central", "standardized"), orders = 4) {
   a <- alpha
   b <- beta
-  BETAMOMENTS <- base::rep(base::list(base::rep(base::list(NULL), orders)), base::length(types))
-  TYPE <- 1
+  moments <- base::rep(base::list(base::rep(base::list(NULL), orders)), base::length(types))
+  type <- 1
   if (any(types == "raw")) {
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^i },
+      moments[[type]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^i },
                                             lower = l, upper = u)$value
     }
-    base::names(BETAMOMENTS)[TYPE] <- "raw"
-    TYPE <- TYPE + 1
+    base::names(moments)[type] <- "raw"
+    type <- type + 1
   }
   if (any(types == "central")) {
     Mu <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^i },
+      moments[[type]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^i },
                                             lower = l, upper = u)$value
     }
-    base::names(BETAMOMENTS)[TYPE] <- "central"
-    TYPE <- TYPE + 1
+    base::names(moments)[type] <- "central"
+    type <- type + 1
   }
   if (base::any(types == "standardized")) {
     Mu <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
     SigmaSquared <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^2 },
                        lower = l, upper = u)$value
     for (i in 1:orders) {
-      BETAMOMENTS[[TYPE]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * ((x - Mu)^i / sqrt(SigmaSquared)^i) },
+      moments[[type]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * ((x - Mu)^i / sqrt(SigmaSquared)^i) },
                                             lower = l, upper = u)$value
     }
-    base::names(BETAMOMENTS)[TYPE] <- "standardized"
+    base::names(moments)[type] <- "standardized"
   }
-  return(BETAMOMENTS)
+  return(moments)
 }
+
+#' Compute Moments of Binomial Probability Mass Functions.
+#'
+#' @description Computes Raw, Central, or Standardized moment properties of defined Binomial probability mass functions.
+#' @param n Number of Binomial trials
+#' @param p Probability of success per trial.
+#' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
+#' @param orders The number of moment-orders to be calculated for each of the moment-types.
+#' @examples
+#' # Assume some variable follows a four-parameter beta distribution with
+#' # location parameters l = 0.25 and u = .75, and shape
+#' # parameters a = 5 and b = 3. To compute the first four
+#' # raw, central, and standardized moments of this distrubution using
+#' # betamoments():
+#' betamoments(a = 5, b = 3, l = .25, u = .75,
+#' types = c("raw", "central", "standardized"), orders = 4)
+#' @references Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
+#' @return A list of moment types, each a list of moment orders.
+#' @export
+binomialmoments <- function(n, p, types = c("raw", "central", "standardized"), orders = 4) {
+  moments <- base::rep(base::list(base::rep(base::list(NULL), orders)), base::length(types))
+  type <- 1
+  if (any(types == "raw")) {
+    for (i in 1:orders) {
+      moments[[type]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * (0:n)^i)
+    }
+    base::names(moments)[type] <- "raw"
+    type <- type + 1
+  }
+  if (any(types == "central")) {
+    Mu <- base::sum(stats::dbinom(0:n, n, p) * (0:n))
+    for (i in 1:orders) {
+      moments[[type]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * ((0:n - Mu)^i))
+    }
+    base::names(moments)[type] <- "central"
+    type <- type + 1
+  }
+  if (base::any(types == "standardized")) {
+    Mu <- base::sum(stats::dbinom(0:n, n, p) * (0:n))
+    SigmaSquared <- base::sum(stats::dbinom(0:n, n, p) * ((0:n - Mu)^2))
+    for (i in 1:orders) {
+      moments[[type]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * ((0:n - Mu)^i / sqrt(SigmaSquared)^i))
+    }
+    base::names(moments)[type] <- "standardized"
+  }
+  return(moments)
+}
+
 
 #' Compute Moments of Observed Value Distribution.
 #'
@@ -390,7 +438,7 @@ UABMSL <- function(alpha = NULL, beta = NULL, mean = NULL, variance = NULL, skew
 pBetaMS <- function(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE) {
   if ((!is.null(variance) & !is.null(sd))) {
     if (variance != sd^2) {
-      warning("Nonequivalent values of VAR and SD specified. Using VAR.")
+      warning("Nonequivalent values of variance and sd specified. Using variance.")
     }
   }
   if (base::is.null(variance) & !base::is.null(sd)) variance <- sd^2
@@ -413,7 +461,7 @@ pBetaMS <- function(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE) {
 dBetaMS <- function(x, mean, variance = NULL, sd = NULL) {
   if ((!base::is.null(variance) & !base::is.null(sd))) {
     if (variance != sd^2) {
-      warning("Nonequivalent values of VAR and SD specified. Using VAR.")
+      warning("Nonequivalent values of variance and sd specified. Using variance.")
     }
   }
   if (base::is.null(variance) & !base::is.null(sd)) variance <- sd^2
@@ -437,7 +485,7 @@ dBetaMS <- function(x, mean, variance = NULL, sd = NULL) {
 qBetaMS <- function(p, mean, variance = NULL, sd = NULL, lower.tail = TRUE) {
   if ((!base::is.null(variance) & !base::is.null(sd))) {
     if (variance != sd^2) {
-      warning("Nonequivalent values of VAR and SD specified. Using VAR.")
+      warning("Nonequivalent values of variance and sd specified. Using var.")
     }
   }
   if (base::is.null(variance) & !base::is.null(sd)) variance <- sd^2
@@ -456,7 +504,7 @@ qBetaMS <- function(p, mean, variance = NULL, sd = NULL, lower.tail = TRUE) {
 rBetaMS <- function(n, mean, variance = NULL, sd = NULL) {
   if ((!base::is.null(variance) & !base::is.null(sd))) {
     if (variance != sd^2) {
-      warning("Nonequivalent values of VAR and SD specified. Using VAR.")
+      warning("Nonequivalent values of var and sd specified. Using var.")
     }
   }
   if (is.null(variance) & !is.null(sd)) variance <- sd^2
@@ -825,7 +873,7 @@ Beta.2p.fit <- function(scores, mean = NULL, variance = NULL, l = 0, u = 1) {
   return(base::list("alpha" = a, "beta" = b, "l" = l, "u" = u))
 }
 
-#' An implementation of the Beta-density Compound Cumulative-Binomial Distribution.
+#' An implementation of the Beta-density Compound Cumulative Binomial Distribution.
 #'
 #' @description The Beta Compound Binomial distribution: The product of the four-parameter Beta probability density function and the binomial cumulative probability mass function. Used in the Livingston and Lewis approach to classification accuracy and consistency, the output can be interpreted as the population density of passing scores produced at "x" (a value of true-score).
 #' @param x x-axis input for which \code{p} (proportion or probability) is to be computed.
@@ -834,11 +882,12 @@ Beta.2p.fit <- function(scores, mean = NULL, variance = NULL, l = 0, u = 1) {
 #' @param alpha The alpha shape-parameter of the Beta distribution.
 #' @param beta The beta shape-parameter of the Beta distribution.
 #' @param n The number of trials for the Binomial distribution.
-#' @param c The "true-cut" (proportion) of on the Binomial distribution.
+#' @param c The "true-cut" (proportion) of the Binomial distribution.
 #' @param lower.tail Logical. Whether to compute the lower or upper tail of the Binomial distribution. Default is \code{FALSE} (i.e., upper tail).
 #' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @references Lord, Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
+#' @note The Binomial distribution cut-point is up-to but not including, unlike the standard behaviour of base-R pbinom() function.
 #' @examples
 #' # Given a four-parameter Beta distribution with parameters l = 0.25, u = 0.75,
 #' # alpha = 5, and beta = 3, and a Binomial error distribution with number of
@@ -859,9 +908,51 @@ Beta.2p.fit <- function(scores, mean = NULL, variance = NULL, l = 0, u = 1) {
 #' @export
 dBeta.pBinom <- function(x, l, u, alpha, beta, n, c, lower.tail = FALSE) {
   if (!lower.tail) {
-    dBeta.4P(x, l, u, alpha, beta) * stats::pbinom(floor(n * c), round(n), x, lower.tail = FALSE)
+    dBeta.4P(x, l, u, alpha, beta) * (1 - stats::pbinom(round(n * c) - 1, round(n), x, lower.tail = TRUE))
   } else {
-    dBeta.4P(x, l, u, alpha, beta) * (1 - stats::pbinom(floor(n * c), round(n), x, lower.tail = FALSE))
+    dBeta.4P(x, l, u, alpha, beta) * stats::pbinom(round(n * c) - 1, round(n), x, lower.tail = TRUE)
+  }
+}
+
+#' An implementation of the Beta-density Compound Cumulative Gamma-Binomial Distribution.
+#'
+#' @description The Beta Compound Binomial distribution: The product of the four-parameter Beta probability density function and the binomial cumulative probability mass function. Used in the Livingston and Lewis approach to classification accuracy and consistency, the output can be interpreted as the population density of passing scores produced at "x" (a value of true-score).
+#' @param x x-axis input for which \code{p} (proportion or probability) is to be computed.
+#' @param l The lower-bound of the four-parameter Beta distribution.
+#' @param u The upper-bound of the four-parameter Beta distribution.
+#' @param alpha The alpha shape-parameter of the four-parameter Beta distribution.
+#' @param beta The beta shape-parameter of the four-parameter Beta distribution.
+#' @param n The number of "trials" for the Gamma-Binomial distribution.
+#' @param c The "true-cut" (proportion) on the Gamma-Binomial distribution. Need not be an integer (unlike Binomial distribution).
+#' @param lower.tail Logical. Whether to compute the lower or upper tail of the Binomial distribution. Default is \code{FALSE} (i.e., upper tail).
+#' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes.American College Testing Research Report Series.
+#' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @references Lord, Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
+#' @references Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).
+#' @examples
+#' # Given a four-parameter Beta distribution with parameters l = 0.25, u = 0.75,
+#' # alpha = 5, and beta = 3, and a Binomial error distribution with number of
+#' # trials (n) = 10 and a cutoff-point (c) at 50% correct (i.e., proportion correct
+#' # of 0.5), the population density of passing scores produced at true-score
+#' # (x) = 0 can be calculated as:
+#' dBeta.pGammaBinom(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10, c = 0.5)
+#'
+#' # Conversely, the density of failing scores produced at x can be calculated
+#' # by passing the additional argument "lower.tail = TRUE" to the function.
+#' # That is:
+#' dBeta.pGammaBinom(x = 0.5, l = 0.25, u = 0.75, a = 5, b = 3, n = 10.1, c = 0.5,
+#' lower.tail = TRUE)
+#'
+#' #By integration, the population proportion of (e.g.) passing scores in some
+#' #region of the true-score distribution (e.g. between 0.25 and 0.5) can be
+#' #calculated as:
+#' integrate(function(x) { dBeta.pGammaBinom(x, 0.25, .75, 5, 3, 10, 0.5) },
+#' lower = 0.25, upper = 0.5)
+dBeta.pGammaBinom <- function(x, l, u, alpha, beta, n, c, lower.tail = FALSE) {
+  if (!lower.tail) {
+    dBeta.4P(x, l, u, alpha, beta) * pGammaBinom(n * c, n, x, FALSE)
+  } else {
+    dBeta.4P(x, l, u, alpha, beta) * pGammaBinom(n * c, n, x, lower.tail = TRUE)
   }
 }
 
@@ -903,4 +994,163 @@ dBeta.pBeta <- function(x, l, u, alpha, beta, n, c, lower.tail = FALSE) {
   } else {
     dBeta.4P(x, l, u, alpha, beta) * (1 - stats::pbeta(c, x * n, (1 - x) * n, lower.tail = FALSE))
   }
+}
+
+#' Generalized Binomial coefficient (choose function) extended to positive non-integers.
+#'
+#' @description Extends the Binomial coefficient for positive non-integers (including 0) by employing the Gamma rather than the factorial function.
+#' @param n In Binomial terms, the number of Binomial trials. Need not be an integer.
+#' @param k In Binomial terms, the number of successful trials. Need not be an integer.
+#' @note Not defined for negative integers.
+#' @references Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).
+#' @examples
+#' # Compare choose function with gchoose function for integers:
+#' gchoose(c(8, 9, 10), c(3, 4, 5)) == choose(c(8, 9, 10), c(3, 4, 5))
+#'
+#' # The gchoose function also works for non-integers:
+#' gchoose(10.5, 7.5)
+gchoose <- function(n, k) {
+  gamma(n + 1) / (gamma(k + 1) * gamma(n - k + 1))
+}
+
+#' Generalized cumulative Binomial probability density function (Gamma-Binomial) extended to positive non-integers.
+#'
+#' @description Extends the cumulative Binomial probability mass function to positive non-integers, effectively turning the mass-function into a density-function.
+#' @param q Vector of quantiles.
+#' @param size Number of "trials" (zero or more). Need not be integer.
+#' @param prob Probability of "success" on each "trial". Need not be integer.
+#' @param lower.tail Logical. If TRUE (default), probabilities are P[X<x], otherwise, P[X >= x]. Note that this differs from base-R binom functions.
+#' @references Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).
+#' # Assume some variable follows a Gamma-Binomial  distribution with
+#' # "number of trials" = 10.5 and probability of "success" for each "trial"
+#' # = 0.75, to compute the cumulative probability to attain a "number of
+#' success" below a specific point (e.g., less than 7.5 "successes":
+#' pGammaBinom(q = 7.5, size = 10.5, prob = 0.75)
+#'
+#' # Conversely, to attain a value at or above 7.5:
+#' pGammaBinom(q = 7.5, size = 10.5, prob = 0.75, lower.tail = FALSE)
+#' @export
+pGammaBinom <- function(q, size, prob, lower.tail = TRUE) {
+  base::sapply(prob, function(x) {
+    num <- stats::integrate(function(y) { dGammaBinom(y, size, x) }, lower = 0, upper = q)$value
+    den <- stats::integrate(function(y) { dGammaBinom(y, size, x) }, lower = 0, upper = size)$value
+    if (lower.tail) {
+      num/den
+    } else {
+      1 - num/den
+    }
+  })
+}
+
+#' Generalized Binomial probability density function (Gamma-Binomial) extended to positive non-integers.
+#'
+#' @param x Vector of quantiles.
+#' @param size Number of "trials" (zero or more). Need not be integer.
+#' @param prob Probability of "success" on each "trial". Need not be integer.
+#' @param nc Whether to include a normalizing constant making sure that the sum of the distribution's density is 1.
+#' @references Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).
+#' @examples
+#' #' # Assume some variable follows a Gamma-Binomial distribution with
+#' # "number of trials" = 10.5 and probability of "success" for each "trial"
+#' # = 0.75, to compute the probability density to attain a "number of success"
+#' # at a specific point (e.g., 7.5 "successes"):
+#' dGammaBinom(x = 7.5, size = 10.5, prob = 0.75)
+#'
+#' # Including a normalizing constant (then diverges from binomial dist.):
+#' dGammaBinom(x = 7.5, size = 10.5, prob = 0.75, nc = TRUE)
+#' dGammaBinom(x = 7, size = 10, prob = 0.75) == dbinom(7, 10, 0.75)
+#' dGammaBinom(x = 7, size = 10, prob = 0.75, nc = TRUE) == dbinom(7, 10, 0.75)
+#' @export
+dGammaBinom <- function(x, size, prob, nc = FALSE) {
+  if (nc) {
+    den <- stats::integrate(function(z) { (gchoose(size, z) * prob^z * (1 - prob)^(size - z)) }, lower = 0, upper = size)$value
+    base::sapply(x, function(y) {
+      if (y < 0 | y > size) {
+        0
+      } else {
+        (gchoose(size, y) * prob^y * (1 - prob)^(size - y)) / den
+      }
+    })
+  } else {
+    base::sapply(x, function(y) {
+      if (y < 0 | y > size) {
+        0
+      } else {
+        (gchoose(size, y) * prob^y * (1 - prob)^(size - y))
+      }
+    })
+  }
+}
+
+#' Random number generation under the generalized Binomial distribution (Gamma-Binomial) extended to non-integers.
+#'
+#' @param n Number of observations.
+#' @param size Number of "trials" (zero or more). Need not be integer.
+#' @param prob Probability of "success" on each "trial". Need not be integer.
+#' @note Calls qGammaBinom(), which makes the random draw slower than what one might be used to (since qGammaBinom() calls pGammaBinom() and employs a search-algorithm to find the appropriate value).
+#' @examples
+#' # Assume some variable follows a Gamma-Binomial distribution with
+#' # "number of trials" = 10.5 and probability of "success" for each "trial"
+#' # = 0.75 To draw a random value from this distribution:
+#' rGammaBinom(n = 1, size = 10, prob = 0.75)
+#' @export
+rGammaBinom <- function(n, size, prob) {
+  qGammaBinom(stats::runif(n, 0, 1), size = size, prob = prob)
+}
+
+#' Quantile function for the Gamma-extended Binomial distribution.
+#'
+#' @param p Vector of probabilities.
+#' @param size Number of "trials" (zero or more, including positive non-integers).
+#' @param prob Probability of success on each "trial".
+#' @param lower.tail Logical. If TRUE (default), probabilities are P[X < x], otherwise P[X > x].
+#' @param precision The precision with which the quantile is to be calculated. Default is 1e-7 (i.e., search terminates when there is no registered change in estimate at the seventh decimal). Tuning this value will impact the time it takes for the search algorithm to arrive at an estimate.
+#' @note This function uses a bisection search-algorithm to find the number of successes corresponding to the specified quantile(s). This algorithm is inefficient with respect to the number of iterations required to converge on the solution. More efficient algorithms might be added in later versions.
+#' @references Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).
+#' @examples
+#' # For a Gamma-extended Binomial distribution with number of trials = 10 and
+#' # probability of success per trial of 0.75, calculate the number of success-
+#' # ful trials at or below the 25% quantile:
+#' qGammaBinom(p = 0.25, size = 10, prob = 0.75)
+#'
+#' # Conversely, for a Gamma-extended Binomial distribution with number of
+#' # trials = 10 and probability of success per trial of 0.75, calculate the
+#' # number of successful trials at or above the 25% quantile:
+#' qGammaBinom(p = 0.25, size = 10, prob = 0.75, lower.tail = FALSE)
+#' @export
+qGammaBinom <- function(p, size, prob, lower.tail = TRUE, precision = 1e-7) {
+  base::sapply(p, function(c) {
+    if (c == 0 | c == 1) {
+      if (c == 0) {
+        x <- 0
+      } else {
+        x <- size
+      }
+      x
+    } else {
+      x <- size / 2
+      y <- pGammaBinom(x, size, prob, lower.tail)
+      a <- size
+      b <- x
+      while(abs(y - c) > precision) {
+        if (y < c) {
+          if (lower.tail) {
+            x <- x + abs((a - b)) / 2
+          } else {
+            x <- x - abs((a - b)) / 2
+          }
+        } else {
+          if (lower.tail) {
+            x <- x - abs((a - b)) / 2
+          } else {
+            x <- x + abs((a - b)) / 2
+          }
+        }
+        a <- b
+        b <- x
+        y <- pGammaBinom(x, size, prob, lower.tail)
+      }
+    }
+    x
+    })
 }

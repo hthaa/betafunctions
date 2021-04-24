@@ -1,4 +1,18 @@
-# betafunctions v. 1.4.5
+# betafunctions v. 1.5.0
+
+- Added the `gchoose()` function generalizing the base-R `choose()` function to work with non-integers and positive integers by calculating the factorials of the Binomial coefficient by drawing on the Gamma distribution.
+
+- Added new set of d/p/q/r functions for a new distribution: The "Gamma-Binomial" distribution. This distribution extends the Binomial distribution to all positive real numbers. Not defined for negative integers.
+  
+  - `dGammaBinom()`: Probability Density Distribution for the Gamma-Binomial distribution.
+  
+  - `pGammaBinom()`: Cumulative Probability Density Distribution for the Gamma-Binomial distribution.
+  
+  - `qGammaBinom()`: Quantile function for the Gamma-Binomial distribution. Calls the `pGammaBinom()` function and utilizes a bisecting search-algorithm to find the number of "successful trials" corresponding to the quantile in question.
+  
+  - `rGammaBinom()`: Random number generation for the Gamma-Binomial distribution. Calls the `qGammaBinom()` function. Since the `qGammaBinom()` function searches for the appropriate values using an inefficient search-algorithm (bisection), this random-number generation is somewhat slow. 
+
+- Added the `binomialmoments()` function, which allows for calculating the raw, central, and standardized moments of Binomial distributions (for which the Beta distribution is the conjugate prior).
 
 - Changes to the `LL.ROC()` function. 
 
@@ -15,6 +29,10 @@
 - Changes to the `tsm` function.
 
   - The `tsm` function now calls the `dfac` function with the direct-arithmetic method for calculating descending factorials as default. In order to use the gamma function rather than direct arithmetic, specify any value other than "product" as part of the `method` argument.
+
+- Correction to the `LL.CA()` function. The Binomial error distribution evaluated up to and including the cut-point. The intended behaviour was to evaluate up to but NOT including the cut-point. Prior to this correction, it is expected that the `LL.CA()` function will have underestimated accuracy somewhat.
+
+  - This new behaviour applies to the `dBeta.pBinom()` function as well, which is contrary to the default behaviour of base-R's `pbinom()` function.
 
 ---
 

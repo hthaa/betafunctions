@@ -153,19 +153,19 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
     if (startsWith(tolower(error.model), "bi")) {
       p.ii <- stats::integrate(function(x) {
         dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) *
-          stats::pbinom(floor(cut * N), N, x, lower.tail = TRUE )
+          stats::pbinom(floor(cut * N) - 1, N, x, lower.tail = TRUE )
         }, lower = 0, upper = 1)$value
       p.ij <- stats::integrate(function(x) {
         dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) *
-          (1 - stats::pbinom(floor(cut * N), N, x, lower.tail = TRUE))
+          (1 - stats::pbinom(floor(cut * N) - 1, N, x, lower.tail = TRUE))
         }, lower = 0, upper = 1)$value
       p.jj <- stats::integrate(function(x) {
         dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = FALSE) *
-          (1 - stats::pbinom(floor(cut * N), N, x, lower.tail = TRUE))
+          (1 - stats::pbinom(floor(cut * N) - 1, N, x, lower.tail = TRUE))
         }, lower = 0, upper = 1)$value
       p.ji <- stats::integrate(function(x) {
         dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = FALSE) *
-          stats::pbinom(floor(cut * N), N, x, lower.tail = TRUE )
+          stats::pbinom(floor(cut * N) - 1, N, x, lower.tail = TRUE )
         }, lower = 0, upper = 1)$value
     }
     if (startsWith(tolower(error.model), "be")) {
@@ -194,7 +194,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
     out[["consistencymatrix"]] <- ccmat / sum(ccmat)
     out[["classification.consistency"]] <- ccStats(ccmat["i", "i"], ccmat["i", "j"], ccmat["j", "i"], ccmat["j", "j"])
   }
-  return(out)
+  base::return(out)
 }
 
 #' Confusion matrix
@@ -223,18 +223,18 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' confmat(tp = TP, fp = FP, tn = TN, fn = FN)
 #' @export
 confmat <- function(tp, tn, fp, fn, output = "freq") {
-  mat <- matrix(nrow = 3, ncol = 3)
-  rownames(mat) <- c("True", "False", "Total")
-  colnames(mat) <- c("Positive", "Negative", "Total")
-  tot <- sum(tp, tn, fp, fn)
+  mat <- base::matrix(nrow = 3, ncol = 3)
+  base::rownames(mat) <- c("True", "False", "Total")
+  base::colnames(mat) <- c("Positive", "Negative", "Total")
+  tot <- base::sum(tp, tn, fp, fn)
   mat[1, 1] <- tp
   mat[1, 2] <- tn
   mat[2, 1] <- fp
   mat[2, 2] <- fn
-  mat[, 3] <- rowSums(mat[, -3])
-  mat[3, ] <- colSums(mat[-3, ])
+  mat[, 3] <- base::rowSums(mat[, -3])
+  mat[3, ] <- base::colSums(mat[-3, ])
   if (output != "freq") {
-    mat <- mat / sum(tp, tn, fp, fn)
+    mat <- mat / base::sum(tp, tn, fp, fn)
   }
   mat
 }
@@ -389,14 +389,14 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
     outputmatrix[i, 5] <- axval$Accuracy
     outputmatrix[i, 6] <- axval$PPV
     outputmatrix[i, 7] <- axval$NPV
-    colnames(outputmatrix) <- c("FPR", "TPR", "Youden.J", "Cutoff", "Accuracy", "PPV", "NPV")
-    outputmatrix[which(is.na(outputmatrix[, 1])), 1] <- 0
-    outputmatrix[which(is.na(outputmatrix[, 2])), 2] <- 1
-    outputmatrix[which(is.na(outputmatrix[, 6])), 6] <- 1
-    outputmatrix[which(is.na(outputmatrix[, 7])), 7] <- 1
+    base::colnames(outputmatrix) <- c("FPR", "TPR", "Youden.J", "Cutoff", "Accuracy", "PPV", "NPV")
+    outputmatrix[base::which(base::is.na(outputmatrix[, 1])), 1] <- 0
+    outputmatrix[base::which(base::is.na(outputmatrix[, 2])), 2] <- 1
+    outputmatrix[base::which(base::is.na(outputmatrix[, 6])), 6] <- 1
+    outputmatrix[base::which(base::is.na(outputmatrix[, 7])), 7] <- 1
   }
   if (raw.out) {
-    return(outputmatrix)
+    base::return(outputmatrix)
   }
   graphics::plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
   graphics::abline(h = seq(0, 1, .1), v = seq(0, 1, .1), col = "lightgrey", lty = "dotted")
@@ -411,44 +411,44 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
                      legend = paste("AUC =", round(AUC(outputmatrix[, 1], outputmatrix[, 2]), 3)))
   }
   if (maxJ) {
-    graphics::points(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1],
-           outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2], cex = 1.5, pch = 19)
-    graphics::text(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 1] + .025,
-         outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3])), 2] - .025,
-         labels = paste("Maximum Youden's J. ", "(", round(max(outputmatrix[, 3]), 3), ") ",  "at cut-off = ",
-                        round(outputmatrix[which(outputmatrix[, 3] == max(outputmatrix[, 3]))[1], 4], 3), ".", sep = ""),
+    graphics::points(outputmatrix[base::which(outputmatrix[, 3] == base::max(outputmatrix[, 3])), 1],
+           outputmatrix[base::which(outputmatrix[, 3] == base::max(outputmatrix[, 3])), 2], cex = 1.5, pch = 19)
+    graphics::text(outputmatrix[base::which(outputmatrix[, 3] == base::max(outputmatrix[, 3])), 1] + .025,
+         outputmatrix[base::which(outputmatrix[, 3] == base::max(outputmatrix[, 3])), 2] - .025,
+         labels = base::paste("Maximum Youden's J. ", "(", base::round(base::max(outputmatrix[, 3]), 3), ") ",  "at cut-off = ",
+                        base::round(outputmatrix[which(outputmatrix[, 3] == base::max(outputmatrix[, 3]))[1], 4], 3), ".", sep = ""),
          adj = c(0, 1))
   }
   if (maxAcc) {
-    graphics::points(outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5])), 1],
-                     outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5])), 2], cex = 1.5, pch = 19)
-    graphics::text(outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5])), 1] + .025,
-                   outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5])), 2] - .025,
-                   labels = paste("Maximum Accuracy ", "(", round(max(outputmatrix[, 5]), 3), ") ",  "at cut-off = ",
-                                  round(outputmatrix[which(outputmatrix[, 5] == max(outputmatrix[, 5]))[1], 4], 3), ".", sep = ""),
+    graphics::points(outputmatrix[base::which(outputmatrix[, 5] == base::max(outputmatrix[, 5])), 1],
+                     outputmatrix[base::which(outputmatrix[, 5] == base::max(outputmatrix[, 5])), 2], cex = 1.5, pch = 19)
+    graphics::text(outputmatrix[base::which(outputmatrix[, 5] == base::max(outputmatrix[, 5])), 1] + .025,
+                   outputmatrix[base::which(outputmatrix[, 5] == base::max(outputmatrix[, 5])), 2] - .025,
+                   labels = base::paste("Maximum Accuracy ", "(", base::round(base::max(outputmatrix[, 5]), 3), ") ",  "at cut-off = ",
+                                  base::round(outputmatrix[which(outputmatrix[, 5] == base::max(outputmatrix[, 5]))[1], 4], 3), ".", sep = ""),
                    adj = c(0, 1))
   }
-  if (!is.null(locate)) {
-    if (startsWith(tolower(locate[1]), "se")) {
-      rowloc <- which(outputmatrix[, "TPR"] >= as.numeric(locate[2]))[1]
+  if (!base::is.null(locate)) {
+    if (base::startsWith(base::tolower(locate[1]), "se")) {
+      rowloc <- base::which(outputmatrix[, "TPR"] >= base::as.numeric(locate[2]))[1]
       colloc <- "TPR"
       value <- outputmatrix[rowloc, "TPR"]
       statistic <- "Sensitivity >= "
     }
-    if (startsWith(tolower(locate[1]), "p")) {
-      rowloc <- which(outputmatrix[, "PPV"] <= as.numeric(locate[2]))[1]
+    if (base::startsWith(base::tolower(locate[1]), "p")) {
+      rowloc <- base::which(outputmatrix[, "PPV"] <= base::as.numeric(locate[2]))[1]
       colloc <- "PPV"
       value <- outputmatrix[rowloc, "PPV"]
       statistic <- "PPV <= "
     }
-    if (startsWith(tolower(locate[1]), "n")) {
-      rowloc <- which(outputmatrix[, "NPV"] >= as.numeric(locate[2]))[1]
+    if (base::startsWith(base::tolower(locate[1]), "n")) {
+      rowloc <- base::which(outputmatrix[, "NPV"] >= base::as.numeric(locate[2]))[1]
       colloc <- "NPV"
       value <- outputmatrix[rowloc, "NPV"]
       statistic <- "NPV >= "
     }
-    if (startsWith(tolower(locate[1]), "sp")) {
-      rowloc <- which(outputmatrix[, "FPR"] <= 1 - as.numeric(locate[2]))[length(which(outputmatrix[, "FPR"] <= 1 - as.numeric(locate[2])))]
+    if (base::startsWith(base::tolower(locate[1]), "sp")) {
+      rowloc <- base::which(outputmatrix[, "FPR"] <= 1 - base::as.numeric(locate[2]))[base::length(base::which(outputmatrix[, "FPR"] <= 1 - base::as.numeric(locate[2])))]
       colloc <- "FPR"
       value <- 1 - outputmatrix[rowloc, "FPR"]
       statistic <- "Specificity <= "
@@ -456,9 +456,9 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
     graphics::points(outputmatrix[rowloc, 1], outputmatrix[rowloc, 2], cex = 1.5, pch = 19)
     graphics::text(outputmatrix[rowloc, 1] + .025,
                    outputmatrix[rowloc, 2] - .025,
-                   labels = paste(statistic, as.numeric(locate[2]) , " (", round(value, 3), ")",
+                   labels = base::paste(statistic, base::as.numeric(locate[2]) , " (", base::round(value, 3), ")",
                                   " at cut-off = ", outputmatrix[rowloc, 4], ".", sep = ""),
-                   adj = if (startsWith(tolower(locate[1]), "sp")) { c(0, 1) } else { c(0, 1) })
+                   adj = if (base::startsWith(base::tolower(locate[1]), "sp")) { c(0, 1) } else { c(0, 1) })
   }
 }
 
@@ -489,9 +489,9 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
 #' AUC(coords[, "FPR"], coords[, "TPR"])
 #' @export
 AUC <- function(FPR, TPR) {
-  dFPR <- base::c(diff(FPR), 0)
-  dTPR <- base::c(diff(TPR), 0)
-  base::sum(TPR * dFPR) + sum(dTPR * dFPR)/2
+  dFPR <- base::c(base::diff(FPR), 0)
+  dTPR <- base::c(base::diff(TPR), 0)
+  base::sum(TPR * dFPR) + base::sum(dTPR * dFPR) / 2
 }
 
 #' Calculate Cronbach's Alpha from supplied variables.
@@ -577,13 +577,14 @@ cba <- function(x) {
 #' @export
 Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P", failsafe = FALSE, l = 0, u = 1, alpha = NA, beta = NA, output = "parameters") {
   if(output != "parameters") {
-    moments <- list()
+    moments <- base::list()
   }
+  true.model <- base::as.character(true.model)
   l.save <- l
   u.save <- u
   alpha.save <- alpha
   beta.save <- beta
-  if (!is.null(reliability)) {
+  if (!base::is.null(reliability)) {
     etl <- ETL(base::mean(x), stats::var(x), min, max, reliability)
   }
   x <- (x - min) / (max - min) * etl
@@ -599,60 +600,60 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
   tp.g3 <- (tp.m3 - 3 * tp.m1 * tp.m2 + 2 * tp.m1^3) / (sqrt(tp.s2)^3)
   tp.g4 <- (tp.m4 - 4 * tp.m1 * tp.m3 + 6 * tp.m1^2 * tp.m2 - 3 * tp.m1^4) / (sqrt(tp.s2)^4)
   if (output == "parameters") {
-    if (true.model == "4P" | true.model == "4p") {
+    if (base::startsWith(true.model, "4")) {
       params <- Beta.4p.fit(mean = tp.m1, variance = tp.s2, skewness = tp.g3, kurtosis = tp.g4)
       l <- params$l
       u <- params$u
       alpha <- params$alpha
       beta <- params$beta
     }
-    if ((true.model == "2P" | true.model == "2p") | (failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
-      if ((failsafe & (any(is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
+    if (base::startsWith(true.model, "2") | (failsafe & (base::any(base::is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
+      if ((failsafe & (base::any(base::is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
         warning(paste("Fail-safe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta,
                       ". Finding permissible solution for the true-score distribution in accordance with specifications.", sep = ""))
       }
-      if ((true.model != "2p" & true.model != "2P") & is.na(l.save)) {
+      if (!base::startsWith(true.model, "2") & base::is.na(l.save)) {
         l <- 0
         } else {
           l <- l.save
         }
-      if ((true.model != "2p" & true.model != "2P") & is.na(u.save)) {
+      if (!base::startsWith(true.model, "2") & base::is.na(u.save)) {
         u <- 1
         } else {
           u <- u.save
         }
       alpha <- alpha.save
       beta <- beta.save
-      if (!is.na(alpha) & !is.na(beta) & is.na(l) & is.na(u)) {
+      if (!base::is.na(alpha) & !base::is.na(beta) & base::is.na(l) & base::is.na(u)) {
         l <- LABMSU(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2)
         u <- UABMSL(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2)
       }
-      if (!is.na(alpha) & !is.na(beta) & is.na(l) & !is.na(u)) {
+      if (!base::is.na(alpha) & !base::is.na(beta) & base::is.na(l) & !base::is.na(u)) {
         l <- LABMSU(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2, u = u)
       }
-      if (!is.na(alpha) & !is.na(beta) & !is.na(l) & is.na(u)) {
+      if (!base::is.na(alpha) & !base::is.na(beta) & !base::is.na(l) & base::is.na(u)) {
         u <- UABMSL(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2, l = l)
       }
-      if (!is.na(alpha) & is.na(beta) & !is.na(l) & !is.na(u)) {
+      if (!base::is.na(alpha) & base::is.na(beta) & !base::is.na(l) & !base::is.na(u)) {
         beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = alpha)
       }
-      if (is.na(alpha) & !is.na(beta) & !is.na(l) & !is.na(u)) {
+      if (base::is.na(alpha) & !base::is.na(beta) & !base::is.na(l) & !base::is.na(u)) {
         alpha <- AMS(mean = tp.m1, variance = tp.s2, l = l,u = u, beta = beta)
       }
-      if (!is.na(alpha) & is.na(beta) & !is.na(l) & !is.na(u)) {
+      if (!base::is.na(alpha) & base::is.na(beta) & !base::is.na(l) & !base::is.na(u)) {
         beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = alpha)
       }
-      if (is.na(alpha) & is.na(beta) & !is.na(l) & !is.na(u)) {
+      if (base::is.na(alpha) & base::is.na(beta) & !base::is.na(l) & !base::is.na(u)) {
         alpha <- AMS(mean = tp.m1, variance = tp.s2, l = l, u = u, beta = NULL)
         beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = NULL)
       }
     }
-    return(list("l" = l, "u" = u, "alpha" = alpha, "beta" = beta, "etl" = etl))
+    base::return(base::list("l" = l, "u" = u, "alpha" = alpha, "beta" = beta, "etl" = etl))
   } else {
-    moments[["Raw"]] <- list(tp.m1, tp.m2, tp.m3, tp.m4)
-    moments[["Central"]] <- list(0, tp.s2, tp.s3, tp.s4)
-    moments[["Standardized"]] <- list(0, 1, tp.g3, tp.g4)
-    return(moments)
+    moments[["Raw"]] <- base::list(tp.m1, tp.m2, tp.m3, tp.m4)
+    moments[["Central"]] <- base::list(0, tp.s2, tp.s3, tp.s4)
+    moments[["Standardized"]] <- base::list(0, 1, tp.g3, tp.g4)
+    base::return(moments)
   }
 }
 
@@ -672,11 +673,11 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
 #' dfac(x = c(3.14, 2.72, 0.58), r = 5)
 dfac <- function(x, r, method = "product") {
   if (method == "product") {
-    x <- ifelse(x < r, 0, x)
+    x <- base::ifelse(x < r, 0, x)
     if (r <= 1) {
       x^r
     } else {
-      mat <- matrix(nrow = length(x), ncol = r)
+      mat <- base::matrix(nrow = length(x), ncol = r)
       for (i in 1:r) {
         if (i == 1) {
           mat[, 1] <- x
@@ -684,10 +685,10 @@ dfac <- function(x, r, method = "product") {
           mat[, i] <- x - i + 1
         }
       }
-      apply(mat, 1, prod)
+      base::apply(mat, 1, prod)
     }
   } else {
-    gamma(x + 1) / gamma(x - r + 1)
+    base::gamma(x + 1) / base::gamma(x - r + 1)
   }
 }
 
@@ -710,7 +711,7 @@ afac <- function(x, r, method = "product") {
     if (r <= 1) {
       x^r
     } else {
-      mat <- matrix(nrow = length(x), ncol = r)
+      mat <- base::matrix(nrow = length(x), ncol = r)
       for (i in 1:r) {
         if (i == 1) {
           mat[, 1] <- x
@@ -718,10 +719,10 @@ afac <- function(x, r, method = "product") {
           mat[, i] <- x + i - 1
         }
       }
-      apply(mat, 1, prod)
+      base::apply(mat, 1, prod)
     }
   } else {
-    gamma(x + r) / gamma(x)
+    base::gamma(x + r) / base::gamma(x)
   }
 }
 
@@ -757,12 +758,12 @@ afac <- function(x, r, method = "product") {
 #' # calculated above.
 tsm <- function(x, r, n, method = "product") {
   if (method != "product") {
-    mean(dfac(x, r, method)) / mean(dfac(n - 2, r - 2, method)) / dfac(n, 2, method)
+    base::mean(dfac(x, r, method)) / base::mean(dfac(n - 2, r - 2, method)) / dfac(n, 2, method)
   } else {
     if (r == 1) {
-      mean(x) / n
+      base::mean(x) / n
     } else {
-      (mean(dfac(x, r)) / dfac(n - 2, r - 2)) * (1 / dfac(n, 2))
+      (base::mean(dfac(x, r)) / dfac(n - 2, r - 2)) * (1 / dfac(n, 2))
     }
   }
 }
