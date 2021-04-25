@@ -19,5 +19,5 @@ Description: Package providing a number of functions for working with Two- and
     Tharwat (2020) <doi:10.1016/j.aci.2018.08.003>.
 License: CC0
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 RoxygenNote: 7.1.1
