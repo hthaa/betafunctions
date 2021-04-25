@@ -749,7 +749,7 @@ rBeta.4P <- function(n, l, u, alpha, beta) {
 #' pBeta.4P(q = 0.5, l = 0.25, u = 0.75, alpha = 5, beta = 3)
 #' @export
 pBeta.4P <- function(q, l, u, alpha, beta, lower.tail = TRUE) {
-  sapply(q, function(x) {
+  base::sapply(q, function(x) {
     num <- stats::integrate(function(y) { dBeta.4P(y, l, u, alpha, beta) }, lower = l, upper = x)$value
     den <- stats::integrate(function(y) { dBeta.4P(y, l, u, alpha, beta) }, lower = l, upper = u)$value
     if (lower.tail) {
@@ -810,7 +810,7 @@ qBeta.4P <- function(p, l, u, alpha, beta, lower.tail = TRUE) {
 #' curve(dBeta.4P(x, params.4p$l, params.4p$u, params.4p$alpha, params.4p$beta), add = TRUE)
 #' @export
 Beta.4p.fit <- function(scores, mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL) {
-  if (!any(is.null(c(mean, variance, skewness, kurtosis)))) {
+  if (!base::any(base::is.null(c(mean, variance, skewness, kurtosis)))) {
     m1 <- mean
     s2 <- variance
     g3 <- skewness
@@ -857,10 +857,10 @@ Beta.4p.fit <- function(scores, mean = NULL, variance = NULL, skewness = NULL, k
 #' curve(dbeta(x, params.2p$alpha, params.2p$beta), add = TRUE)
 #' @export
 Beta.2p.fit <- function(scores, mean = NULL, variance = NULL, l = 0, u = 1) {
-  if (max(scores) > u | min(scores) < l) {
+  if (base::max(scores) > u | base::min(scores) < l) {
     warning(paste("Input values outside the range of the specified location parameters of the Beta distribution (i.e., there are values falling outside the [", l, ", ", u, "] interval).", sep = ""))
   }
-  if (is.null(mean) & is.null(variance)) {
+  if (base::is.null(mean) & base::is.null(variance)) {
     mean <- base::mean(scores)
     variance <- stats::var(scores)
   }
@@ -1134,7 +1134,7 @@ qGammaBinom <- function(p, size, prob, lower.tail = TRUE, precision = 1e-7) {
       y <- pGammaBinom(x, size, prob, lower.tail)
       a <- size
       b <- x
-      while(abs(y - c) > precision) {
+      while(base::abs(y - c) > precision) {
         if (y < c) {
           if (lower.tail) {
             x <- x + abs((a - b)) / 2
@@ -1143,9 +1143,9 @@ qGammaBinom <- function(p, size, prob, lower.tail = TRUE, precision = 1e-7) {
           }
         } else {
           if (lower.tail) {
-            x <- x - abs((a - b)) / 2
+            x <- x - base::abs((a - b)) / 2
           } else {
-            x <- x + abs((a - b)) / 2
+            x <- x + base::abs((a - b)) / 2
           }
         }
         a <- b
