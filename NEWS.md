@@ -8,13 +8,15 @@
   
   - `pGammaBinom()`: Cumulative Probability Density Distribution for the Gamma-Binomial distribution.
   
-  - `qGammaBinom()`: Quantile function for the Gamma-Binomial distribution. Calls the `pGammaBinom()` function and utilizes a bisecting search-algorithm to find the number of "successful trials" corresponding to the quantile in question.
+  - `qGammaBinom()`: Quantile function for the Gamma-Binomial distribution. Calls the `pGammaBinom()` function and utilizes a bisecting search-algorithm to find the number of "successful trials" corresponding to the quantile in question. This algorithm is rather slow so the function might take longer to find the appropriate quantile than what one might be used to.
   
-  - `rGammaBinom()`: Random number generation for the Gamma-Binomial distribution. Calls the `qGammaBinom()` function. Since the `qGammaBinom()` function searches for the appropriate values using an inefficient search-algorithm (bisection), this random-number generation is somewhat slow. 
+  - `rGammaBinom()`: Random number generation for the Gamma-Binomial distribution. Calls the `qGammaBinom()` function. Since the `qGammaBinom()` function searches for the appropriate values using a rather inefficient search-algorithm (bisection), this random-number generation is somewhat slow. 
 
 - Added the `binomialmoments()` function, which allows for calculating the raw, central, and standardized moments of Binomial distributions (for which the Beta distribution is the conjugate prior).
 
 - Changes to the `LL.ROC()` function. 
+
+  - Changed the internal behaviour of the function to estimate the true-score distribution only once. This should greatly improve the time required to produce the plots.
 
   - Added the `locate` argument where it is possible to ask the function to locate the operational cut-point at which the values of sensitivity or NPV are greater than or equal to some value, or specificity or PPV are lesser than or equal to some value.
   

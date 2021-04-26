@@ -344,45 +344,44 @@ ccStats <- function(ii, ij, ji, jj) {
 #' testdata <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 #' hist(testdata / 100, xlim = c(0, 1), freq = FALSE)
 #'
-#' # To save time, estimate true-score distribution once using Beta.tp.fit().
-#' # Supposing that the effective test length is equal to the actual test
-#' # length (i.e., 100):
-#' param <- Beta.tp.fit(x = testdata, min = 0, max = 100, etl = 100)
-#'
-#' # Suppose the cutoff value for attaining a pass is 50 items correct. To
-#' # produce a plot with an ROC curve using LL.ROC(), along with the AUC
-#' # statistics and the points at which Youden's J. is maximized:
-#' LL.ROC(x = param, truecut = 50, min = 0, max = 100, AUC = TRUE, maxJ = TRUE)
+#' # Suppose the cutoff value for attaining a pass is 50 items correct.
+#' # Suppose further that the reliability of the test-scores were estimated to
+#' # 0.75. To produce a plot with an ROC curve using LL.ROC(), along with the
+#' # AUC statistics and the points at which Youden's J. is maximized:
+#' LL.ROC(x = testdata, reliability = 0.7, truecut = 50, min = 0, max = 100,
+#' AUC = TRUE, maxJ = TRUE)
 #' # Or to locate the point at which accuracy is maximized:
-#' LL.ROC(x = param, truecut = 50, min = 0, max = 100, maxAcc = TRUE)
+#' LL.ROC(x = testdata, reliability = 0.7, truecut = 50, min = 0, max = 100,
+#' maxAcc = TRUE)
 #'
-#' # Using the example data above, the function can be instructed to locate the
+#' # Using the example data above, the function can be instructed to locate an
 #' # operational cut-point at which sensitivity or specificity is equal to or
 #' # greater than some specified value by specifying the "locate" argument with
 #' # c("statistic", value). For example, to locate the operational cut-point at
 #' # which sensitivity is first equal to or greater than 0.9:
-#' LL.ROC(x = param, min = 0, max = 100, truecut = 50, AUC = TRUE,
+#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
 #' locate = c("sensitivity", 0.9))
 #' # For Negative Predictive value, the point at which it is equal or greater:
-#' LL.ROC(x = param, min = 0, max = 100, truecut = 50, AUC = TRUE,
+#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
 #' locate = c("NPV", 0.9))
 #' # For specificity, the point at which it is equal to or less than 0.9:
-#' LL.ROC(x = param, min = 0, max = 100, truecut = 50, AUC = TRUE,
+#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
 #' locate = c("specificity", 0.9))
 #' # For Positive Predictive Value, the point at which it is equal or less:
-#' LL.ROC(x = param, min = 0, max = 100, truecut = 50, AUC = TRUE,
+#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
 #' locate = c("PPV", 0.90))
 #' @export
 LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", error.model = "Binomial", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = 100) {
   oldpar <- graphics::par(no.readonly = TRUE)
   base::on.exit(graphics::par(oldpar))
+  x <- Beta.tp.fit(x, min, max, reliability = reliability, true.model = true.model, failsafe = failsafe, l = l, u = u)
   for (i in 1:(grainsize + 1)) {
     if (i == 1) {
       cuts <- seq(min, max, (max - min) / grainsize)
       outputmatrix <- matrix(nrow = grainsize + 1, ncol = 7)
       outputmatrix[, 4] <- cuts
     }
-    axval <- LL.CA(x = x, min = min, max = max, reliability = reliability, cut = cuts[i],
+    axval <- LL.CA(x = x, min = min, max = max, cut = cuts[i],
                    truecut = truecut, true.model = true.model, error.model = error.model,
                    output = "a", l = l, u = u)$classification.accuracy
     outputmatrix[i, 1] <- 1 - axval$Specificity
