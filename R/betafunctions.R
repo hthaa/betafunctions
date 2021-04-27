@@ -997,7 +997,7 @@ dBeta.pBeta <- function(x, l, u, alpha, beta, n, c, lower.tail = FALSE) {
   }
 }
 
-#' Generalized Binomial coefficient (choose function) extended to positive non-integers.
+#' Gamma-extended Binomial coefficient (choose function).
 #'
 #' @description Extends the Binomial coefficient for positive non-integers (including 0) by employing the Gamma rather than the factorial function.
 #' @param n In Binomial terms, the number of Binomial "trials". Need not be an integer.
@@ -1015,7 +1015,7 @@ gchoose <- function(n, k) {
   gamma(n + 1) / (gamma(k + 1) * gamma(n - k + 1))
 }
 
-#' Generalized cumulative Binomial probability density function (Gamma-Binomial) extended to positive non-integers.
+#' Cumulative probability density function under the Gamma-extended Binomial distribution.
 #'
 #' @description Extends the cumulative Binomial probability mass function to positive non-integers, effectively turning the mass-function into a density-function.
 #' @param q Vector of quantiles.
@@ -1044,7 +1044,7 @@ pGammaBinom <- function(q, size, prob, lower.tail = TRUE) {
   })
 }
 
-#' Generalized Binomial probability density function (Gamma-Binomial) extended to positive non-integers.
+#' Probability density function under the Gamma-extended Binomial distribution.
 #'
 #' @param x Vector of quantiles.
 #' @param size Number of "trials" (zero or more). Need not be integer.
@@ -1084,7 +1084,7 @@ dGammaBinom <- function(x, size, prob, nc = FALSE) {
   }
 }
 
-#' Random number generation under the generalized Binomial distribution (Gamma-Binomial) extended to non-integers.
+#' Random number generation under the Gamma-extended Binomial distribution.
 #'
 #' @param n Number of observations.
 #' @param size Number of "trials" (zero or more). Need not be integer.
