@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{pGammaBinom}
 \alias{pGammaBinom}
-\title{Generalized cumulative Binomial probability density function (Gamma-Binomial) extended to positive non-integers.}
+\title{Cumulative probability density function under the Gamma-extended Binomial distribution.}
 \usage{
 pGammaBinom(q, size, prob, lower.tail = TRUE)
 }

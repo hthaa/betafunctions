@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{gchoose}
 \alias{gchoose}
-\title{Generalized Binomial coefficient (choose function) extended to positive non-integers.}
+\title{Gamma-extended Binomial coefficient (choose function).}
 \usage{
 gchoose(n, k)
 }

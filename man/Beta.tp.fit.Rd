@@ -26,7 +26,7 @@ Beta.tp.fit(
 
 \item{max}{The maximum possible score to attain on the test.}
 
-\item{etl}{The value of Livingston and Lewis' effective test length. See \code{?ETL()}.}
+\item{etl}{The value of Livingston and Lewis' effective test length. See \code{?ETL()}. Not necessary to specify if reliability is supplied to the \code{reliability} argument.}
 
 \item{reliability}{Optional specification of the test-score reliability coefficient. If specified, overrides the input of the \code{etl} argument.}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{dGammaBinom}
 \alias{dGammaBinom}
-\title{Generalized Binomial probability density function (Gamma-Binomial) extended to positive non-integers.}
+\title{Probability density function under the Gamma-extended Binomial distribution.}
 \usage{
 dGammaBinom(x, size, prob, nc = FALSE)
 }
@@ -16,7 +16,7 @@ dGammaBinom(x, size, prob, nc = FALSE)
 \item{nc}{Whether to include a normalizing constant making sure that the sum of the distribution's density is 1.}
 }
 \description{
-Generalized Binomial probability density function (Gamma-Binomial) extended to positive non-integers.
+Probability density function under the Gamma-extended Binomial distribution.
 }
 \examples{
 #' # Assume some variable follows a Gamma-Binomial distribution with

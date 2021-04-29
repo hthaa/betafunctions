@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{rGammaBinom}
 \alias{rGammaBinom}
-\title{Random number generation under the generalized Binomial distribution (Gamma-Binomial) extended to non-integers.}
+\title{Random number generation under the Gamma-extended Binomial distribution.}
 \usage{
 rGammaBinom(n, size, prob)
 }
@@ -14,7 +14,7 @@ rGammaBinom(n, size, prob)
 \item{prob}{Probability of "success" on each "trial". Need not be integer.}
 }
 \description{
-Random number generation under the generalized Binomial distribution (Gamma-Binomial) extended to non-integers.
+Random number generation under the Gamma-extended Binomial distribution.
 }
 \note{
 Calls \code{qGammaBinom()}, which makes the random draw slower than what one might be used to (since \code{qGammaBinom()} calls \code{pGammaBinom()} and employs a search-algorithm to find the appropriate value down to a specifiable level of precision).
