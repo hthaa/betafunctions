@@ -4,7 +4,7 @@
 \alias{rGammaBinom}
 \title{Random number generation under the Gamma-extended Binomial distribution.}
 \usage{
-rGammaBinom(n, size, prob)
+rGammaBinom(n, size, prob, precision = 1e-04)
 }
 \arguments{
 \item{n}{Number of observations.}
@@ -12,6 +12,8 @@ rGammaBinom(n, size, prob)
 \item{size}{Number of "trials" (zero or more). Need not be integer.}
 
 \item{prob}{Probability of "success" on each "trial". Need not be integer.}
+
+\item{precision}{The precision with which the quantile is to be calculated. Default is 1e-4 (i.e., search terminates when there is no registered change in estimate at the fourth decimal). Tuning this value will impact the time it takes for the search algorithm to arrive at an estimate.}
 }
 \description{
 Random number generation under the Gamma-extended Binomial distribution.

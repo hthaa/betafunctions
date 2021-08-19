@@ -11,7 +11,7 @@ afac(x, r, method = "product")
 
 \item{r}{The power \code{x} is to be raised to.}
 
-\item{method}{The method by which the descending factorials are to be calculated. Default is \code{"product"} which uses direct arithmetic. Alternative is "gamma" which calculates the descending factorial using the Gamma function. The alternative method might be faster but might fail because the Gamma function is not defined for negative integers (returning Inf).}
+\item{method}{The method by which the descending factorials are to be calculated. Default is \code{"product"} which uses direct arithmetic. Alternative is \code{"gamma"} which calculates the descending factorial using the Gamma function. The alternative method might be faster but might fail because the Gamma function is not defined for negative integers (returning Inf).}
 }
 \value{
 The ascending factorial of value \code{x} raised to the \code{r}'th power.

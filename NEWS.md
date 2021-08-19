@@ -1,3 +1,17 @@
+# betafunctions v. 1.6.0
+
+- Major updates to the classification accuracy and consistency functionalities:
+
+  - Added new `LL.ROC()` functionality, providing the option to give the ROC-curve a classic, "staircase" look. This option is made the default.
+
+  - Added the `LL.CA.MC()` function extending the Livingston and Lewis approach to using multiple cut-points. The output of this function can grow quite verbose when operating with several cut-points, as diagnostic performance and consistency indices are estimated and reported for each group separately.
+  
+  - Removed the `error.model` argument of the `LL.CA()` function. In essence, this means that one can no longer specify a beta error model.
+  
+  - Added model-fit functionality to the `LL.CA()` function. The model-fit is examined by comparing observed and model-expected frequencies by binning frequencies into bins of at least 10 expected and observed frequencies. According to Lord, this model fit procedure has N-bins - 4 degrees of freedom, meaning that model-fit cannot be examined if a grouping of the observed-score distribution reduces to fewer than 5 bins.
+
+---
+
 # betafunctions v. 1.5.0
 
 - Added the `gchoose()` function generalizing the base-R `choose()` function to work with non-integers and positive integers by calculating the factorials of the Binomial coefficient by drawing on the Gamma distribution.
@@ -16,7 +30,7 @@
 
 - Changes to the `LL.ROC()` function. 
 
-  - Changed the internal behaviour of the function to estimate the true-score distribution only once. This should greatly improve the time required to produce the plots.
+  - Changed the internal behavior of the function to estimate the true-score distribution only once. This should greatly improve the time required to produce the plots.
 
   - Added the `locate` argument where it is possible to ask the function to locate the operational cut-point at which the values of sensitivity or NPV are greater than or equal to some value, or specificity or PPV are lesser than or equal to some value.
   
@@ -26,7 +40,7 @@
   
 - Changes to the `afac` and `dfac` functions.
 
-  - Due to the problems associated with calculating descending and ascending factorials for low-valued integers by means of the gamma function (particularly for descending factorials), a direct-arithmetic solution is implemented and set as the default method. In order to use the gamma function rather than direct arithmetic, specify any value other than "product" as part of the `method` argument.
+  - Due to the problems associated with calculating descending and ascending factorials for low-valued integers by means of the gamma function (particularly for descending factorials), a direct-arithmetic solution is implemented and set as the default method. In order to use the gamma function rather than direct arithmetic, specify any value other than `"product"` as part of the `method` argument.
   
 - Changes to the `tsm` function.
 
@@ -34,7 +48,7 @@
 
 - Correction to the `LL.CA()` function. The Binomial error distribution evaluated up to and including the cut-point. The intended behaviour was to evaluate up to but NOT including the cut-point. Prior to this correction, it is expected that the `LL.CA()` function will have underestimated accuracy somewhat.
 
-  - This new behaviour applies to the `dBeta.pBinom()` function as well, which is contrary to the default behaviour of base-R's `pbinom()` function.
+  - This new behavior applies to the `dBeta.pBinom()` function as well, which is contrary to the default behavior of base-R's `pbinom()` function.
 
 ---
 

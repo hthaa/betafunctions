@@ -219,7 +219,7 @@ AMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
     alpha <- ((l - mean) * (l * (mean - u) - mean^2 + mean * u - variance)) / (variance * (l - u))
   }
   if(is.null(alpha)) {
-    warning("Insufficient information")
+    warning("Insufficient information.")
   } else {
     if (alpha <= 0) {
       warning("Parameter out of bounds (alpha <= 0).")
@@ -290,7 +290,7 @@ BMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
     beta <- (mean - u) * (l * (u - mean) + mean^2 - mean * u + variance) / (variance * (u - l))
   }
   if(is.null(beta)) {
-    warning("Insufficient information")
+    warning("Insufficient information.")
   } else {
     if (beta <= 0) {
       warning("Parameter out of bounds (beta <= 0).")
@@ -1089,6 +1089,7 @@ dGammaBinom <- function(x, size, prob, nc = FALSE) {
 #' @param n Number of observations.
 #' @param size Number of "trials" (zero or more). Need not be integer.
 #' @param prob Probability of "success" on each "trial". Need not be integer.
+#' @param precision The precision with which the quantile is to be calculated. Default is 1e-4 (i.e., search terminates when there is no registered change in estimate at the fourth decimal). Tuning this value will impact the time it takes for the search algorithm to arrive at an estimate.
 #' @note Calls \code{qGammaBinom()}, which makes the random draw slower than what one might be used to (since \code{qGammaBinom()} calls \code{pGammaBinom()} and employs a search-algorithm to find the appropriate value down to a specifiable level of precision).
 #' @examples
 #' # Assume some variable follows a Gamma-Binomial distribution with
@@ -1096,8 +1097,8 @@ dGammaBinom <- function(x, size, prob, nc = FALSE) {
 #' # = 0.75 To draw a random value from this distribution:
 #' rGammaBinom(n = 1, size = 10, prob = 0.75)
 #' @export
-rGammaBinom <- function(n, size, prob) {
-  qGammaBinom(stats::runif(n, 0, 1), size = size, prob = prob)
+rGammaBinom <- function(n, size, prob, precision = 1e-4) {
+  qGammaBinom(stats::runif(n, 0, 1), size = size, prob = prob, precision = precision)
 }
 
 #' Quantile function for the Gamma-extended Binomial distribution.
