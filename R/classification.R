@@ -87,7 +87,7 @@ ETL <- function(mean, variance, min = 0, max = 1, reliability) {
 #' @references Lord. Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
 #' @references Lewis, Don and Burke, C. J. (1949). The Use and Misuse of the Chi-Square Test. Psychological Bulletin, 46(6).
 #' @export
-LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", truecut = NULL, output = c("accuracy", "consistency"), failsafe = TRUE, l = 0, u = 1) {
+LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", truecut = NULL, output = c("accuracy", "consistency"), failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 10, "minbin" = 10)) {
   out <- base::list()
   if (class(x) != "list") {
     if ((base::min(x) < min) | (base::max(x) > max)) {
@@ -108,12 +108,12 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
   if (base::is.null(truecut)) {
     truecut <- cut
   }
+  N <- base::round(N)
   cut <- (cut - min) / (max - min)
   truecut <- (truecut - min) / (max - min)
-  N <- base::round(N)
   params[["etl_rounded"]] <- N
   out[["parameters"]] <- params
-  tcut <- round(seq(0, N, N / 10))
+  tcut <- round(seq(0, N, N / modelfit[1]))
   mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
   rownames(mdlfit) <- c("Expected", "Observed")
   if (class(x) != "list") {
@@ -136,7 +136,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
     for (i in 1:ncol(mdlfit)) {
       if (i < ncol(mdlfit)) {
         if (any(mdlfit[, i] < ncol(mdlfit))) {
-          if (any(mdlfit[, i] < 10)) {
+          if (any(mdlfit[, i] < modelfit[2])) {
             mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
             mdlfit[, i] <- NA
           }
@@ -144,7 +144,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
       }
     }
     mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
-    if (any(mdlfit[, ncol(mdlfit)] < 10)) {
+    if (any(mdlfit[, ncol(mdlfit)] < modelfit[2])) {
       mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
       mdlfit <- mdlfit[, -ncol(mdlfit)]
     }
@@ -255,7 +255,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' @references Lord. Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
 #' @references Lewis, Don and Burke, C. J. (1949). The Use and Misuse of the Chi-Square Test. Psychological Bulletin, 46(6).
 #' @export
-LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", failsafe = TRUE, l = 0, u = 1) {
+LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 10, "minbin" = 10)) {
   out <- base::list()
   if (class(x) != "list") {
     if ((base::min(x) < min) | (base::max(x) > max)) {
@@ -278,8 +278,8 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
   params[["etl_rounded"]] <- N
   out[["parameters"]] <- params
   pcut <- c(0, cut, 1)
-  ocut <- floor(pcut * N)
-  tcut <- round(seq(0, N, N / 10))
+  ocut <- round(pcut * N)
+  tcut <- round(seq(0, N, N / modelfit[1]))
   mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
   rownames(mdlfit) <- c("Expected", "Observed")
   camat <- matrix(ncol = length(cut) + 1, nrow = length(cut) + 1)
@@ -290,22 +290,22 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
       mdlfit[1, j] <- stats::integrate(function(x) {
         if(j == 1) {
           dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1] - 1, N, x))
+        } else {
+          if (j != 1 & j != (length(tcut) - 1)) {
+            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1] - 1, N, x) - stats::pbinom(tcut[j] - 1, N, x))
           } else {
-            if (j != 1 & j != (length(tcut) - 1)) {
-              dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1] - 1, N, x) - stats::pbinom(tcut[j] - 1, N, x))
-              } else {
-                dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1], N, x) - stats::pbinom(tcut[j] - 1, N, x))
-              }
-            }
-        }, lower = 0, upper = 1)$value
+            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1], N, x) - stats::pbinom(tcut[j] - 1, N, x))
+          }
+        }
+      }, lower = 0, upper = 1)$value
       mdlfit[2, j] <- length(x[x < tcut[j + 1] & x >= tcut[j]])
-      }
+    }
     mdlfit[1, ] <- (mdlfit[1, ] / sum(mdlfit[1, ])) * length(x)
 
     for (i in 1:ncol(mdlfit)) {
       if (i < ncol(mdlfit)) {
         if (any(mdlfit[, i] < ncol(mdlfit))) {
-          if (any(mdlfit[, i] < 10)) {
+          if (any(mdlfit[, i] < modelfit[2])) {
             mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
             mdlfit[, i] <- NA
           }
@@ -313,7 +313,7 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
       }
     }
     mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
-    if (any(mdlfit[, ncol(mdlfit)] < 10)) {
+    if (any(mdlfit[, ncol(mdlfit)] < modelfit[2])) {
       mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
       mdlfit <- mdlfit[, -ncol(mdlfit)]
     }
@@ -332,20 +332,20 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
         if (j == 1) {
           rnam <- NULL
           cnam <- NULL
-          }
+        }
         if (j != (length(cut) + 1)) {
           if (j == 1) {
             rnam[j] <- paste("Observed <", pcut[j + 1] * max)
             cnam[j] <- paste("True     <", pcut[j + 1] * max)
-            } else {
-              rnam[j] <- paste(" >=", pcut[j] * max, "& <", pcut[j + 1] * max)
-              cnam[j] <- paste(" >=", pcut[j] * max, "& <", pcut[j + 1] * max)
-              }
           } else {
-            rnam[j] <- paste(" >=", pcut[j] * max)
-            cnam[j] <- paste(" >=", pcut[j] * max)
+            rnam[j] <- paste(" >=", pcut[j] * max, "& <", pcut[j + 1] * max)
+            cnam[j] <- paste(" >=", pcut[j] * max, "& <", pcut[j + 1] * max)
           }
+        } else {
+          rnam[j] <- paste(" >=", pcut[j] * max)
+          cnam[j] <- paste(" >=", pcut[j] * max)
         }
+      }
       colnames(camat) <- cnam
       rownames(camat) <- rnam
     }
@@ -353,13 +353,13 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
       camat[j, i] <- stats::integrate(function(x) {
         if(j == 1) {
           dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1] - 1, N, x))
+        } else {
+          if (j != 1 & j != (length(cut) + 1)) {
+            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1] - 1, N, x) - stats::pbinom(ocut[j] - 1, N, x))
           } else {
-            if (j != 1 & j != (length(cut) + 1)) {
-              dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1] - 1, N, x) - stats::pbinom(ocut[j] - 1, N, x))
-              } else {
-                dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1], N, x) - stats::pbinom(ocut[j] - 1, N, x))
-              }
-            }
+            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1], N, x) - stats::pbinom(ocut[j] - 1, N, x))
+          }
+        }
       }, lower = pcut[i], upper = pcut[i + 1])$value
     }
   }
@@ -404,24 +404,42 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
     }
     for (j in 1:(length(cut) + 1)) {
       ccmat[j, i] <- stats::integrate(function(x) {
-        if(j == 1) {
+        if (j == 1) {
           if (i == 1) {
-            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * ((stats::pbinom(ocut[j + 1] - 1, N, x)) * (stats::pbinom(ocut[i + 1] - 1, N, x)))
+            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(ocut[j + 1] - 1, N, x) * stats::pbinom(ocut[i + 1] - 1, N, x)
           } else {
-            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * ((stats::pbinom(ocut[j + 1] - 1, N, x)) *
-                                                                            (stats::pbinom(ocut[i + 1] - 1, N, x) - stats::pbinom(ocut[i] - 1, N, x)))
+            if (i == (length(cut) + 1)) {
+              dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(ocut[j + 1] - 1, N, x) *
+                (stats::pbinom(ocut[i + 1], N, x) - stats::pbinom(ocut[i] - 1, N, x))
+            } else {
+              dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * stats::pbinom(ocut[j + 1] - 1, N, x) *
+                (stats::pbinom(ocut[i + 1] - 1, N, x) - stats::pbinom(ocut[i] - 1, N, x))
+            }
           }
         } else {
-          if ((j != 1 & j != (length(cut) + 1))) {
-            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * ((stats::pbinom(ocut[j + 1] - 1, N, x) - stats::pbinom(ocut[j] - 1, N, x)) *
-              (stats::pbinom(ocut[i + 1] - 1, N, x) - stats::pbinom(ocut[i] - 1, N, x)))
-          } else {
-            if (i != 1 & i != (length(cut) + 1)) {
-              dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * ((stats::pbinom(ocut[j + 1], N, x) - stats::pbinom(ocut[j] - 1, N, x)) *
-                                                                              (stats::pbinom(ocut[i + 1], N, x) - stats::pbinom(ocut[i] - 1, N, x)))
+          if (j == (length(cut) + 1)) {
+            if (i == 1) {
+              dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1], N, x) - stats::pbinom(ocut[j] - 1, N, x)) * stats::pbinom(ocut[i + 1] - 1, N, x)
             } else {
-              dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * ((stats::pbinom(ocut[j + 1], N, x) - stats::pbinom(ocut[j] - 1, N, x)) *
-                                                                              (stats::pbinom(ocut[i + 1] - 1, N, x) - stats::pbinom(ocut[i] - 1, N, x)))
+              if (i == (length(cut) + 1)) {
+                dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1], N, x) - stats::pbinom(ocut[j] - 1, N, x)) *
+                  (stats::pbinom(ocut[i + 1], N, x) - stats::pbinom(ocut[i] - 1, N, x))
+              } else {
+                dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1], N, x) - stats::pbinom(ocut[j] - 1, N, x)) *
+                  (stats::pbinom(ocut[i + 1] - 1, N, x) - stats::pbinom(ocut[i] - 1, N, x))
+              }
+            }
+          } else {
+            if (i == 1) {
+              dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1] - 1, N, x) - stats::pbinom(ocut[j] - 1, N, x)) * stats::pbinom(ocut[i + 1] - 1, N, x)
+            } else {
+              if (i == (length(cut) + 1)) {
+                dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1] - 1, N, x) - stats::pbinom(ocut[j] - 1, N, x)) *
+                  (stats::pbinom(ocut[i + 1], N, x) - stats::pbinom(ocut[i] - 1, N, x))
+              } else {
+                dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(ocut[j + 1] - 1, N, x) - stats::pbinom(ocut[j] - 1, N, x)) *
+                  (stats::pbinom(ocut[i + 1] - 1, N, x) - stats::pbinom(ocut[i] - 1, N, x))
+              }
             }
           }
         }
@@ -448,6 +466,7 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
   out[["consistency"]][["specific"]] <- ccout
   base::return(out)
 }
+
 
 #' Confusion matrix
 #'

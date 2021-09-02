@@ -13,7 +13,8 @@ LL.CA.MC(
   true.model = "4P",
   failsafe = TRUE,
   l = 0,
-  u = 1
+  u = 1,
+  modelfit = c(nbins = 10, minbin = 10)
 )
 }
 \arguments{

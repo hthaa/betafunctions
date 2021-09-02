@@ -1,3 +1,9 @@
+# betafunctions v. 1.6.1
+
+- Added `modelfit` arguments to the `LL.CA()` and `LL.CA.MC()` functions that allow for controlling the maximum number of- and minimum size of the bins that are to be used for the chi-square test of model fit. Tuning the maximum number and minimum size of the bins should facilitate model-fit testing if the default option does not afford sufficient degrees of freedom for the test.
+
+---
+
 # betafunctions v. 1.6.0
 
 - Major updates to the classification accuracy and consistency functionalities:
@@ -178,7 +184,7 @@
 
 - Fixed the `LL.ROC()` function which stopped working after the previous update.
 
-	- Included possibility of specifying the number of points for which the ROC curve is drawn and the AUC statistic is calculated by way of the new `grainsize`argument.
+	- Included possibility of specifying the number of points for which the ROC curve is drawn and the AUC statistic is calculated by way of the new `grainsize` argument.
 
 ---
 

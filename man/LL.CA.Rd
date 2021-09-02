@@ -15,7 +15,8 @@ LL.CA(
   output = c("accuracy", "consistency"),
   failsafe = TRUE,
   l = 0,
-  u = 1
+  u = 1,
+  modelfit = c(nbins = 10, minbin = 10)
 )
 }
 \arguments{
