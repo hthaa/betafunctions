@@ -95,6 +95,9 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
                     base::min(x), ", observed max = ", base::max(x), ").", sep = ""))
     }
     N <- ETL(base::mean(x), stats::var(x), min = min, max = max, reliability = reliability)
+    if (startsWith(as.character(true.model), "2")) {
+      failsafe <- FALSE
+    }
     params <- Beta.tp.fit(x, min = min, max = max, etl = N, true.model = true.model, failsafe = failsafe, l = l, u = u)
     if (params$l < 0 | params$u > 1) {
       warning(paste("Parameter out of bounds: l = ", round(params$l, 4), ", u = ", round(params$u, 4), ", alpha = ", round(params$alpha, 4), ", beta = ", round(params$beta, 4),
@@ -263,6 +266,9 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
                     base::min(x), ", observed max = ", base::max(x), ").", sep = ""))
     }
     N <- ETL(base::mean(x), stats::var(x), min = min, max = max, reliability = reliability)
+    if (startsWith(as.character(true.model), "2")) {
+      failsafe <- FALSE
+    }
     params <- Beta.tp.fit(x, min = min, max = max, etl = N, true.model = true.model, failsafe = failsafe, l = l, u = u)
     if (params$l < 0 | params$u > 1) {
       warning(paste("Parameter out of bounds: l = ", round(params$l, 4), ", u = ", round(params$u, 4), ", alpha = ", round(params$alpha, 4), ", beta = ", round(params$beta, 4),

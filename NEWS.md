@@ -1,6 +1,10 @@
 # betafunctions v. 1.6.1
 
-- Added `modelfit` arguments to the `LL.CA()` and `LL.CA.MC()` functions that allow for controlling the maximum number of- and minimum size of the bins that are to be used for the chi-square test of model fit. Tuning the maximum number and minimum size of the bins should facilitate model-fit testing if the default option does not afford sufficient degrees of freedom for the test.
+- Added `modelfit` arguments to the `LL.CA()` and `LL.CA.MC()` functions that allow for controlling the maximum number of- and minimum size of the bins that are to be used for the chi-square test of model fit. Tuning the maximum number and minimum size of the bins should facilitate model-fit testing if the default settings does not result in sufficient degrees of freedom to perform the significance-test.
+
+- Fixed bug in the `LL.CA.MC()` function regarding the assembly of the consistency matrix when more than two categories were included which resulted in some entries having slightly too large values. This change results in slight changes to the estimated consistency-indices (now more precise).
+
+- The `LL.CA()` and `LL.CA.MC()` functions no longer issue warnings if parameter estimates are out of bounds if the `true.model` argument is specified to `"2P"` and the `failsafe` argument is set to `TRUE` (the default).
 
 ---
 
