@@ -1065,6 +1065,7 @@ gchoose <- function(n, k) {
 #' @param prob Probability of "success" on each "trial". Need not be integer.
 #' @param lower.tail Logical. If TRUE (default), probabilities are P[X<x], otherwise, P[X >= x]. Note that this differs from base-R \code{binom()} functions.
 #' @references Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).
+#' @examples
 #' # Assume some variable follows a Gamma-Binomial  distribution with
 #' # "number of trials" = 10.5 and probability of "success" for each "trial"
 #' # = 0.75, to compute the cumulative probability to attain a "number of
