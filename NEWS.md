@@ -1,5 +1,7 @@
 # betafunctions v. 1.6.1
 
+- Added `betamode()` and `betamedian()` functions that allow for calculating the mode and median (respectively) of two- and four-parameter Beta distributions.
+
 - Added `modelfit` arguments to the `LL.CA()` and `LL.CA.MC()` functions that allow for controlling the maximum number of- and minimum size of the bins that are to be used for the chi-square test of model fit. Tuning the maximum number and minimum size of the bins should facilitate model-fit testing if the default settings does not result in sufficient degrees of freedom to perform the significance-test.
 
 - Fixed bug in the `LL.CA.MC()` function regarding the assembly of the consistency matrix when more than two categories were included which resulted in some entries having slightly too large values. This change results in slight changes to the estimated consistency-indices (now more precise).

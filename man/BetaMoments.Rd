@@ -14,13 +14,13 @@ betamoments(
 )
 }
 \arguments{
-\item{alpha}{The alpha shape parameter of the PDD.}
+\item{alpha}{The alpha shape parameter.}
 
-\item{beta}{The beta shape parameter of the PDD.}
+\item{beta}{The beta shape parameter.}
 
-\item{l}{The first (lower) location parameter of a four-parameter distribution.}
+\item{l}{The first (lower) location parameter.}
 
-\item{u}{The second (upper) location parameter of a four-parameter distribution.}
+\item{u}{The second (upper) location parameter.}
 
 \item{types}{A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".}
 

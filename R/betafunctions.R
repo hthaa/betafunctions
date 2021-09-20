@@ -1,10 +1,10 @@
 #' Compute Moments of Two-to-Four Parameter Beta Probability Density Distributions.
 #'
 #' @description Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
-#' @param alpha The alpha shape parameter of the PDD.
-#' @param beta The beta shape parameter of the PDD.
-#' @param l The first (lower) location parameter of a four-parameter distribution.
-#' @param u The second (upper) location parameter of a four-parameter distribution.
+#' @param alpha The alpha shape parameter.
+#' @param beta The beta shape parameter.
+#' @param l The first (lower) location parameter.
+#' @param u The second (upper) location parameter.
 #' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
 #' @examples
@@ -50,6 +50,48 @@ betamoments <- function(alpha, beta, l = 0, u = 1, types = c("raw", "central", "
     base::names(moments)[type] <- "standardized"
   }
   return(moments)
+}
+
+#' Compute Mode of Two- and Four-Parameter Beta Probability Density distribution.
+#'
+#' @description Computes the mode of a Beta distribution with specified shape- and location parameters.
+#' @param alpha The alpha shape parameter of the PDD.
+#' @param beta The beta shape parameter of the PDD.
+#' @param l The first (lower) location parameter of a four-parameter distribution. Default set to \code{0}.
+#' @param u The second (upper) location parameter of a four-parameter distribution. Default set to \code{1}.
+#' @examples
+#' # To calculate the mode of a two-parameter (standard) Beta distribution with
+#' # shape parameters alpha = 5 and beta = 3:
+#' betamode(alpha = 5, beta = 3)
+#'
+#' # To calculate the mode of a four-parameter Beta distribution with shape
+#' # parameters alpha = 5 and beta = 3, and location parameters l = 25 and
+#' # u = 150:
+#' betamode(alpha = 5, beta = 3, l = 25, u = 150)
+#' @export
+betamode <- function(alpha, beta, l = 0, u = 1) {
+  ((alpha - 1) / (alpha + beta - 2)) * (u - l) + l
+}
+
+#' Compute Median of Two- and Four-Parameter Beta Probability Density distribution.
+#'
+#' @description Computes the median of a Beta distribution with specified shape- and location parameters.
+#' @param alpha The alpha shape parameter.
+#' @param beta The beta shape parameter.
+#' @param l The first (lower) location parameter. Default set to \code{0}.
+#' @param u The second (upper) location parameter. Default set to \code{1}.
+#' @examples
+#' # To calculate the median of a two-parameter (standard) Beta distribution with
+#' # shape parameters alpha = 5 and beta = 3:
+#' betamedian(alpha = 5, beta = 3)
+#'
+#' # To calculate the median of a four-parameter Beta distribution with shape
+#' # parameters alpha = 5 and beta = 3, and location parameters l = 25 and
+#' # u = 150:
+#' betamedian(alpha = 5, beta = 3, l = 25, u = 150)
+#' @export
+betamedian <- function(alpha, beta, l = 0, u = 1) {
+  (alpha - (1/3)) / (alpha + beta - (2/3)) * (u - l) + l
 }
 
 #' Compute Moments of Binomial Probability Mass Functions.
