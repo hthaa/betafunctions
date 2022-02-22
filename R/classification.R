@@ -24,6 +24,32 @@ ETL <- function(mean, variance, min = 0, max = 1, reliability) {
   ((mean - min) * (max - mean) - (reliability * variance)) / (variance * (1 - reliability))
 }
 
+#' Model implied reliability from Livingston and Lewis' "Effective Test Length".
+#'
+#' @description  Calculate model-implied reliability given mean, variance, the minimum and maximum possible scores, and the effective test length.
+#' @param mean The mean of the observed-score distribution.
+#' @param variance The variance of the observed-score distribution.
+#' @param min The lower-bound (minimum possible value) of the observed-score distribution. Default is 0 (assuming observed scores represent proportions).
+#' @param max The upper-bound (maximum possible value) of the observed-score distribution. Default is 1 (assuming observed scores represent proportions).
+#' @param ETL The effective test length as defined by Livingston and Lewis (1995).
+#' @return An estimate of the reliability of a test, given the effective test length, mean, variance, and minimum and maximum possible scores of the observed-score distribution..
+#' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
+#' @examples
+#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' hist(testdata, xlim = c(0, 100))
+#'
+#' # From the data-generating script above, the effective test length is 100.
+#' # To estimate and retrieve the model-implied reliability using R.ETL():
+#' R.ETL(mean = mean(testdata), variance = var(testdata), min = 0, max = 100,
+#' ETL = 100)
+#' @export
+R.ETL <- function(mean, variance, min = 0, max = 1, ETL) {
+  (ETL * variance + min * (max - mean) + mean * (mean - max)) / ((ETL - 1) * variance)
+}
+
 #' An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Consistency and Accuracy based on Observed Test Scores and Test Reliability.
 #'
 #' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
@@ -38,7 +64,7 @@ ETL <- function(mean, variance, min = 0, max = 1, reliability) {
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-squre test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 10. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
+#' @param modelfit Allows for controlling the chi-squre test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to estimating classification consistency outlined by Hanson (1991).
 #' @note A shiny application providing a GUI for this method is available at https://hthaa.shinyapps.io/shinybeta/ .
@@ -88,7 +114,7 @@ ETL <- function(mean, variance, min = 0, max = 1, reliability) {
 #' @references Lord. Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
 #' @references Lewis, Don and Burke, C. J. (1949). The Use and Misuse of the Chi-Square Test. Psychological Bulletin, 46(6).
 #' @export
-LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", truecut = NULL, output = c("accuracy", "consistency"), failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 10, "minbin" = 10)) {
+LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", truecut = NULL, output = c("accuracy", "consistency"), failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 100, "minbin" = 10)) {
   out <- base::list()
   if (class(x) != "list") {
     if ((base::min(x) < min) | (base::max(x) > max)) {
@@ -139,8 +165,8 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
     mdlfit[1, ] <- (mdlfit[1, ] / sum(mdlfit[1, ])) * length(x)
     for (i in 1:ncol(mdlfit)) {
       if (i < ncol(mdlfit)) {
-        if (any(mdlfit[, i] < ncol(mdlfit))) {
-          if (any(mdlfit[, i] < modelfit[2])) {
+        if (any(mdlfit[1, i] < ncol(mdlfit))) {
+          if (any(mdlfit[1, i] < modelfit[2])) {
             mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
             mdlfit[, i] <- NA
           }
@@ -148,7 +174,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
       }
     }
     mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
-    if (any(mdlfit[, ncol(mdlfit)] < modelfit[2])) {
+    if (any(mdlfit[1, ncol(mdlfit)] < modelfit[2])) {
       mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
       mdlfit <- mdlfit[, -ncol(mdlfit)]
     }
@@ -220,8 +246,8 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-squre test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 10. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
-#' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
+#' @param modelfit Allows for controlling the chi-squre test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
+#' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to estimating classification consistency outlined by Hanson (1991).
 #' @examples
 #' # Generate some fictional data. Say, 1000 individuals take a test with a
@@ -255,12 +281,16 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' # To retrieve only the classification consistency indices:
 #' LL.CA.MC(rowSums(rawdata), cba(rawdata), c(50, 60, 70, 80, 90), min = 0, max = 100)$consistency
 #'
+#' # Alternatively, the MC.out.tabular() function can be used to organize the
+#' # category-specific indices in a tabular format:
+#' MC.out.tabular(LL.CA.MC(rowSums(rawdata), cba(rawdata), c(50, 60, 70, 80, 90), min = 0, max = 100))
+#'
 #' @references Livingston, Samuel A. and Lewis, Charles. (1995). Estimating the Consistency and Accuracy of Classifications Based on Test Scores. Journal of Educational Measurement, 32(2).
 #' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
 #' @references Lord. Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
 #' @references Lewis, Don and Burke, C. J. (1949). The Use and Misuse of the Chi-Square Test. Psychological Bulletin, 46(6).
 #' @export
-LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 10, "minbin" = 10)) {
+LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 100, "minbin" = 10)) {
   out <- base::list()
   if (class(x) != "list") {
     if ((base::min(x) < min) | (base::max(x) > max)) {
@@ -309,11 +339,10 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
       mdlfit[2, j] <- length(x[x < tcut[j + 1] & x >= tcut[j]])
     }
     mdlfit[1, ] <- (mdlfit[1, ] / sum(mdlfit[1, ])) * length(x)
-
     for (i in 1:ncol(mdlfit)) {
       if (i < ncol(mdlfit)) {
-        if (any(mdlfit[, i] < ncol(mdlfit))) {
-          if (any(mdlfit[, i] < modelfit[2])) {
+        if (any(mdlfit[1, i] < ncol(mdlfit))) {
+          if (any(mdlfit[1, i] < modelfit[2])) {
             mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
             mdlfit[, i] <- NA
           }
@@ -321,7 +350,7 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
       }
     }
     mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
-    if (any(mdlfit[, ncol(mdlfit)] < modelfit[2])) {
+    if (any(mdlfit[1, ncol(mdlfit)] < modelfit[2])) {
       mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
       mdlfit <- mdlfit[, -ncol(mdlfit)]
     }
@@ -773,10 +802,10 @@ AUC <- function(FPR, TPR) {
   base::sum(TPR * dFPR) + base::sum(dTPR * dFPR) / 2
 }
 
-#' Calculate Cronbach's Alpha from supplied variables.
+#' Calculate Cronbach's Alpha reliability-coefficient from supplied variables.
 #'
-#' @description Calculates Cronbach's Alpha, a very commonly used index for assessing the reliability / internal consistency of a sum-score. Often interpreted as the mean correlation across all possible split-half alternate forms of the test.
-#' @param x A data-frame or matrix of numerical values where rows are across-items within-respondent observation vectors, and columns are within-item across-respondents observation vectors.
+#' @description Calculates Cronbach's Alpha reliability coefficient of the sum-score.
+#' @param x A data-frame or matrix of numerical values where rows represent respondents, and columns represent items.
 #' @note Missing values are treated by passing \code{na.rm = TRUE} to the \code{var} function call.
 #' @note Be aware that this function does not issue a warning if there are negative correlations between variables in the supplied data-set.
 #' @return Cronbach's Alpha for the sum-score of supplied variables.
@@ -799,6 +828,98 @@ cba <- function(x) {
   (base::ncol(x) / (base::ncol(x) - 1)) *
     (1 - (base::sum(base::diag(stats::var(x, na.rm = TRUE))) /
             base::sum(stats::var(x, na.rm = TRUE))))
+}
+
+#' Calculate McDonald's Omega reliability-coefficient from supplied variables.
+#'
+#' @description Calculates McDonalds's Omega reliability-coefficient of the sum-score from the Spearman one-factor model using the procedure outlined in McDonald (1999).
+#' @param x A data-frame or matrix of numerical values where rows represent respondents, and columns represent items.
+#' @param fit Logical. Default is \code{FALSE}. If \code{TRUE}, the output changes from a vector containing the Omega reliability-estimate to a list containing additional detailed information concerning the fitted factor model.
+#' @note Missing values are treated by passing \code{na.rm = TRUE} to the \code{var} function call and \code{use = "pairwise.complete.obs"} to the \code{cov} function call.
+#' @note The function terminates with an error if there are negative covariance-matrix entries.
+#' @return If \code{fit = FALSE}, A vector of length 1 containing the estimated McDonalds's Omega reliability-coefficient for the sum-score of the supplied variables. If \code{fit = TRUE}, a list containing the Omega-coefficient reliability-estimate as the first entry, followed by the goodness-of-fit index (GFI), a two-row matrix containing the estimated factor-loadings and error-variances, and the observed and fitted covariance-matrices and the discrepancy matrix.
+#' @references McDonald, R. P. (1999). Test Theory: A Unified Treatment. Routledge.
+#' @examples
+#' # Generate some fictional data.
+#' set.seed(1234)
+#' rawdata <- matrix(rnorm(500), ncol = 5)
+#' common <- rnorm(100)
+#' rawdata <- apply(rawdata, 2, function(x) {x + common})
+#'
+#' # To estimate McDonald's Omega from this data:
+#' mdo(rawdata)
+#'
+#' # To retrieve additional information such as the GFI fit-index and model-
+#' # parameter estimates:
+#' mdo(rawdata, fit = TRUE)
+#' @export
+mdo <- function(x, fit = FALSE) {
+  vars <- base::apply(x, 2, var, na.rm = TRUE)
+  covs <- base::list()
+  if (base::any(stats::cov(x, use = "pairwise.complete.obs") <= 0)) {
+    stop("Item-covariance(s) less than or equal to 0 detected. Consider reverse-scoring or excluding variables.")
+  }
+  for (i in 1:base::ncol(x)) {
+    covs[[i]] <- base::list()
+    if (i == 1) {
+      y <- stats::cov(x, use = "pairwise.complete.obs")
+    } else {
+      y <- base::rbind(y, y[1, ]); y <- base::cbind(y, y[, 1]); y <- y[-1, ]; y <- y[, -1]
+    }
+    for (j in 1:(base::ncol(x) - 1)) {
+      covs[[i]][[j]] <- y[(j + 1):base::ncol(y), j]
+    }
+  }
+  fload <- base::lapply(covs, function(y) {
+    for (i in 1:(base::length(y) - 1)) {
+      for (j in 1:base::length(y[[i + 1]])) {
+        if (i == 1 & j == 1)  {
+          out <- base::sqrt((y[[1]][i] * y[[1]][i + j]) /  y[[i + 1]][j])
+        } else {
+          out[base::length(out) + 1] <- base::sqrt((y[[1]][i] * y[[1]][i + j]) /  y[[i + 1]][j])
+        }
+      }
+    }
+    base::mean(out)
+  })
+  for (i in 1:base::length(fload)) {
+    if (i == 1) {
+      floads <- fload[[1]][1]
+    } else {
+      floads[i] <- fload[[i]][1]
+    }
+  }
+  if (!fit) {
+    base::return(base::sum(floads)^2 / (base::sum(vars - floads^2) + base::sum(floads)^2))
+  } else {
+    Omega <- base::sum(floads)^2 / (base::sum(vars - floads^2) + base::sum(floads)^2)
+    omat <- stats::cov(x, use = "pairwise.complete.obs")
+    evars <- vars - floads^2
+    for (i in 1:base::length(floads)) {
+      for (j in 1:base::length(floads)) {
+        if (i == 1 & j == 1) {
+          imat <- base::matrix(ncol = base::length(floads), nrow = base::length(floads))
+        }
+        if (i == j) {
+          imat[j, i] <- floads[j]^2 + evars[j]
+        } else {
+          imat[j, i] <- floads[i] * floads[j]
+        }
+      }
+    }
+    dmat <- omat - imat
+    gfi <- 1 - (base::mean(dmat^2) / base::mean(omat))
+    floads <- base::matrix(base::c(floads, evars), nrow = 2, byrow = TRUE, dimnames = base::list(c("Loadings", "Errors")))
+    if (!base::is.null(base::colnames(x))) {
+      base::colnames(floads) <- base::rownames(imat) <- base::colnames(imat) <- base::colnames(x)
+    }
+    base::return(base::list("Omega" = Omega,
+                            "GFI" = gfi,
+                            "Parameters" = floads,
+                            "Matrices" = base::list("Observed" = omat,
+                                                    "Fitted" = imat,
+                                                    "Discrepancy" = dmat)))
+  }
 }
 
 #' Estimate Beta true-score distribution based on observed-score raw-moments and the effective test length.
@@ -1047,3 +1168,51 @@ tsm <- function(x, r, n, method = "product") {
     }
   }
 }
+
+
+#' Tabular organization of accuracy and consistency output from the \code{LL.CA.MC()} function.
+#'
+#' @description Function that takes the output from the \code{LL.CA.MC()} function and organizes it in a table with accuracy and consistency indices represented by columns and categories as rows.
+#' @param x The list-output from the \code{LL.CA.MC()} function.
+#' @export
+#' @examples
+#' # Generate some fictional data. Say, 1000 individuals take a test with a
+#' # maximum score of 100 and a minimum score of 0.
+#' set.seed(1234)
+#' p.success <- rBeta.4P(1000, 0.1, 0.95, 5, 3)
+#' for (i in 1:100) {
+#'   if (i == 1) {
+#'     rawdata <- matrix(nrow = 1000, ncol = 100)
+#'   }
+#'   rawdata[, i] <- rbinom(1000, 1, p.success)
+#' }
+#'
+#' # Estimate accuracy and consistency where the lowest category are scores
+#' # below 50, second lowest 60, then 70, 80, and 90. Using the cba() function
+#' # to estimate the reliability of this test, to use the LL.CA.MC() function
+#' # or estimating diagnostic performance and consistency indices of
+#' # classifications when using several cut-points:
+#' output <- LL.CA.MC(rowSums(rawdata), cba(rawdata), seq(50, 90, 10), 0, 100)
+#'
+#' # As this output can get quite verbose as the number of categories increase,
+#' # the MC.out.tabular() function can be used to organize the output more
+#' # concisely in a tabular format.
+#' MC.out.tabular(output)
+MC.out.tabular <- function(x) {
+  tab.out <- base::matrix(nrow = length(x$accuracy$specific), ncol = 15)
+  base::colnames(tab.out) <- base::c("TP", "FP", "TN", "FN", base::names(x$accuracy[[2]][[2]][[2]]), "p", "p_c", "Kappa")
+  nams <- NULL
+  for (i in 1:base::length((x$accuracy$specific))) {
+    nams[i] <- base::paste("Category.", i, sep = "")
+    tab.out[i, 1:4] <- base::as.vector(as.matrix(x$accuracy$specific[[i]][[1]][-3, -3]))
+    for (j in 1:base::length(x$accuracy[[2]][[i]][[2]])) {
+      tab.out[i, j + 4] <- x$accuracy[[2]][[i]][[2]][[j]]
+    }
+    for (k in 1:base::length(x$consistency[[2]][[i]][[1]])) {
+      tab.out[i, k + 12] <- x$consistency[[2]][[i]][[1]][[k]]
+    }
+  }
+  base::rownames(tab.out) <- nams
+  tab.out
+}
+

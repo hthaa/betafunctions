@@ -14,7 +14,7 @@ LL.CA.MC(
   failsafe = TRUE,
   l = 0,
   u = 1,
-  modelfit = c(nbins = 10, minbin = 10)
+  modelfit = c(nbins = 100, minbin = 10)
 )
 }
 \arguments{
@@ -36,10 +36,10 @@ LL.CA.MC(
 
 \item{u}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).}
 
-\item{modelfit}{Allows for controlling the chi-squre test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 10. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.}
+\item{modelfit}{Allows for controlling the chi-squre test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.}
 }
 \value{
-A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
+A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 }
 \description{
 An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
@@ -78,6 +78,10 @@ LL.CA.MC(rowSums(rawdata), cba(rawdata), c(50, 60, 70, 80, 90), min = 0, max = 1
 
 # To retrieve only the classification consistency indices:
 LL.CA.MC(rowSums(rawdata), cba(rawdata), c(50, 60, 70, 80, 90), min = 0, max = 100)$consistency
+
+# Alternatively, the MC.out.tabular() function can be used to organize the
+# category-specific indices in a tabular format:
+MC.out.tabular(LL.CA.MC(rowSums(rawdata), cba(rawdata), c(50, 60, 70, 80, 90), min = 0, max = 100))
 
 }
 \references{

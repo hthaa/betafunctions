@@ -18,14 +18,16 @@ pGammaBinom(q, size, prob, lower.tail = TRUE)
 \description{
 Extends the cumulative Binomial probability mass function to positive non-integers, effectively turning the mass-function into a density-function.
 }
-\references{
-Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).
+\examples{
 # Assume some variable follows a Gamma-Binomial  distribution with
 # "number of trials" = 10.5 and probability of "success" for each "trial"
 # = 0.75, to compute the cumulative probability to attain a "number of
-success" below a specific point (e.g., less than 7.5 "successes":
+# success" below a specific point (e.g., less than 7.5 "successes":
 pGammaBinom(q = 7.5, size = 10.5, prob = 0.75)
 
 # Conversely, to attain a value at or above 7.5:
 pGammaBinom(q = 7.5, size = 10.5, prob = 0.75, lower.tail = FALSE)
+}
+\references{
+Loeb, D. E. (1992). A generalization of the binomial coefficients. Discrete Mathematics, 105(1-3).
 }

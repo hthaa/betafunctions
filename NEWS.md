@@ -1,3 +1,17 @@
+# betafunctions v. 1.6.2
+
+- Added the `R.ETL()` function for calculating model-implied reliability given the "Effective Test Length" of Livingston and Lewis (1995) and the mean, variance, and minimum and maximum possible scores of the observed-score distribution.
+
+- Added the `mdo()` function which allows for estimating McDonald's Omega reliability coefficient.
+
+- Added the `MC.out.tabular()` function which can be used to organize the accuracy and consistency output from the `LL.CA.MC()` function in a tabular format.
+
+- Changes to the model-fit test procedure for the `LL.CA()`and `LL.CA.MC()` functions. The initial number of bins are now set to 100, and the bins are only grouped into the expected number of observations rather than both expected and observed.
+
+- TODO: Added the `betabinomialmoments()` function for calculating the raw, central, and standardized moments of Beta compound Binomial distributions.
+
+---
+
 # betafunctions v. 1.6.1
 
 - Added `betamode()` and `betamedian()` functions that allow for calculating the mode and median (respectively) of two- and four-parameter Beta distributions.
