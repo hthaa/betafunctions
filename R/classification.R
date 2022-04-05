@@ -870,7 +870,7 @@ cba <- function(x) {
 #' mdo(rawdata, fit = TRUE)
 #' @export
 mdo <- function(x, fit = FALSE) {
-  vars <- base::apply(x, 2, var, na.rm = TRUE)
+  vars <- base::apply(x, 2, stats::var, na.rm = TRUE)
   covs <- base::list()
   if (base::any(stats::cov(x, use = "pairwise.complete.obs") <= 0)) {
     stop("Item-covariance(s) less than or equal to 0 detected. Consider reverse-scoring or excluding variables.")
