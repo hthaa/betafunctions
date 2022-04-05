@@ -64,7 +64,7 @@ R.ETL <- function(mean, variance, min = 0, max = 1, ETL) {
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-squre test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
+#' @param modelfit Allows for controlling the chi-square test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to estimating classification consistency outlined by Hanson (1991).
 #' @note A shiny application providing a GUI for this method is available at https://hthaa.shinyapps.io/shinybeta/ .
@@ -184,7 +184,15 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
     out[["modelfit"]] <- list()
     out[["modelfit"]][["contingencytable"]] <- mdlfit
     out[["modelfit"]][["chisquared"]] <- chisquared
-    out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
+    if (startsWith(as.character(true.model), "2")) {
+      out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
+    } else {
+      if ((startsWith(as.character(true.model), "4") & failsafe == TRUE) & (out[["parameters"]]$l == l & out[["parameters"]]$u == u)) {
+        out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
+      } else {
+        out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
+      }
+    }
     out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
   }
   if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") |
@@ -246,7 +254,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-squre test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
+#' @param modelfit Allows for controlling the chi-square test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to estimating classification consistency outlined by Hanson (1991).
 #' @examples
@@ -360,8 +368,16 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
     out[["modelfit"]] <- list()
     out[["modelfit"]][["contingencytable"]] <- mdlfit
     out[["modelfit"]][["chisquared"]] <- chisquared
-    out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
-    out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
+    if (startsWith(as.character(true.model), "2")) {
+      out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
+    } else {
+      if ((startsWith(as.character(true.model), "4") & failsafe == TRUE) & (out[["parameters"]]$l == l & out[["parameters"]]$u == u)) {
+        out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
+      } else {
+        out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
+      }
+    }
+    out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - out[["modelfit"]][["df"]], lower.tail = FALSE)
   }
   for (i in 1:(length(cut) + 1)) {
     if (i == 1) {

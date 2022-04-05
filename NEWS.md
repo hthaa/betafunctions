@@ -4,11 +4,9 @@
 
 - Added the `mdo()` function which allows for estimating McDonald's Omega reliability coefficient.
 
-- Added the `MC.out.tabular()` function which can be used to organize the accuracy and consistency output from the `LL.CA.MC()` function in a tabular format.
+- Added the `MC.out.tabular()` function which can be used to organize the accuracy and consistency output from the `LL.CA.MC()` function in tabular format.
 
 - Changes to the model-fit test procedure for the `LL.CA()`and `LL.CA.MC()` functions. The initial number of bins are now set to 100, and the bins are only grouped into the expected number of observations rather than both expected and observed.
-
-- TODO: Added the `betabinomialmoments()` function for calculating the raw, central, and standardized moments of Beta compound Binomial distributions.
 
 ---
 
