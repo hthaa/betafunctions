@@ -140,6 +140,57 @@ binomialmoments <- function(n, p, types = c("raw", "central", "standardized"), o
   return(moments)
 }
 
+#' Compute Moments of Beta-Binomial Probability Mass Functions.
+#'
+#' @description Computes Raw, Central, or Standardized moment properties of defined Beta-Binomial probability mass functions.
+#' @param N Number of trials.
+#' @param l The first (lower) location-parameter of the Beta distribution.
+#' @param u The second (upper) location-parameter of the Beta distribution.
+#' @param alpha The alpha (first) shape-parameter of the Beta distribution.
+#' @param beta The beta (second) shape-parameter of the Beta-distribution.
+#' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
+#' @param orders The number of moment-orders to be calculated for each of the moment-types.
+#' @examples
+#' # Assume 100 observations of a discrete variable with probabilities of
+#' # positive outcomes adhering to a four-parameter Beta distribution with
+#' # location parameters l = 0.25 and u = .95, and shape parameters a = 5 and
+#' # b = 3. To compute the first four raw, central, and standardized moments of
+#' # this distrubution using betabinomialmoments():
+#' betabinomialmoments(N = 100, l = .25, u = .95, alpha = 5, beta = 3,
+#' types = c("raw", "central", "standardized"), orders = 4)
+#' @references Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
+#' @return A list of moment types, each a list of moment orders.
+#' @export
+betabinomialmoments <- function(N, l, u, alpha, beta, types = c("raw", "central", "standardized"), orders = 4) {
+  if (l < 0 | u > 1) {
+    base::warning("Beta-distribution location parameter(s) out of bounds (l < 0 or u > 1).")
+  }
+  weights <- NULL
+  for (i in 0:N) {
+    weights[i + 1] <- stats::integrate(function(x) { stats::dbinom(i, N, x) * dBeta.4P(x, l, u, alpha, beta) }, lower = 0, upper = 1)$value
+  }
+  moments <- base::list()
+  if (base::any(types == "raw")) {
+    for (i in 1:orders) {
+      moments[["raw"]][[i]] <- sum((0:N)^i * weights)
+    }
+  }
+  if (base::any(types == "central")) {
+    mu1 <- sum((0:N)^1 * weights)
+    for (i in 1:orders) {
+      moments[["central"]][[i]] <- sum((0:N - mu1)^i * weights)
+    }
+  }
+  if (base::any(types == "standardized")) {
+    mu1 <- base::sum((0:N)^1 * weights)
+    sigma2 <- base::sum((0:N - mu1)^2 * weights)
+    for (i in 1:orders) {
+      moments[["standardized"]][[i]] <- base::sum((0:N - mu1)^i * weights) / base::sqrt(sigma2)^i
+    }
+  }
+  return(moments)
+}
+
 
 #' Compute Moments of Observed Value Distribution.
 #'
@@ -203,6 +254,7 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
   }
   return(momentorders)
 }
+
 
 #' Alpha Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Beta Shape-Parameter of a Four-Parameter Beta PDD.
 #'
@@ -750,6 +802,76 @@ dBeta.4P <- function(x, l, u, alpha, beta) {
     }
     }
   )
+}
+
+#' Random Number Generation under the Beta-Binomial Probability Mass Distribution.
+#'
+#' @param n Number of draws.
+#' @param N Number of trials.
+#' @param l The first (lower) location parameter.
+#' @param u The second (upper) location parameter.
+#' @param alpha The alpha (first) shape parameter.
+#' @param beta The beta (second) shape parameter.
+#' @return A vector with length \code{n} of random values drawn from the Beta-Binomial Distribution.
+#' @examples
+#' # To draw a sample of 50 values from a Beta-Binomial distribution with
+#' # number of trials = 100, and with success-probabilities drawn from a
+#' # Four-Parameter Beta distribution with location parameters l = 0.25 and
+#' # u = 0.95, and shape-parameters alpha = 5 and beta = 3:
+#' rBetaBinom(n = 50, N = 100, l = 0.25, u = 0.95, alpha = 5, beta = 3)
+#' @export
+rBetaBinom <- function(n, N, l, u, alpha, beta) {
+  weights <- sapply(0:N, function(x) { stats::integrate(function(y) { stats::dbinom(x, N, y) * dBeta.4P(y, l, u, alpha, beta) }, lower = 0, upper = 1)$value})
+  base::sample(0:N, size = n, prob = weights, replace = TRUE)
+}
+
+#' Probability Mass under the Beta-Binomial Probability-Mass Distribution.
+#'
+#' @description Gives the density at \code{x} under the Beta-Binomial PMF.
+#' @param x Value of \code{x} (a specific number of successes).
+#' @param N The total number of trials.
+#' @param l The first (lower) location parameter.
+#' @param u The second (upper) location parameter.
+#' @param alpha The first shape parameter.
+#' @param beta The second shape parameter.
+#' @return The value for the probability mass at \code{x} given the specified Beta-Binomial distribution.
+#' @examples
+#' # Assume some variable follows a Beta-Binomial distribution with 100 number
+#' # of trials, and with probabilities of successful trials drawn from a four-
+#' # parameter Beta distribution with location parameters l = 0.25 and u = 0.75
+#' # and shape parameters alpha = 5 and beta = 3. To compute the probability
+#' # density at a specific point of the distribution (e.g., 50):
+#' dBetaBinom(x = 50, N = 100, l = 0.25, u = 0.75, alpha = 5, beta = 3)
+#' @export
+dBetaBinom <- function(x, N, l, u, alpha, beta) {
+  sapply(x, function(x) { stats::integrate(function(y) { stats::dbinom(x, N, y) * dBeta.4P(y, l, u, alpha, beta) }, lower = 0, upper = 1)$value})
+}
+
+#' Cumulative Probability Function under the Beta-Binomial Probability Distribution.
+#'
+#' @description Function for calculating the proportion of observations up to a specifiable quantile under the Beta-Binomial Probability Distribution.
+#' @param q The quantile or a vector of quantiles for which the proportion is to be calculated.
+#' @param N The total number of trials.
+#' @param l The first (lower) location parameter.
+#' @param u The second (upper) location parameter.
+#' @param alpha The first shape parameter.
+#' @param beta The second shape parameter.
+#' @param lower.tail Whether the proportion to be calculated is to be under the lower or upper tail. Default is \code{TRUE} (lower tail).
+#' @return A vector of proportions of observations falling under specified quantiles under the four-parameter Beta distribution.
+#' @examples
+#' # Assume some variable follows a Beta-Binomial distribution with number of
+#' # trials = 50, and probabilities of successful trials are drawn from a four-
+#' # parameter Beta distribution with location parameters l = 0.25 and u =
+#' # 0.75, and shape parameters alpha = 5 and beta = 3. To compute the
+#' # cumulative probability at a specific point of the distribution (e.g., 25):
+#' pBetaBinom(q = 25, N = 50, l = .25, u = .75, alpha = 5, beta = 3)
+#' @export
+pBetaBinom <- function(q, N, l, u, alpha, beta, lower.tail = TRUE) {
+  if (lower.tail) {
+    1 - sapply(q, function(x) { sapply(x, function(x) { sum(dBetaBinom(x:N, N, l, u, alpha, beta)) })})
+  } else {
+    sapply(q, function(x) { sapply(x, function(x) { sum(dBetaBinom(x:N, N, l, u, alpha, beta)) })})
+  }
 }
 
 #' Random Number Generation under the Four-Parameter Beta Probability Density Distribution.

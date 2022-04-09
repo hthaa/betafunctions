@@ -1,5 +1,9 @@
 # betafunctions v. 1.6.2
 
+- Added d/p/r functions for Beta-Binomial distributions (`d/p/rBetaBinom()`, no quantile function as of yet).
+
+- Added the `betabinomialmoments()` function for calculating raw-, central-, and standardized moments of Beta-Binomial distributions.
+
 - Added the `R.ETL()` function for calculating model-implied reliability given the "Effective Test Length" of Livingston and Lewis (1995) and the mean, variance, and minimum and maximum possible scores of the observed-score distribution.
 
 - Added the `mdo()` function which allows for estimating McDonald's Omega reliability coefficient.
