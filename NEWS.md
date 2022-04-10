@@ -1,4 +1,4 @@
-# betafunctions v. 1.6.2
+# betafunctions v. 1.7.0
 
 - Added d/p/r functions for Beta-Binomial distributions (`d/p/rBetaBinom()`, no quantile function as of yet).
 
@@ -6,11 +6,11 @@
 
 - Added the `R.ETL()` function for calculating model-implied reliability given the "Effective Test Length" of Livingston and Lewis (1995) and the mean, variance, and minimum and maximum possible scores of the observed-score distribution.
 
-- Added the `mdo()` function which allows for estimating McDonald's Omega reliability coefficient.
+- Added the `mdo()` function which allows for estimating McDonald's Omega reliability coefficient. Requires no negative item-covariances.
 
 - Added the `MC.out.tabular()` function which can be used to organize the accuracy and consistency output from the `LL.CA.MC()` function in tabular format.
 
-- Changes to the model-fit test procedure for the `LL.CA()`and `LL.CA.MC()` functions. The initial number of bins are now set to 100, and the bins are only grouped into the expected number of observations rather than both expected and observed.
+- Changes to the model-fit test procedure for the `LL.CA()`and `LL.CA.MC()` functions. The initial number of bins are now set to 100 and the minimum bin-size is set to 10. The bins are now only grouped into the expected number of observations rather than both expected and observed.
 
 ---
 
