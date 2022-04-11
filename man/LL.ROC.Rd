@@ -81,15 +81,11 @@ maxAcc = TRUE)
 # greater than some specified value by specifying the "locate" argument with
 # c("statistic", value). For example, to locate the operational cut-point at
 # which sensitivity is first equal to or greater than 0.9:
-LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
+LL.ROC(testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
 locate = c("sensitivity", 0.9))
 # For Negative Predictive value, the point at which it is equal or greater:
-LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
+LL.ROC(testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
 locate = c("NPV", 0.9))
-# For specificity, the point at which it is equal to or less than 0.9:
-LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
-locate = c("specificity", 0.9))
-# For Positive Predictive Value, the point at which it is equal or less:
-LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
-locate = c("PPV", 0.90))
+# And so on for other statistics such as Specificity and Positive Predictive
+# Value.
 }

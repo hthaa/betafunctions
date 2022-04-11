@@ -682,22 +682,20 @@ ccStats <- function(ii, ij, ji, jj) {
 #' # greater than some specified value by specifying the "locate" argument with
 #' # c("statistic", value). For example, to locate the operational cut-point at
 #' # which sensitivity is first equal to or greater than 0.9:
-#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
+#' LL.ROC(testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
 #' locate = c("sensitivity", 0.9))
 #' # For Negative Predictive value, the point at which it is equal or greater:
-#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
+#' LL.ROC(testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
 #' locate = c("NPV", 0.9))
-#' # For specificity, the point at which it is equal to or less than 0.9:
-#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
-#' locate = c("specificity", 0.9))
-#' # For Positive Predictive Value, the point at which it is equal or less:
-#' LL.ROC(x = testdata, reliability = 0.7, min = 0, max = 100, truecut = 50,
-#' locate = c("PPV", 0.90))
+#' # And so on for other statistics such as Specificity and Positive Predictive
+#' # Value.
 #' @export
 LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = 100) {
   oldpar <- graphics::par(no.readonly = TRUE)
   base::on.exit(graphics::par(oldpar))
-  x <- Beta.tp.fit(x, min, max, reliability = reliability, true.model = true.model, failsafe = failsafe, l = l, u = u)
+  if (class(x) != "list") {
+    x <- Beta.tp.fit(x, min, max, reliability = reliability, true.model = true.model, failsafe = failsafe, l = l, u = u)
+  }
   for (i in 1:(grainsize + 1)) {
     if (i == 1) {
       cuts <- seq(min, max, (max - min) / grainsize)

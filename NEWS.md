@@ -1,16 +1,16 @@
 # betafunctions v. 1.7.0
 
-- Added d/p/r functions for Beta-Binomial distributions (`d/p/rBetaBinom()`, no quantile function as of yet).
+- Added d/p/r functions for Beta-Binomial distributions (`d/p/rBetaBinom()`, no `q` function as of yet).
 
 - Added the `betabinomialmoments()` function for calculating raw-, central-, and standardized moments of Beta-Binomial distributions.
 
-- Added the `R.ETL()` function for calculating model-implied reliability given the "Effective Test Length" of Livingston and Lewis (1995) and the mean, variance, and minimum and maximum possible scores of the observed-score distribution.
+- Added the `R.ETL()` function for calculating the model-implied reliability of test-scores given the "Effective Test Length" of Livingston and Lewis (1995), and the mean, variance, and minimum and maximum possible scores of the observed-score distribution.
 
-- Added the `mdo()` function which allows for estimating McDonald's Omega reliability coefficient. Requires no negative item-covariances.
+- Added the `mdo()` function which allows for estimating McDonald's Omega reliability coefficient. Requires that there are no negative item-covariances.
 
-- Added the `MC.out.tabular()` function which can be used to organize the accuracy and consistency output from the `LL.CA.MC()` function in tabular format.
+- Added the `MC.out.tabular()` function which can be used to organize the accuracy and consistency output from the `LL.CA.MC()` function in tabular format. The `MC.out.tabular()` function takes the output of `LL.CA.MC()` function as input.
 
-- Changes to the model-fit test procedure for the `LL.CA()`and `LL.CA.MC()` functions. The initial number of bins are now set to 100 and the minimum bin-size is set to 10. The bins are now only grouped into the expected number of observations rather than both expected and observed.
+- Changes to the model-fit test procedure for the `LL.CA()`and `LL.CA.MC()` functions. The initial number of bins are now set to 100 and the minimum bin-size is set to 10. The bins are now only grouped into the expected number of observations rather than both expected and observed. The behaviour of this model-fit test-procedure is still under scrutiny and should as of yet be considered an experimental approximation procedure.
 
 ---
 
