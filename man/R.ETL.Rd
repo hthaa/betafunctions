@@ -2,7 +2,7 @@
 % Please edit documentation in R/classification.R
 \name{R.ETL}
 \alias{R.ETL}
-\title{Model implied reliability from Livingston and Lewis' "Effective Test Length".}
+\title{Model Implied Reliability from Livingston and Lewis' "Effective Test Length".}
 \usage{
 R.ETL(mean, variance, min = 0, max = 1, ETL)
 }

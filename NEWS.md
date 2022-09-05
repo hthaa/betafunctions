@@ -1,3 +1,19 @@
+# betafunctions v. 1.8.0
+
+- Added an implementation of the Hanson-Brennan approach to classification accuracy and consistency.
+
+  - The `HB.CA()` and `HB.MC.CA()` functions for binary and multiple classifications, respectively.
+  
+  - The `HB.ROC()` function for ROC analysis.
+  
+- Added d/p/r functions for Lord's two-term approximation to the compound binomial distribution (`xcBinom()`).
+
+- Added d/p/r functions for Beta compound-Binomial distributions where the compound Binomial is Lord's two-term approximation (`xBetacBinom()`).
+
+- Added the `mdlfit.gfx()` as a visual aid to gauge the severity of model misfit for the LL and HB approaches.
+
+---
+
 # betafunctions v. 1.7.0
 
 - Added d/p/r functions for Beta-Binomial distributions (`d/p/rBetaBinom()`, no `q` function as of yet).
@@ -8,7 +24,7 @@
 
 - Added the `mdo()` function which allows for estimating McDonald's Omega reliability coefficient. Requires that there are no negative item-covariances.
 
-- Added the `MC.out.tabular()` function which can be used to organize the accuracy and consistency output from the `LL.CA.MC()` function in tabular format. The `MC.out.tabular()` function takes the output of `LL.CA.MC()` function as input.
+- Added the `MC.out.tabular()` function which can be used to organize the accuracy and consistency output from the `LL.CA.MC()` function in tabular format. The `MC.out.tabular()` function takes the output of the `LL.CA.MC()` function as input.
 
 - Changes to the model-fit test procedure for the `LL.CA()`and `LL.CA.MC()` functions. The initial number of bins are now set to 100 and the minimum bin-size is set to 10. The bins are now only grouped into the expected number of observations rather than both expected and observed. The behaviour of this model-fit test-procedure is still under scrutiny and should as of yet be considered an experimental approximation procedure.
 

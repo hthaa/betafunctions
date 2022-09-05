@@ -20,15 +20,15 @@ LL.CA(
 )
 }
 \arguments{
-\item{x}{A vector of observed scores for which a Beta true-score distribution is to be estimated, or a list of pre-defined true-score distribution parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location parameters, \code{alpha} and \code{beta} for the shape parameters, and \code{etl} for the effective test length (see documentation for the \code{ETL} function).}
+\item{x}{A vector of observed scores, or a list specifying parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location-, and \code{alpha} and \code{beta} for the shape parameters of the Beta true-score distribution, and \code{etl} for the effective test length (see documentation for the \code{ETL} function).}
 
 \item{reliability}{The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.}
 
 \item{cut}{The cutoff value for classifying observations into pass or fail categories.}
 
-\item{min}{The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).}
+\item{min}{The minimum value possible to attain on the test. Default is 0.}
 
-\item{max}{The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).}
+\item{max}{The maximum value possible to attain on the test. Default is 1 (assumes that the values contained in \code{x} represents proportions of maximum credit).}
 
 \item{true.model}{The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.}
 

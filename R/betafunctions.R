@@ -1322,3 +1322,123 @@ qGammaBinom <- function(p, size, prob, lower.tail = TRUE, precision = 1e-7) {
     x
     })
 }
+
+
+#' Probability Mass function for Lord's Two-Term Approximation to the Compound Binomial Distribution.
+#'
+#' @description Gives the density at \code{x} under Lord's two-term approximation to the compound Binomial PMF.
+#' @param x Value of \code{x} (a specific number of successes).
+#' @param N The total number of trials.
+#' @param k Lord's k (see documentation for the \code{Lords.k()} function).
+#' @param p Probability of success for each trial.
+#' @export
+#' @examples
+#' # Assume some variable follows a compound Binomial distribution with 100
+#' # trials, a 50% probability of success on each trial, and Lord's k = 1. To
+#' # compute the probability density at a specific point of the distribution
+#' # (e.g., 50):
+#' dcBinom(x = 50, N = 100, k = 1, p = .5)
+dcBinom <- function(x, N, k, p) {
+  sapply(x, function(x) {
+    dbinom(x, N, p) - k*p*(1 - p)*(dbinom(x, N - 2, p) - 2*dbinom(x - 1, N - 2, p) + dbinom(x - 2, N - 2, p))
+  })
+}
+
+#' Cumulative Probability Mass function for Lord's Two-Term Approximation to the Compound Binomial Distribution.
+#'
+#' @description Function for calculating the proportion of observations up to a specifiable quantile under Lord's two-term approximation to the compound Binomial distribution.
+#' @param q The quantile or vector of quantiles for which the proportion is to be calculated.
+#' @param N Total number of trials.
+#' @param k Lord's k (see documentation for the \code{Lords.k()} function).
+#' @param p Probability of success for each trial.
+#' @export
+#' @examples
+#' # Assume some variable follows a compound Binomial distribution with 100
+#' # trials, a 50% probability of success on each trial, and Lord's k = 1. To
+#' # compute the cumulative probability at a specific point of the distribution
+#' # (e.g., 50):
+#' pcBinom(x = 50, N = 100, k = 1, p = .5)
+pcBinom <- function(q, N, k, p, lower.tail = TRUE) {
+  if (lower.tail) {
+    1 - sapply(q, function(x) {
+      sapply(x, function(x) {
+        sum(dcBinom(x:N, N, k, p))
+      })
+    })
+  } else {
+    sapply(q, function(x) {
+      sapply(x, function(x) {
+        sum(dcBinom(x:N, N, k, p))
+      })
+    })
+  }
+}
+
+#' Random Number Generation under Lord's Two-Term Approximation to the Compound Binomial Distribution.
+#'
+#' @description Random Number Generation under Lord's Two-Term Approximation to the Compound Binomial Distribution.
+#' @param n Number of draws.
+#' @param N Number of trials.
+#' @param k Lord's k (see documentation for the \code{Lords.k()} function).
+#' @param p Probability of success for each trial.
+#' @note For larger values of \code{k}, the distribution can yield negative probabilities which returns an error.
+#' @export
+#' @examples
+#' # To draw a sample of 50 values from a Compound-Binomial distribution with
+#' # number of trials = 100, a 50% probability of success for each trial, and
+#' # Lord's k = 1:
+#' rcBinom(n = 50, N = 100, k = 1, p = .5)
+rcBinom <- function(n, N, k, p) {
+  weights <- dcBinom(0:N, N, k, p)
+  weights <- weights/sum(weights)
+  sample(0:N, size = n, prob = weights, replace = TRUE)
+}
+
+#' Probability Mass function for Lord's Beta Compound Binomial Distribution.
+#'
+#' @description Gives the density at \code{x} under the Beta Compound-Binomial distribution, where the Compound-Binomial distribution is Lord's two-term approximation.
+#' @param x Value of \code{x} (a specific number of successes).
+#' @param N Number of trials.
+#' @param k Lord's k (see documentation for the \code{Lords.k()} function).
+#' @param l The lower-bound location parameter of the four-parameter Beta distribution.
+#' @param u The upper-bound location parameter of the four-parameter Beta distribution.
+#' @param alpha The first shape-parameter of the four-parameter Beta distribution.
+#' @param beta The second shape-parameter of the four-parameter Beta distribution.
+#' # Assume some variable follows a Beta compound Binomial distribution with 100
+#' # trials, Lord's k = 1, and probabilities of successful trials drawn from a
+#' # four-parameter Beta distribution with location-parameters l = .15 and u =
+#' # .85, and shape parameters alpha = 6 and beta = 4. To compute the
+#' # probability density at a specific point of the distribution (e.g., 50):
+#' dBetacBinom(x = 50, N = 100, k = 1, l = .15, u = .85, alpha = 6, beta = 4)
+dBetacBinom <- function(x, N, k, l, u, alpha, beta) {
+  sapply(x, function(x) {
+    stats::integrate(function(y) {
+      dcBinom(x, N, k, y) * dBeta.4P(y, l, u, alpha, beta)
+    }, lower = 0, upper = 1)$value
+  })
+}
+
+#' Random Number Generation under Lord's Beta Compound-Binomial Distribution.
+#'
+#' @description Random number generation under Lord's Beta Compound-Binomial distribution, where the Compound-Binomial distribution is Lord's two-term approximation.
+#' @param n Number of draws.
+#' @param N Number of trials.
+#' @param k Lord's k (see documentation for the \code{Lords.k()} function).
+#' @param l The lower-bound location parameter of the four-parameter Beta distribution.
+#' @param u The upper-bound location parameter of the four-parameter Beta distribution.
+#' @param alpha The first shape-parameter of the four-parameter Beta distribution.
+#' @param beta The second shape-parameter of the four-parameter Beta distribution.
+#' @note For larger values of \code{k}, the distribution can yield negative probabilities which returns an error.
+#' @export
+#' @examples
+#' # To draw a sample of 50 values from a Beta Compound-Binomial distribution
+#' # with number of trials = 100, Lord's k = 1, and probabilities of successful
+#' # trials drawn from a four-parameter Beta distribution with location-
+#' # parameters l = .15 and u = .85, and shape parameters alpha = 6 and
+#' # beta = 4:
+#' rBetacBinom(n = 50, N = 100, k = 1, l = .15, u = .85, alpha = 6, beta = 4)
+rBetacBinom <- function(x, N, k, l, u, alpha, beta) {
+  weights <- dBetacBinom(0:N, N, k, l, u, alpha, beta)
+  weights <- weights/sum(weights)
+  sample(0:N, size = x, prob = weights, replace = TRUE)
+}

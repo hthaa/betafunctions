@@ -48,7 +48,7 @@ Beta.tp.fit(
 A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter.
 }
 \description{
-Estimator for the Beta true-score distribution shape-parameters from the observed-score distribution and Livingston and Lewis' effective test length. Returns a list with entries representing the lower- and upper shape parameters (l and u), and the shape parameters (alpha and beta) of the four-parameters beta distribution.
+Estimator for the Beta true-score distribution shape-parameters from the observed-score distribution and Livingston and Lewis' effective test length. Returns a list with entries representing the lower- and upper shape parameters (l and u), and the shape parameters (alpha and beta) of the four-parameters beta distribution, and the effective test length.
 }
 \examples{
 # Generate some fictional data. Say 1000 individuals take a 100-item test
@@ -89,5 +89,5 @@ Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Co
 
 Lord, F. M. (1965). A strong true-score theory, with applications. Psychometrika. 30(3). pp. 239--270. doi: 10.1007/BF02289490
 
-Rogosa, D. &  Finkelman, M. (2004). How Accurate Are the STAR Scores for Individual Students? – An Interpretive Guide. Retrieved from http://statweb.stanford.edu/~rag/accguide/guide04.pdf
+Rogosa, D. &  Finkelman, M. (2004). How Accurate Are the STAR Scores for Individual Students? An Interpretive Guide. Retrieved from http://statweb.stanford.edu/~rag/accguide/guide04.pdf
 }

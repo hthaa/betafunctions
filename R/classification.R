@@ -24,7 +24,7 @@ ETL <- function(mean, variance, min = 0, max = 1, reliability) {
   ((mean - min) * (max - mean) - (reliability * variance)) / (variance * (1 - reliability))
 }
 
-#' Model implied reliability from Livingston and Lewis' "Effective Test Length".
+#' Model Implied Reliability from Livingston and Lewis' "Effective Test Length".
 #'
 #' @description  Calculate model-implied reliability given mean, variance, the minimum and maximum possible scores, and the effective test length.
 #' @param mean The mean of the observed-score distribution.
@@ -53,10 +53,10 @@ R.ETL <- function(mean, variance, min = 0, max = 1, ETL) {
 #' An Implementation of the Livingston and Lewis (1995) Approach to Estimate Classification Consistency and Accuracy based on Observed Test Scores and Test Reliability.
 #'
 #' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
-#' @param x A vector of observed scores for which a Beta true-score distribution is to be estimated, or a list of pre-defined true-score distribution parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location parameters, \code{alpha} and \code{beta} for the shape parameters, and \code{etl} for the effective test length (see documentation for the \code{ETL} function).
+#' @param x A vector of observed scores, or a list specifying parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location-, and \code{alpha} and \code{beta} for the shape parameters of the Beta true-score distribution, and \code{etl} for the effective test length (see documentation for the \code{ETL} function).
 #' @param reliability The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.
-#' @param min The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).
-#' @param max The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).
+#' @param min The minimum value possible to attain on the test. Default is 0.
+#' @param max The maximum value possible to attain on the test. Default is 1 (assumes that the values contained in \code{x} represents proportions of maximum credit).
 #' @param cut The cutoff value for classifying observations into pass or fail categories.
 #' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
 #' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves (see documentation for the \code{LL.ROC()} function).
@@ -195,9 +195,8 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
     }
     out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
   }
-  if (any(output == "accuracy") | any(output == "Accuracy") | any(output == "ca") |
-      any(output == "CA") | any(output == "a") | any(output == "A")) {
-      p.tp <- stats::integrate(function(x) {
+  if (any(startsWith(tolower(output), "a"))) {
+    p.tp <- stats::integrate(function(x) {
         dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut)
         }, lower = truecut, upper = 1)$value
       p.fp <- stats::integrate(function(x) {
@@ -213,8 +212,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
     out[["confusionmatrix"]] <- camat
     out[["classification.accuracy"]] <- caStats(camat[1, 1], camat[1, 2], camat[2, 1], camat[2, 2])
   }
-  if (any(output == "consistency") | any(output == "Consistency" ) | any(output == "cc") |
-      any(output == "CC") | any(output == "c") | any(output == "C")) {
+  if (any(startsWith(tolower(output), "c"))) {
     p.ii <- stats::integrate(function(x) {
       dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE) *
           stats::pbinom(floor(cut * N) - 1, N, x, lower.tail = TRUE )
@@ -245,10 +243,10 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' An Extension of the Livingston and Lewis (1995) Approach to Estimate Classification Consistency and Accuracy for Multiple Classifications based on Observed Test Scores and Test Reliability.
 #'
 #' @description An implementation of what has been come to be known as the "Livingston and Lewis approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
-#' @param x A vector of observed scores for which a Beta true-score distribution is to be estimated, or a list of pre-defined true-score distribution parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location parameters, \code{alpha} and \code{beta} for the shape parameters, and \code{etl} for the effective test length (see documentation for the \code{ETL} function).
+#' @param x A vector of observed scores, or a list specifying parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location-, and \code{alpha} and \code{beta} for the shape parameters of the Beta true-score distribution, and \code{etl} for the effective test length (see documentation for the \code{ETL} function).
 #' @param reliability The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.
-#' @param min The minimum value possible to attain on the test. Default is 0 (assuming \code{x} represent proportions).
-#' @param max The maximum value possible to attain on the test. Default is 1 (assuming \code{x} represent proportions).
+#' @param min The minimum value possible to attain on the test. Default is 0.
+#' @param max The maximum value possible to attain on the test. Default is 1 (assumes that the values contained in \code{x} represents proportions of maximum credit).
 #' @param cut A vector of cut-off values for classifying observations into two or more categories.
 #' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
@@ -643,17 +641,17 @@ ccStats <- function(ii, ij, ji, jj) {
 
 #' ROC curves for the Livingston and Lewis approach.
 #'
-#' @description Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.
+#' @description Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed-score scale.
 #' @param x A vector of observed results.
-#' @param min The minimum possible value to attain on the observed-score scale. Default is 0 (assuming \code{x} represent proportions).
-#' @param max The maximum possible value to attain on the observed-score scale. Default is 1 (assuming \code{x} represent proportions).
+#' @param min The minimum possible value to attain on the observed-score scale.
+#' @param max The maximum value possible to attain on the test. Default is 1 (assumes that the values contained in \code{x} represents proportions of maximum credit).
 #' @param reliability The reliability coefficient of the test.
 #' @param truecut The true point along the x-scale that marks the categorization-threshold.
 #' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The \code{"4P"} method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the \code{"2P"} method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
 #' @param failsafe If true-model == "4P": Whether to engage a fail-safe reverting to a two-parameter true-score distribution solution should the four-parameter fitting procedure produce impermissible results. Default is TRUE (engage fail-safe in the event of impermissible estimates).
 #' @param l If \code{true.model == "2P"} or \code{failsafe == TRUE}: The lower-bound location parameter of the two-parameter true-score distribution solution.
 #' @param u If \code{true.model == "2P"} or \code{failsafe == TRUE}: The upper-bound location parameter of the two-parameter true-score distribution solution.
-#' @param AUC Calculate and include the area under the curve? Default is \code{FALSE}.
+#' @param AUC Logical. Calculate and include the area under the curve? Default is \code{FALSE}.
 #' @param maxJ Logical. Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
 #' @param maxAcc Logical. Mark the point along the curve where the Accuracy statistic is maximized? Default is \code{FALSE}.
 #' @param locate Ask the function to locate the cut-point at which sensitivity or NPV is greater than or equal to some value, or specificity or PPV is lesser than or equal to some value. Take as input a character-vector of length 2, with the first argument being which index is to be found (e.g., "sensitivity"), and the second argument the value to locate (e.g., "0.75"). For example: c("sensitivity", "0.75").
@@ -938,7 +936,7 @@ mdo <- function(x, fit = FALSE) {
 
 #' Estimate Beta true-score distribution based on observed-score raw-moments and the effective test length.
 #'
-#' @description Estimator for the Beta true-score distribution shape-parameters from the observed-score distribution and Livingston and Lewis' effective test length. Returns a list with entries representing the lower- and upper shape parameters (l and u), and the shape parameters (alpha and beta) of the four-parameters beta distribution.
+#' @description Estimator for the Beta true-score distribution shape-parameters from the observed-score distribution and Livingston and Lewis' effective test length. Returns a list with entries representing the lower- and upper shape parameters (l and u), and the shape parameters (alpha and beta) of the four-parameters beta distribution, and the effective test length.
 #' @param x Vector of observed-scores.
 #' @param min The minimum possible score to attain on the test.
 #' @param max The maximum possible score to attain on the test.
@@ -954,7 +952,7 @@ mdo <- function(x, fit = FALSE) {
 #' @return A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter.
 #' @references Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf
 #' @references Lord, F. M. (1965). A strong true-score theory, with applications. Psychometrika. 30(3). pp. 239--270. doi: 10.1007/BF02289490
-#' @references Rogosa, D. &  Finkelman, M. (2004). How Accurate Are the STAR Scores for Individual Students? – An Interpretive Guide. Retrieved from http://statweb.stanford.edu/~rag/accguide/guide04.pdf
+#' @references Rogosa, D. &  Finkelman, M. (2004). How Accurate Are the STAR Scores for Individual Students? An Interpretive Guide. Retrieved from http://statweb.stanford.edu/~rag/accguide/guide04.pdf
 #' @examples
 #' # Generate some fictional data. Say 1000 individuals take a 100-item test
 #' # where all items are equally difficult, and the true-score distribution
@@ -1071,6 +1069,55 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
   }
 }
 
+
+#' Estimate Beta True-Score Distribution Based on Observed-Score Raw-Moments and Lord's k.
+#'
+#' @description Estimator for the Beta true-score distribution shape-parameters from the observed-score distribution and Lord's k. Returns a list with entries representing the lower- and upper shape parameters (l and u), and the shape parameters (alpha and beta) of the four-parameters beta distribution, as well as Lord's k and the test length.
+#' @param x Vector of observed-scores.
+#' @param N The test length.
+#' @param k Lord's k (see documentation for the \code{Lords.k()} function).
+#' @param true.model The type of Beta distribution which is to be fit to the moments of the true-score distribution. Options are \code{"4P"} and \code{"2P"}, where \code{"4P"} refers to the four-parameter (with the same mean, variance, skewness, and kurtosis), and \code{"2P"} the two-parameter solution where both location-parameters are specified (with the same mean and variance).
+#' @param failsafe Logical. Whether to revert to a fail-safe two-parameter solution should the four-parameter solution contain invalid parameter estimates.
+#' @param l If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
+#' @param u If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).
+#' @param alpha If \code{failsafe = TRUE} or \code{true.model = "2P"}: The alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).
+#' @param beta If \code{failsafe = TRUE} or \code{true.model = "2P"}: The beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).
+#' @return A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter. Also includes Lord's k and the test length.
+#' @references Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf
+#' @references Lord, F. M. (1965). A strong true-score theory, with applications. Psychometrika. 30(3). pp. 239--270. doi: 10.1007/BF02289490
+#' @examples
+#' # Generate some fictional data. Say 1000 individuals take a 100-item test
+#' # where all items are equally difficult, and the true-score distribution
+#' # is a four-parameter Beta distribution with location parameters l = 0.25,
+#' # u = 0.75, alpha = 5, and beta = 3, and the error distribution is a
+#' # compound Binomial with Lord's k = 2:
+#' set.seed(12)
+#' testdata <- rcBinom(1000, 100, 2, rBeta.4P(1000, 0.25, 0.75, 5, 3))
+#'
+#' # To estimate the four-parameter Beta distribution parameters from this
+#' # sample of observations:
+#' HB.beta.tp.fit(testdata, 100, 2, 100)
+#' @export
+HB.beta.tp.fit <- function(x, N, k, true.model = "4P", failsafe = FALSE, l = 0, u = 1) {
+  rm <- HB.tsm(x, 4, N, k)
+  s2 <- rm[2] - rm[1]^2
+  g3 <- (rm[3] - 3 * rm[1] * rm[2] + 2 * rm[1]^3) / (sqrt(s2)^3)
+  g4 <- (rm[4] - 4 * rm[1] * rm[3] + 6 * rm[1]^2 * rm[2] - 3 * rm[1]^4) / (sqrt(s2)^4)
+  if (startsWith(as.character(true.model), "4")) {
+    out <- Beta.4p.fit(mean = rm[1], variance = s2, skewness = g3, kurtosis = g4)
+  }
+  if (startsWith(as.character(true.model), "2") | (failsafe & (any(is.na(out)) | any(out < 0)))) {
+    if (failsafe & (any(is.na(out)) | any(out < 0))) {
+      warning(paste("Fail-safe engaged: l = ", out$l, ", u = ", out$u, ", alpha = ", out$alpha, ", beta = ", out$beta,
+                    ". \n  Finding permissible solution for the true-score distribution in accordance with specifications.", sep = ""))
+    }
+    out <- list("alpha" = AMS(rm[1], s2, l, u), "beta" = BMS(rm[1], s2, l, u), "l" = l, "u" = u)
+  }
+  out[["k"]] <- k
+  out[["N"]] <- N
+  out
+}
+
 #' Descending (falling) factorial.
 #'
 #' @description Calculate the descending (or falling) factorial of a value \code{x} of order \code{r}.
@@ -1183,6 +1230,35 @@ tsm <- function(x, r, n, method = "product") {
   }
 }
 
+#' Proportional True-Score Distribution Raw Moments for the Hanson-Brennan Approach to Classification Accuracy and Consistency.
+#'
+#' @description An implementation of Lords (1965, p. 265) equation 37 for estimating the raw moments of the true-score distribution.
+#' @param x Vector of values representing sum-scores.
+#' @param r The number of raw moments to be calculated.
+#' @param N The number of test items (i.e., test length).
+#' @param k Lord's k (see documentation for the \code{Lords.k()} function.
+#' @export
+#' @examples
+#' # Generate some data under the Beta Compound-Binomial distribution, where the
+#' # Compound Binomial distribution has 100 trials and Lord's k = 2, and the
+#' # Beta distribution has location parameters l = .15 and u = .85, and shape
+#' # parameters alpha = 6 and beta = 4:
+#' obs <- rBetacBinom(1000, 100, 2, .15, .85, 6, 4)
+#'
+#' # To estimate the first four raw moments of the underlying Beta distribution:
+#' HB.tsm(x = obs, r = 4, N = 100, k = 2)
+HB.tsm <- function(x, r, N, k) {
+  m <- vector("numeric", r)
+  for(i in 1:r) {
+    if (i == 1) {
+      m[i] <- mean(x) / N
+      } else {
+        m[i] <- 1 / (dfac(N, 2) + k*dfac(i, 2)) * ((mean(dfac(x, i)) / dfac(N - 2, i - 2)) + k*dfac(i, 2) * m[i - 1])
+      }
+    }
+  m
+}
+
 
 #' Tabular organization of accuracy and consistency output from the \code{LL.CA.MC()} function.
 #'
@@ -1230,3 +1306,597 @@ MC.out.tabular <- function(x) {
   tab.out
 }
 
+#' Graphical presentation of model fit for the Beta-Binomial classification accuracy and consistency model.
+#'
+#' @description Tool for visually gauging the discrepancy between the observed and model-implied frequencies of observed-scores.
+#' @param x The output object from the \code{LL.CA()}, \code{LL.MC.CA()}, \code{HB.CA()}, or \code{HB.CA.MC()} functions.
+#' @export
+#' @examples
+#' # Generate some data. 1000 respondents taking 100 item test:
+#' set.seed(060121)
+#' p.success <- rBeta.4P(1000, 0.25, 0.75, 5, 3)
+#' for (i in 1:100) {
+#'   if (i == 1) {
+#'    rawdata <- matrix(nrow = 1000, ncol = 100)
+#'  }
+#'  rawdata[, i] <- rbinom(1000, 1, p.success)
+#' }
+#'
+#' # Analyse the accuracy and consistency of the test and store the object:
+#' out <- LL.CA(x = rowSums(rawdata), reliability = cba(rawdata), cut = 50,
+#' min = 0, max = 100, modelfit = c(nbins = 20, minbin = 1))
+#'
+#' # Feed the object to the mdlfit.gfx() function:
+#' mdlfit.gfx(out)
+mdlfit.gfx <- function(x) {
+  yup <- max(x$modelfit$contingencytable) * 1.3
+  plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[2, ], type = "o", bg = "black", ylim = c(0, yup), ylab = "Frequency", xlab = "Bin number", main = "Observed vs Expected frequencies", lwd = 2, axes = FALSE)
+  par(new = TRUE)
+  plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[1, ], type = "o", col = "grey", ylim = c(0, yup), ylab = "", xlab = "", lwd = 2, lty = 2, axes = FALSE)
+  box()
+  axis(1, 0:ncol(x$modelfit$contingencytable))
+  axis(2)
+  legend("topright", legend = c("Observed", "Expected"), col = c("black", "darkgrey"), lty = c(1, 2), lwd = c(3, 3), pch = c(1, 1), bty = "n")
+  if (x$modelfit$p < .001) {
+    legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), "p < 0.001"), bty = "n")
+  } else {
+    legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), paste("p = ", round(x$modelfit$p, 3))), bty = "n")
+  }
+}
+
+#' Function for estimating "Lord's k" for Lord's two-term approximation to the compound binomial distribution.
+#'
+#' @description Calculates Lord's k.
+#' @param x A vector of observed-scores.
+#' @param N The test length.
+#' @param reliability The test-score reliability coefficient.
+#' @return A value representing Lord's k
+#' @export
+#' @examples
+#' # Generate some fictional data. Say 100 students take a 50-item long test
+#' # where all items are equally difficult (i.e., where the true Lord's k = 0).
+#' set.seed(1234)
+#' p.success <- rBeta.4P(100, 0.25, 0.75, 5, 3)
+#' for (i in 1:50) {
+#'   if (i == 1) {
+#'     rawdata <- matrix(nrow = 100, ncol = 50)
+#'   }
+#'   rawdata[, i] <- rbinom(100, 1, p.success)
+#' }
+#'
+#' # Estimate the reliability of these scores with Cronbach's Alpha:
+#' reliability <- cba(rawdata)
+#'
+#' # Estimate Lord's k using Lords.k():
+#' Lords.k(rowSums(rawdata), 50, reliability)
+Lords.k <- function(x, N, reliability) {
+  mu <- mean(x)
+  sigma2 <- var(x)
+  sigma2e <- sigma2*(1 - reliability)
+  num <- N*((N-1) * (sigma2 - sigma2e) - N*sigma2 + mu*(N-mu))
+  den <- 2*(mu*(N - mu) - (sigma2 - sigma2e))
+  num/den
+}
+
+
+#' An Implementation of the Hanson and Brennan Approach to Estimate Classification Consistency and Accuracy based on Observed Test Scores and Test Reliability.
+#'
+#' @description An implementation of what has been come to be known as the "Hanson and Brennan approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to a two-term approximation of the compound binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
+#' @param x A vector of observed scores, or a list specifying parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location-, and \code{alpha} and \code{beta} for the shape parameters of the Beta true-score distribution, and \code{k} for the "Lord's k" parameter (see documentation for the \code{Lords.k} function).
+#' @param reliability The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.
+#' @param testlength The total number of test items.
+#' @param cut The cutoff value for classifying observations into above/below categories.
+#' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
+#' @param truecut Optional specification of a "true" cutoff. Useful for producing ROC curves (see documentation for the \code{HB.ROC()} function).
+#' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
+#' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
+#' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
+#' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
+#' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. In accordance with standard recommendations for chi-square tests this is set to a default of 10. However, Lord suggested that this value should be set to 1 in order for the test to be sensitive to misfit in the tails of the distribution.
+#' @note This implementation of the Hanson-Brennan approach is much slower than the implementation of the Livingston and Lewis approach, as there is no native implementation of Lord's two-term approximation to the Compound-Binomial distribution in R. This implementation uses a "brute-force" method of computing the cumulative probabilities from the compound-Binomial distribution, which will by necessity be more resource intensive.
+#' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
+#' @examples
+#' # Generate some fictional data. Say, 1000 individuals take a test with a
+#' # maximum score of 50.
+#' # Generate some fictional data. Say, 1000 individuals take a 20-item test.
+#' set.seed(1234)
+#' p.success <- rBeta.4P(1000, 0.15, 0.85, 6, 4)
+#'  for (i in 1:20) {
+#'    if (i == 1) {
+#'      rawdata <- matrix(nrow = 1000, ncol = 20)
+#'      }
+#'    rawdata[, i] <- rbinom(1000, 1, p.success)
+#'  }
+#'
+#' # Suppose the cutoff value for attaining a pass is 10 items correct, and
+#' # that the reliability of this test was estimated using the Cronbach's Alpha
+#' # estimator. To estimate and retrieve the estimated parameters, confusion and
+#' # consistency matrices, and accuracy and consistency indices using HB.CA():
+#' HB.CA(x = rowSums(rawdata), reliability = cba(rawdata), cut = 10,
+#' testlength = 20)
+#' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
+#' @references Lord. Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
+#' @references Lewis, Don and Burke, C. J. (1949). The Use and Misuse of the Chi-Square Test. Psychological Bulletin, 46(6).
+#' @export
+HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", truecut = NULL, output = c("accuracy", "consistency"), failsafe = TRUE, l = 0, u = 1, modelfit = 10) {
+  out <- base::list()
+  if (class(x) != "list") {
+    k <- Lords.k(x, testlength, reliability)
+    if (startsWith(as.character(true.model), "2")) {
+      failsafe <- FALSE
+    }
+    params <- HB.beta.tp.fit(x, testlength, k)
+    if (params$l < 0 | params$u > 1) {
+      warning(paste("Parameter out of bounds: l = ", round(params$l, 4), ", u = ", round(params$u, 4), ", alpha = ", round(params$alpha, 4), ", beta = ", round(params$beta, 4),
+                    ". Consider constraining the fitting procedure further (e.g., set the location-parameters).", sep = ""))
+    }
+  } else {
+    params <- x
+  }
+  if (base::is.null(truecut)) {
+    truecut <- cut
+  }
+  truecut <- truecut / params$N
+  out[["parameters"]] <- params
+  if (class(x) != "list") {
+    mdlfit <- matrix(ncol = params$N + 1, nrow = 2)
+    rownames(mdlfit) <- c("Expected", "Observed")
+    for (i in 0:params$N) {
+      mdlfit[1, i + 1] <- integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) }, lower = 0, upper = 1)$value * length(x)
+      mdlfit[2, i + 1] <- length(x[x == i])
+      }
+    for (i in 1:ncol(mdlfit)) {
+      if (i < ncol(mdlfit)) {
+        if (any(mdlfit[1, i] < ncol(mdlfit))) {
+          if (any(mdlfit[1, i] < modelfit)) {
+            mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
+            mdlfit[, i] <- NA
+          }
+        }
+      }
+      }
+    mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
+    if (any(mdlfit[1, ncol(mdlfit)] < modelfit)) {
+      mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
+      mdlfit <- mdlfit[, -ncol(mdlfit)]
+      }
+    chisquared <- sum(apply(mdlfit, 2, function(x) {(x[2] - x[1])^2 / x[1]}))
+    out[["modelfit"]] <- list()
+    out[["modelfit"]][["contingencytable"]] <- mdlfit
+    out[["modelfit"]][["chisquared"]] <- chisquared
+    if (startsWith(as.character(true.model), "2")) {
+      out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
+      } else {
+        if ((startsWith(as.character(true.model), "4") & failsafe == TRUE) & (out[["parameters"]]$l == l & out[["parameters"]]$u == u)) {
+          out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
+          } else {
+            out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
+          }
+        }
+    out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
+  }
+  if (any(startsWith(tolower(output), "a"))) {
+    p.fp <- NULL
+    for (i in 0:(cut - 1)) {
+      p.fp[i + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = truecut, upper = 1)$value
+    }
+    p.fp <- sum(p.fp)
+    p.tp <- NULL
+    for (i in 0:(cut - 1)) {
+      p.tp[i + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = 0, upper = truecut)$value
+    }
+    p.tp <- sum(p.tp)
+    p.tn <- NULL
+    for (i in cut:params$N) {
+      p.tn[i - cut + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = truecut, upper = 1)$value
+    }
+    p.tn <- sum(p.tn)
+    p.fn <- NULL
+    for (i in cut:params$N) {
+      p.fn[i - cut + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = 0, upper = truecut)$value
+    }
+    p.fn <- sum(p.fn)
+    camat <- confmat(p.tp, p.tn, p.fp, p.fn, "prop")
+    out[["confusionmatrix"]] <- camat
+    out[["classification.accuracy"]] <- caStats(camat[1, 1], camat[1, 2], camat[2, 1], camat[2, 2])
+  }
+  if (any(startsWith(tolower(output), "c"))) {
+    ccmat <- matrix(ncol = params$N + 1, nrow = params$N + 1)
+    for (i in 0:params$N) {
+      for (j in 0:params$N) {
+        ccmat[i + 1, j + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
+      }
+    }
+    p.ii <- sum(ccmat[1:cut, 1:cut])
+    p.jj <- sum(ccmat[(cut + 1):(params$N + 1), (cut + 1):(params$N + 1)])
+    p.ij <- sum(ccmat[1:cut, (cut + 1):(params$N + 1)])
+    p.ji <- sum(ccmat[(cut + 1):(params$N + 1), 1:cut])
+    ccmat <- base::matrix(nrow = 2, ncol = 2, dimnames = list(c("i", "j"), c("i", "j")))
+    ccmat["i", "i"] <- p.ii
+    ccmat["i", "j"] <- p.ij
+    ccmat["j", "i"] <- p.ji
+    ccmat["j", "j"] <- p.jj
+    ccmat <- ccmat / sum(ccmat)
+    out[["consistencymatrix"]] <- ccmat
+    out[["classification.consistency"]] <- ccStats(ccmat["i", "i"], ccmat["i", "j"], ccmat["j", "i"], ccmat["j", "j"])
+  }
+  base::return(out)
+}
+
+#' ROC curves for the Hanson and Brennan approach.
+#'
+#' @description Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed-score scale.
+#' @param x A vector of observed results (sum scores) or a list of parameter values (see documentation for the \code{HB.beta.tp.fit() function}.
+#' @param reliability The reliability coefficient of the test.
+#' @param testlength The test length (i.e., the number of test items).
+#' @param truecut The point along the x-scale that marks true category membership.
+#' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The \code{"4P"} method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the \code{"2P"} method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
+#' @param failsafe If true-model == "4P": Whether to engage a fail-safe reverting to a two-parameter true-score distribution solution should the four-parameter fitting procedure produce impermissible results. Default is TRUE (engage fail-safe in the event of impermissible estimates).
+#' @param l If \code{true.model == "2P"} or \code{failsafe == TRUE}: The lower-bound location parameter of the two-parameter true-score distribution solution.
+#' @param u If \code{true.model == "2P"} or \code{failsafe == TRUE}: The upper-bound location parameter of the two-parameter true-score distribution solution.
+#' @param AUC Logical. Calculate and include the area under the curve? Default is \code{FALSE}.
+#' @param maxJ Logical. Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.
+#' @param maxAcc Logical. Mark the point along the curve where the Accuracy statistic is maximized? Default is \code{FALSE}.
+#' @param locate Ask the function to locate the cut-point at which sensitivity or NPV is greater than or equal to some value, or specificity or PPV is lesser than or equal to some value. Take as input a character-vector of length 2, with the first argument being which index is to be found (e.g., "sensitivity"), and the second argument the value to locate (e.g., "0.75"). For example: c("sensitivity", "0.75").
+#' @param raw.out Give raw coordinates as output rather than plot? Default is \code{FALSE}
+#' @param grainsize Specify the number of cutoff-points for which the ROC curve is to be calculated. The greater this number the greater the accuracy. Default is set to the stated test length (N).
+#' @note This implementation of the Hanson-Brennan approach is much slower than the implementation of the Livingston and Lewis approach, as there is no native implementation of Lord's two-term approximation to the Compound-Binomial distribution in R. This implementation uses a "brute-force" method of computing the cumulative probabilities from the compound-Binomial distribution, which will by necessity be more resource intensive.
+#' @return A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
+#' @examples
+#' # Generate some fictional data. Say, 1000 individuals take a test with a
+#' # maximum score of 50.
+#' # Generate some fictional data. Say, 1000 individuals take a 20-item test.
+#' set.seed(1234)
+#' p.success <- rBeta.4P(1000, 0.15, 0.85, 6, 4)
+#'  for (i in 1:20) {
+#'    if (i == 1) {
+#'      rawdata <- matrix(nrow = 1000, ncol = 20)
+#'      }
+#'    rawdata[, i] <- rbinom(1000, 1, p.success)
+#'  }
+#'
+#' # Suppose the cutoff value for attaining a pass is 10 items correct, and
+#' # that the reliability of this test was estimated using the Cronbach's Alpha
+#' # estimator. To draw the ROC-graph and locate the points at which Youden's J
+#' # and Accuracy are maximized:
+#' HB.ROC(rowSums(rawdata), cba(rawdata), 20, 10, maxAcc = TRUE, maxJ = TRUE)
+#'
+#' # For further examples regarding how to use the locate argument to locate
+#' # points at which various criteria are satisfied, see documentation for the
+#' # LL.ROC() function.
+#' @export
+HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = testlength) {
+  oldpar <- graphics::par(no.readonly = TRUE)
+  base::on.exit(graphics::par(oldpar))
+  if (class(x) != "list") {
+    k <- Lords.k(x, testlength, reliability)
+    x <- HB.beta.tp.fit(x, testlength, k, true.model = true.model, failsafe = failsafe, l = l, u = u)
+  }
+  for (i in 1:(grainsize + 1)) {
+    if (i == 1) {
+      cuts <- seq(0, testlength, testlength / grainsize)
+      outputmatrix <- matrix(nrow = grainsize + 1, ncol = 7)
+      outputmatrix[, 4] <- cuts
+    }
+    axval <- HB.CA(x = x, cut = cuts[i],
+                   truecut = truecut, true.model = true.model,
+                   output = "a", l = l, u = u)$classification.accuracy
+    outputmatrix[i, 1] <- 1 - axval$Specificity
+    outputmatrix[i, 2] <- axval$Sensitivity
+    outputmatrix[i, 3] <- axval$Youden.J
+    outputmatrix[i, 5] <- axval$Accuracy
+    outputmatrix[i, 6] <- axval$PPV
+    outputmatrix[i, 7] <- axval$NPV
+    base::colnames(outputmatrix) <- c("FPR", "TPR", "Youden.J", "Cutoff", "Accuracy", "PPV", "NPV")
+    outputmatrix[base::which(base::is.na(outputmatrix[, 1])), 1] <- 0
+    outputmatrix[base::which(base::is.na(outputmatrix[, 2])), 2] <- 1
+    outputmatrix[base::which(base::is.na(outputmatrix[, 6])), 6] <- 1
+    outputmatrix[base::which(base::is.na(outputmatrix[, 7])), 7] <- 1
+  }
+  if (raw.out) {
+    base::return(outputmatrix)
+  }
+  graphics::plot(NULL, xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
+  graphics::abline(h = seq(0, 1, .1), v = seq(0, 1, .1), col = "lightgrey", lty = "dotted")
+  graphics::par(new = TRUE)
+  graphics::plot(outputmatrix[, 1], outputmatrix[, 2], type = "s",
+                 xlab = "False-Positive Rate (1 - Specificity)",
+                 ylab = "True-Positive Rate (Sensitivity)",
+                 main = paste("ROC curve for true-cut equal to", truecut), lwd = 2,
+                 xlim = c(0, 1), ylim = c(0, 1))
+  if (AUC) {
+    graphics::legend("bottomright", bty = "n", cex = 1.5,
+                     legend = paste("AUC =", round(AUC(outputmatrix[, 1], outputmatrix[, 2]), 3)))
+  }
+  if (maxJ) {
+    graphics::points(outputmatrix[base::which(outputmatrix[, 3] == base::max(outputmatrix[, 3])), 1],
+                     outputmatrix[base::which(outputmatrix[, 3] == base::max(outputmatrix[, 3])), 2], cex = 1.5, pch = 19)
+    graphics::text(outputmatrix[base::which(outputmatrix[, 3] == base::max(outputmatrix[, 3])), 1] + .025,
+                   outputmatrix[base::which(outputmatrix[, 3] == base::max(outputmatrix[, 3])), 2] - .025,
+                   labels = base::paste("Maximum Youden's J. ", "(", base::round(base::max(outputmatrix[, 3]), 3), ") ",  "at cut-off = ",
+                                        base::round(outputmatrix[which(outputmatrix[, 3] == base::max(outputmatrix[, 3]))[1], 4], 3), ".", sep = ""),
+                   adj = c(0, 1))
+  }
+  if (maxAcc) {
+    graphics::points(outputmatrix[base::which(outputmatrix[, 5] == base::max(outputmatrix[, 5])), 1],
+                     outputmatrix[base::which(outputmatrix[, 5] == base::max(outputmatrix[, 5])), 2], cex = 1.5, pch = 19)
+    graphics::text(outputmatrix[base::which(outputmatrix[, 5] == base::max(outputmatrix[, 5])), 1] + .025,
+                   outputmatrix[base::which(outputmatrix[, 5] == base::max(outputmatrix[, 5])), 2] - .025,
+                   labels = base::paste("Maximum Accuracy ", "(", base::round(base::max(outputmatrix[, 5]), 3), ") ",  "at cut-off = ",
+                                        base::round(outputmatrix[which(outputmatrix[, 5] == base::max(outputmatrix[, 5]))[1], 4], 3), ".", sep = ""),
+                   adj = c(0, 1))
+  }
+  if (!base::is.null(locate)) {
+    if (base::startsWith(base::tolower(locate[1]), "se")) {
+      rowloc <- base::which(outputmatrix[, "TPR"] >= base::as.numeric(locate[2]))[1]
+      colloc <- "TPR"
+      value <- outputmatrix[rowloc, "TPR"]
+      statistic <- "Sensitivity >= "
+    }
+    if (base::startsWith(base::tolower(locate[1]), "p")) {
+      rowloc <- base::which(outputmatrix[, "PPV"] <= base::as.numeric(locate[2]))[1]
+      colloc <- "PPV"
+      value <- outputmatrix[rowloc, "PPV"]
+      statistic <- "PPV <= "
+    }
+    if (base::startsWith(base::tolower(locate[1]), "n")) {
+      rowloc <- base::which(outputmatrix[, "NPV"] >= base::as.numeric(locate[2]))[1]
+      colloc <- "NPV"
+      value <- outputmatrix[rowloc, "NPV"]
+      statistic <- "NPV >= "
+    }
+    if (base::startsWith(base::tolower(locate[1]), "sp")) {
+      rowloc <- base::which(outputmatrix[, "FPR"] <= 1 - base::as.numeric(locate[2]))[base::length(base::which(outputmatrix[, "FPR"] <= 1 - base::as.numeric(locate[2])))]
+      colloc <- "FPR"
+      value <- 1 - outputmatrix[rowloc, "FPR"]
+      statistic <- "Specificity <= "
+    }
+    graphics::points(outputmatrix[rowloc, 1], outputmatrix[rowloc, 2], cex = 1.5, pch = 19)
+    graphics::text(outputmatrix[rowloc, 1] + .025,
+                   outputmatrix[rowloc, 2] - .025,
+                   labels = base::paste(statistic, base::as.numeric(locate[2]) , " (", base::round(value, 3), ")",
+                                        " at cut-off = ", outputmatrix[rowloc, 4], ".", sep = ""),
+                   adj = if (base::startsWith(base::tolower(locate[1]), "sp")) { c(0, 1) } else { c(0, 1) })
+  }
+}
+
+
+
+#' An Extension of the Hanson and Brennan Approach to Estimate Classification Consistency and Accuracy for Multiple Classifications based on Observed Test Scores and Test Reliability.
+#'
+#' @description An implementation of what has been come to be known as the "Hanson and Brennan approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to the binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
+#' @param x A vector of observed scores, or a list specifying parameter values. If a list is provided, the list entries must be named after the parameters: \code{l} and \code{u} for the location-, and \code{alpha} and \code{beta} for the shape parameters of the Beta true-score distribution, and \code{k} for the "Lord's k" parameter (see documentation for the \code{Lords.k} function).
+#' @param reliability The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.
+#' @param testlength The total number of test items.
+#' @param cut The cutoff value for classifying observations into above/below categories.
+#' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
+#' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
+#' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
+#' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
+#' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
+#' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. In accordance with standard recommendations for chi-square tests this is set to a default of 10. However, Lord suggested that this value should be set to 1 in order for the test to be sensitive to misfit in the tails of the distribution.
+#' @return A list containing the estimated parameters necessary for the approach (i.e., Lord's k, test-lenght, and the true-score Beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
+#' @note This implementation of the Hanson-Brennan approach is much slower than the implementation of the Livingston and Lewis approach, as there is no native implementation of Lord's two-term approximation to the Compound-Binomial distribution in R. This implementation uses a "brute-force" method of computing the cumulative probabilities from the compound-Binomial distribution, which will by necessity be more resource intensive.
+#' @examples
+#' # Generate some fictional data. Say, 1000 individuals take a 20-item test.
+#' set.seed(1234)
+#' p.success <- rBeta.4P(1000, 0.15, 0.85, 6, 4)
+#'  for (i in 1:20) {
+#'    if (i == 1) {
+#'      rawdata <- matrix(nrow = 1000, ncol = 20)
+#'      }
+#'    rawdata[, i] <- rbinom(1000, 1, p.success)
+#'  }
+#'
+#' # Suppose the cutoff value for being placed in the lower category is a score
+#' # below 10, middle category 15, and the upper category 15 or above. Using the
+#' # cba() function to estimate the reliability of this test, to use the
+#' # HB.CA.MC() function or estimating diagnostic performance and consistency
+#' # indices of classifications when using several cut-points:
+#' (output <- HB.CA.MC(rowSums(rawdata), cba(rawdata), c(20, 30), 50))
+#'
+#' # The output for this function can get quite verbose as more categories are
+#' # included. The output from the function can be fed to the MC.out.tabular()
+#' # function in order to organize the output in a tabular format.
+#' MC.out.tabular(output)
+#'
+#' @references Hanson, Bradley A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing.
+#' @references Lord. Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
+#' @references Lewis, Don and Burke, C. J. (1949). The Use and Misuse of the Chi-Square Test. Psychological Bulletin, 46(6).
+#' @export
+HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", failsafe = TRUE, l = 0, u = 1, modelfit = 10) {
+  out <- base::list()
+  if (class(x) != "list") {
+    k <- Lords.k(x, testlength, reliability)
+    if (startsWith(as.character(true.model), "2")) {
+      failsafe <- FALSE
+    }
+    params <- HB.beta.tp.fit(x, testlength, k)
+    if (params$l < 0 | params$u > 1) {
+      warning(paste("Parameter out of bounds: l = ", round(params$l, 4), ", u = ", round(params$u, 4), ", alpha = ", round(params$alpha, 4), ", beta = ", round(params$beta, 4),
+                    ". Consider constraining the fitting procedure further (e.g., set the location-parameters).", sep = ""))
+    }
+  } else {
+    params <- x
+  }
+  out[["parameters"]] <- params
+  truecut <- c(0, cut / params$N, 1)
+  cut <- c(0, cut, params$N)
+  camat <- matrix(ncol = length(cut) -1, nrow = length(cut) - 1)
+  ccmat <- camat
+  if (class(x) != "list") {
+    mdlfit <- matrix(ncol = params$N + 1, nrow = 2)
+    rownames(mdlfit) <- c("Expected", "Observed")
+    for (i in 0:params$N) {
+      mdlfit[1, i + 1] <- integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) }, lower = 0, upper = 1)$value * length(x)
+      mdlfit[2, i + 1] <- length(x[x == i])
+    }
+    for (i in 1:ncol(mdlfit)) {
+      if (i < ncol(mdlfit)) {
+        if (any(mdlfit[1, i] < ncol(mdlfit))) {
+          if (any(mdlfit[1, i] < modelfit)) {
+            mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
+            mdlfit[, i] <- NA
+          }
+        }
+      }
+    }
+    mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
+    if (any(mdlfit[1, ncol(mdlfit)] < modelfit)) {
+      mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
+      mdlfit <- mdlfit[, -ncol(mdlfit)]
+    }
+    chisquared <- sum(apply(mdlfit, 2, function(x) {(x[2] - x[1])^2 / x[1]}))
+    out[["modelfit"]] <- list()
+    out[["modelfit"]][["contingencytable"]] <- mdlfit
+    out[["modelfit"]][["chisquared"]] <- chisquared
+    if (startsWith(as.character(true.model), "2")) {
+      out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
+    } else {
+      if ((startsWith(as.character(true.model), "4") & failsafe == TRUE) & (out[["parameters"]]$l == l & out[["parameters"]]$u == u)) {
+        out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
+      } else {
+        out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
+      }
+    }
+    out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
+  }
+  for (i in 1:(length(cut) - 1)) {
+    if (i == 1) {
+      for (j in 1:(length(cut) - 1)) {
+        if (j == 1) {
+          rnam <- NULL
+          cnam <- NULL
+        }
+        if (j != (length(cut) - 1)) {
+          if (j == 1) {
+            rnam[j] <- paste("Observed <", cut[j + 1])
+            cnam[j] <- paste("True     <", cut[j + 1])
+          } else {
+            rnam[j] <- paste(" >=", cut[j], "& <", cut[j + 1])
+            cnam[j] <- paste(" >=", cut[j], "& <", cut[j + 1])
+          }
+        } else {
+          rnam[j] <- paste(" >=", cut[j])
+          cnam[j] <- paste(" >=", cut[j])
+        }
+      }
+      colnames(camat) <- cnam
+      rownames(camat) <- rnam
+    }
+  }
+
+  camat.bc <- matrix(ncol = (length(cut) - 1), nrow = params$N + 1)
+  for(i in 0:(nrow(camat.bc) - 1)) {
+    for (j in 1:ncol(camat.bc)) {
+      camat.bc[i + 1, j] <- integrate(function(x) {
+        dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)
+      }, lower = truecut[j], upper = truecut[j + 1])$value
+    }
+  }
+  for (i in 1:ncol(camat)) {
+    for (j in 1:ncol(camat)) {
+      if (i != ncol(camat)) {
+        camat[i, j] <- sum(camat.bc[(cut[i] + 1):(cut[i + 1]), j])
+      } else {
+        camat[i, j] <- sum(camat.bc[(cut[i] + 1):(cut[i + 1] + 1), j])
+      }
+    }
+  }
+  out[["accuracy"]] <- list()
+  out[["accuracy"]][["overall"]] <- list()
+  out[["accuracy"]][["overall"]][["confusionmatrix"]] <- camat / sum(camat)
+  out[["accuracy"]][["overall"]][["accuracy"]] <- sum(diag(camat))
+  out[["accuracy"]][["specific"]]
+  caout <- list()
+  for(i in 1:ncol(camat)) {
+    FN <- sum(camat[-i, i])
+    FP <- sum(camat[i, -i])
+    TP <- camat[i, i]
+    TN <- sum(camat[-i, -i])
+    caout[[paste("Category.", i, sep = "")]] <- list()
+    caout[[i]][["confusionmatrix"]] <- confmat(TP, TN, FP, FN)
+    caout[[i]][["statistics"]] <- caStats(TP, TN, FP, FN)
+  }
+  out[["accuracy"]][["specific"]] <- caout
+  for (i in 1:(length(cut) - 1)) {
+    if (i == 1) {
+      for (j in 1:(length(cut) - 1)) {
+        if (j == 1) {
+          rnam <- NULL
+          cnam <- NULL
+        }
+        if (j != (length(cut) - 1)) {
+          if (j == 1) {
+            rnam[j] <- paste("2nd adm. <", cut[j + 1])
+            cnam[j] <- paste("1st adm. <", cut[j + 1])
+          } else {
+            rnam[j] <- paste(" >=", cut[j], "& <", cut[j + 1])
+            cnam[j] <- paste(" >=", cut[j], "& <", cut[j + 1])
+          }
+        } else {
+          rnam[j] <- paste(" >=", cut[j])
+          cnam[j] <- paste(" >=", cut[j])
+        }
+      }
+      colnames(ccmat) <- cnam
+      rownames(ccmat) <- rnam
+    }
+    ccmat.bc <- matrix(ncol = params$N + 1, nrow = params$N + 1)
+    for (i in 0:params$N) {
+      for (j in 0:params$N) {
+        ccmat.bc[i + 1, j + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
+      }
+    }
+    for (i in 1:ncol(ccmat)) {
+      for (j in 1:ncol(ccmat)) {
+        if (i == 1 & j == 1) {
+          ccmat[i, j] <- sum(ccmat.bc[1:(cut[i + 1]), 1:(cut[j + 1])])
+        }
+        if (i == 1 & (j != 1 & j != ncol(ccmat))) {
+          ccmat[i, j] <- sum(ccmat.bc[1:(cut[i + 1]), (cut[j] + 1):cut[j + 1]])
+        }
+        if (i == 1 & (j == ncol(ccmat))) {
+          ccmat[i, j] <- sum(ccmat.bc[1:(cut[i + 1]), (cut[j] + 1):(cut[j + 1] + 1)])
+        }
+        if ((i != 1 & i != ncol(ccmat)) & j == 1) {
+          ccmat[i, j] <- sum(ccmat.bc[(cut[i] + 1):cut[i + 1], 1:(cut[j + 1])])
+        }
+        if ((i != 1 & i != ncol(ccmat)) & (j != 1 & j != ncol(ccmat))) {
+          ccmat[i, j] <- sum(ccmat.bc[(cut[i] + 1):cut[i + 1], (cut[j] + 1):cut[j + 1]])
+        }
+        if ((i != 1 & i != ncol(ccmat)) & j == ncol(ccmat)) {
+          ccmat[i, j] <- sum(ccmat.bc[(cut[i] + 1):cut[i + 1], (cut[j] + 1):(cut[j + 1] + 1)])
+        }
+        if (i == ncol(ccmat) & j == 1) {
+          ccmat[i, j] <- sum(ccmat.bc[(cut[i] + 1):(cut[i + 1] + 1), 1:(cut[j + 1])])
+        }
+        if (i == ncol(ccmat) & (j != 1 & j != ncol(ccmat))) {
+          ccmat[i, j] <- sum(ccmat.bc[(cut[i] + 1):(cut[i + 1] + 1), (cut[j] + 1):cut[j + 1]])
+        }
+        if (i == ncol(ccmat) & j == ncol(ccmat)) {
+          ccmat[i, j] <- sum(ccmat.bc[(cut[i] + 1):(cut[i + 1] + 1), (cut[j] + 1):(cut[j + 1] + 1)])
+        }
+      }
+    }
+  }
+  out[["consistency"]] <- list()
+  out[["consistency"]][["overall"]] <- list()
+  out[["consistency"]][["overall"]][["consistencymatrix"]] <- ccmat / sum(ccmat)
+  p <- sum(diag(ccmat))
+  p_c <- sum(apply(ccmat, 2, function(x) {
+    sum(x)^2
+  }))
+  Kappa <- (p - p_c) / (1 - p_c)
+  out[["consistency"]][["overall"]][["statistics"]] <- list("p" = p, "p_c" = p_c, "Kappa" = Kappa)
+  ccout <- list()
+  for(i in 1:ncol(ccmat)) {
+    p <- diag(ccmat)[i]
+    p_c <- sum(ccmat[i, ])^2
+    Kappa <- (p - p_c) / (1 - p_c)
+    ccout[[paste("Category.", i, sep = "")]] <- list()
+    ccout[[i]][["statistics"]] <- list("p" = p, "p_c" = p_c, "Kappa" = Kappa)
+  }
+  out[["consistency"]][["specific"]] <- ccout
+  base::return(out)
+}

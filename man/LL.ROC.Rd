@@ -27,9 +27,9 @@ LL.ROC(
 
 \item{reliability}{The reliability coefficient of the test.}
 
-\item{min}{The minimum possible value to attain on the observed-score scale. Default is 0 (assuming \code{x} represent proportions).}
+\item{min}{The minimum possible value to attain on the observed-score scale.}
 
-\item{max}{The maximum possible value to attain on the observed-score scale. Default is 1 (assuming \code{x} represent proportions).}
+\item{max}{The maximum value possible to attain on the test. Default is 1 (assumes that the values contained in \code{x} represents proportions of maximum credit).}
 
 \item{truecut}{The true point along the x-scale that marks the categorization-threshold.}
 
@@ -41,7 +41,7 @@ LL.ROC(
 
 \item{u}{If \code{true.model == "2P"} or \code{failsafe == TRUE}: The upper-bound location parameter of the two-parameter true-score distribution solution.}
 
-\item{AUC}{Calculate and include the area under the curve? Default is \code{FALSE}.}
+\item{AUC}{Logical. Calculate and include the area under the curve? Default is \code{FALSE}.}
 
 \item{maxJ}{Logical. Mark the point along the curve where Youden's J statistic is maximized? Default is \code{FALSE}.}
 
@@ -57,7 +57,7 @@ LL.ROC(
 A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out is \code{TRUE}.
 }
 \description{
-Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed proportion-score scale.
+Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed-score scale.
 }
 \examples{
 # Generate some fictional data. Say, 1000 individuals take a test with a
