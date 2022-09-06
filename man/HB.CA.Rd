@@ -47,6 +47,9 @@ A list containing the estimated parameters necessary for the approach (i.e., the
 \description{
 An implementation of what has been come to be known as the "Hanson and Brennan approach" to classification consistency and accuracy, which by employing a compound beta-binomial distribution assumes that true-scores conform to the four-parameter beta distribution, and errors of measurement to a two-term approximation of the compound binomial distribution. Under these assumptions, the expected classification consistency and accuracy of tests can be estimated from observed outcomes and test reliability.
 }
+\note{
+This implementation of the Hanson-Brennan approach is much slower than the implementation of the Livingston and Lewis approach, as there is no native implementation of Lord's two-term approximation to the Compound-Binomial distribution in R. This implementation uses a "brute-force" method of computing the cumulative probabilities from the compound-Binomial distribution, which will by necessity be more resource intensive.
+}
 \examples{
 # Generate some fictional data. Say, 1000 individuals take a test with a
 # maximum score of 50.

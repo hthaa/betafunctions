@@ -1496,7 +1496,7 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
       p.fn[i - cut + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = 0, upper = truecut)$value
     }
     p.fn <- sum(p.fn)
-    camat <- confmat(p.tp, p.tn, p.fp, p.fn, "prop")
+    camat <- confmat(p.tp, p.tn, p.fp, p.fn, "freq")
     out[["confusionmatrix"]] <- camat
     out[["classification.accuracy"]] <- caStats(camat[1, 1], camat[1, 2], camat[2, 1], camat[2, 2])
   }

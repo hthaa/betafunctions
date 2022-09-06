@@ -56,6 +56,9 @@ A plot tracing the ROC curve for the test, or matrix of coordinates if raw.out i
 \description{
 Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed-score scale.
 }
+\note{
+This implementation of the Hanson-Brennan approach is much slower than the implementation of the Livingston and Lewis approach, as there is no native implementation of Lord's two-term approximation to the Compound-Binomial distribution in R. This implementation uses a "brute-force" method of computing the cumulative probabilities from the compound-Binomial distribution, which will by necessity be more resource intensive.
+}
 \examples{
 # Generate some fictional data. Say, 1000 individuals take a test with a
 # maximum score of 50.
