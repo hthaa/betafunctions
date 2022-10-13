@@ -116,7 +116,7 @@ R.ETL <- function(mean, variance, min = 0, max = 1, ETL) {
 #' @export
 LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", truecut = NULL, output = c("accuracy", "consistency"), failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 100, "minbin" = 10)) {
   out <- base::list()
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     if ((base::min(x) < min) | (base::max(x) > max)) {
       warning(paste("Observed values not within the specified [", min, ", ", max, "] bounds (observed min = ",
                     base::min(x), ", observed max = ", base::max(x), ").", sep = ""))
@@ -146,7 +146,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
   tcut <- round(seq(0, N, N / modelfit[1]))
   mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
   rownames(mdlfit) <- c("Expected", "Observed")
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     x <- x * N
     for (j in 1:(length(tcut) - 1)) {
       mdlfit[1, j] <- stats::integrate(function(x) {
@@ -298,7 +298,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' @export
 LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 100, "minbin" = 10)) {
   out <- base::list()
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     if ((base::min(x) < min) | (base::max(x) > max)) {
       warning(paste("Observed values not within the specified [", min, ", ", max, "] bounds (observed min = ",
                     base::min(x), ", observed max = ", base::max(x), ").", sep = ""))
@@ -328,7 +328,7 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
   rownames(mdlfit) <- c("Expected", "Observed")
   camat <- matrix(ncol = length(cut) + 1, nrow = length(cut) + 1)
   ccmat <- camat
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     x <- x * N
     for (j in 1:(length(tcut) - 1)) {
       mdlfit[1, j] <- stats::integrate(function(x) {
@@ -691,7 +691,7 @@ ccStats <- function(ii, ij, ji, jj) {
 LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = 100) {
   oldpar <- graphics::par(no.readonly = TRUE)
   base::on.exit(graphics::par(oldpar))
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     x <- Beta.tp.fit(x, min, max, reliability = reliability, true.model = true.model, failsafe = failsafe, l = l, u = u)
   }
   for (i in 1:(grainsize + 1)) {
@@ -1418,7 +1418,7 @@ Lords.k <- function(x, N, reliability) {
 #' @export
 HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", truecut = NULL, output = c("accuracy", "consistency"), failsafe = TRUE, l = 0, u = 1, modelfit = 10) {
   out <- base::list()
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     k <- Lords.k(x, testlength, reliability)
     if (startsWith(as.character(true.model), "2")) {
       failsafe <- FALSE
@@ -1436,7 +1436,7 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
   }
   truecut <- truecut / params$N
   out[["parameters"]] <- params
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     mdlfit <- matrix(ncol = params$N + 1, nrow = 2)
     rownames(mdlfit) <- c("Expected", "Observed")
     for (i in 0:params$N) {
@@ -1566,7 +1566,7 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
 HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = testlength) {
   oldpar <- graphics::par(no.readonly = TRUE)
   base::on.exit(graphics::par(oldpar))
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     k <- Lords.k(x, testlength, reliability)
     x <- HB.beta.tp.fit(x, testlength, k, true.model = true.model, failsafe = failsafe, l = l, u = u)
   }
@@ -1703,7 +1703,7 @@ HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P"
 #' @export
 HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", failsafe = TRUE, l = 0, u = 1, modelfit = 10) {
   out <- base::list()
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     k <- Lords.k(x, testlength, reliability)
     if (startsWith(as.character(true.model), "2")) {
       failsafe <- FALSE
@@ -1721,7 +1721,7 @@ HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", 
   cut <- c(0, cut, params$N)
   camat <- matrix(ncol = length(cut) -1, nrow = length(cut) - 1)
   ccmat <- camat
-  if (class(x) != "list") {
+  if (!is.list(x)) {
     mdlfit <- matrix(ncol = params$N + 1, nrow = 2)
     rownames(mdlfit) <- c("Expected", "Observed")
     for (i in 0:params$N) {
