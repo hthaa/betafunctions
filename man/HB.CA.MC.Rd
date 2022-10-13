@@ -23,7 +23,7 @@ HB.CA.MC(
 
 \item{cut}{The cutoff value for classifying observations into above/below categories.}
 
-\item{testlength}{The total number of test items.}
+\item{testlength}{The total number of test items (or maximum possible score). Must be an integer.}
 
 \item{true.model}{The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.}
 

@@ -1381,17 +1381,46 @@ pcBinom <- function(q, N, k, p, lower.tail = TRUE) {
 #' @param N Number of trials.
 #' @param k Lord's k (see documentation for the \code{Lords.k()} function).
 #' @param p Probability of success for each trial.
-#' @note For larger values of \code{k}, the distribution can yield negative probabilities which returns an error.
+#' @note For larger values of \code{k}, the distribution can yield negative probabilities. This function handles such occurrences by adding the absolute value of the minimum probability to all observations if there are any negative probabilities and then normalize the distribution so that the total density is equal to 1.
 #' @export
 #' @examples
 #' # To draw a sample of 50 values from a Compound-Binomial distribution with
 #' # number of trials = 100, a 50% probability of success for each trial, and
 #' # Lord's k = 1:
+#' set.seed(1234)
 #' rcBinom(n = 50, N = 100, k = 1, p = .5)
+#'
+#' # To draw values where the probabilities vary for each draw:
+#' rcBinom(n = 50, N = 100, k = 1, p = runif(50))
 rcBinom <- function(n, N, k, p) {
-  weights <- dcBinom(0:N, N, k, p)
-  weights <- weights/sum(weights)
-  sample(0:N, size = n, prob = weights, replace = TRUE)
+  if (length(p) == 1) {
+    weights <- dcBinom(0:N, N, k, p)
+    if (any(weights < 0)) {
+      warning("Density function returned negative probabilities.")
+      weights <- weights + abs(min(weights))
+    }
+    if (sum(weights) != 1) {
+      warning("Sum of probabilities did not equal 1.")
+      weights <- weights/sum(weights)
+    }
+    sample(0:N, size = n, prob = weights, replace = TRUE)
+  } else {
+    if (length(p) < n) {
+      p <- as.vector(matrix(p, nrow = n, ncol = 1))
+    }
+    sapply(p, function(x) {
+      weights <- dcBinom(0:N, N, k, x)
+      if (any(weights < 0)) {
+        warning("Density function returned negative probabilities.")
+        weights <- weights + abs(min(weights))
+      }
+      if (sum(weights != 1)) {
+        warning("Sum of probabilities did not equal 1.")
+        weights <- weights/sum(weights)
+      }
+      sample(0:N, size = 1, prob = weights, replace = TRUE)
+    })
+  }
 }
 
 #' Probability Mass function for Lord's Beta Compound Binomial Distribution.
@@ -1439,6 +1468,13 @@ dBetacBinom <- function(x, N, k, l, u, alpha, beta) {
 #' rBetacBinom(n = 50, N = 100, k = 1, l = .15, u = .85, alpha = 6, beta = 4)
 rBetacBinom <- function(x, N, k, l, u, alpha, beta) {
   weights <- dBetacBinom(0:N, N, k, l, u, alpha, beta)
-  weights <- weights/sum(weights)
+  if (any(weights < 0)) {
+    warning("Density function returned negative probabilities.")
+    weights <- weights + abs(min(weights))
+  }
+  if (sum(weights != 1)) {
+    warning("Sum of probabilities did not equal 1.")
+    weights <- weights/sum(weights)
+  }
   sample(0:N, size = x, prob = weights, replace = TRUE)
 }

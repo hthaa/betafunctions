@@ -19,11 +19,15 @@ rcBinom(n, N, k, p)
 Random Number Generation under Lord's Two-Term Approximation to the Compound Binomial Distribution.
 }
 \note{
-For larger values of \code{k}, the distribution can yield negative probabilities which returns an error.
+For larger values of \code{k}, the distribution can yield negative probabilities. This function handles such occurrences by adding the absolute value of the minimum probability to all observations if there are any negative probabilities and then normalize the distribution so that the total density is equal to 1.
 }
 \examples{
 # To draw a sample of 50 values from a Compound-Binomial distribution with
 # number of trials = 100, a 50\% probability of success for each trial, and
 # Lord's k = 1:
+set.seed(1234)
 rcBinom(n = 50, N = 100, k = 1, p = .5)
+
+# To draw values where the probabilities vary for each draw:
+rcBinom(n = 50, N = 100, k = 1, p = runif(50))
 }

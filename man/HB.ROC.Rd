@@ -26,7 +26,7 @@ HB.ROC(
 
 \item{reliability}{The reliability coefficient of the test.}
 
-\item{testlength}{The test length (i.e., the number of test items).}
+\item{testlength}{The total number of test items (or maximum possible score). Must be an integer.}
 
 \item{truecut}{The point along the x-scale that marks true category membership.}
 
