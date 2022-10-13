@@ -14,6 +14,8 @@ pcBinom(q, N, k, p, lower.tail = TRUE)
 \item{k}{Lord's k (see documentation for the \code{Lords.k()} function).}
 
 \item{p}{Probability of success for each trial.}
+
+\item{lower.tail}{Logical. If TRUE (default), probabilities are P[X<x], otherwise, P[X >= x]. Note that this differs from base-R \code{binom()} functions.}
 }
 \description{
 Function for calculating the proportion of observations up to a specifiable quantile under Lord's two-term approximation to the compound Binomial distribution.
@@ -23,5 +25,5 @@ Function for calculating the proportion of observations up to a specifiable quan
 # trials, a 50\% probability of success on each trial, and Lord's k = 1. To
 # compute the cumulative probability at a specific point of the distribution
 # (e.g., 50):
-pcBinom(x = 50, N = 100, k = 1, p = .5)
+pcBinom(q = 50, N = 100, k = 1, p = .5)
 }

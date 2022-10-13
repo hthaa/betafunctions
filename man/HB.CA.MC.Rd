@@ -34,8 +34,6 @@ HB.CA.MC(
 \item{u}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).}
 
 \item{modelfit}{Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. In accordance with standard recommendations for chi-square tests this is set to a default of 10. However, Lord suggested that this value should be set to 1 in order for the test to be sensitive to misfit in the tails of the distribution.}
-
-\item{output}{Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.}
 }
 \value{
 A list containing the estimated parameters necessary for the approach (i.e., Lord's k, test-lenght, and the true-score Beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
@@ -62,7 +60,7 @@ p.success <- rBeta.4P(1000, 0.15, 0.85, 6, 4)
 # cba() function to estimate the reliability of this test, to use the
 # HB.CA.MC() function or estimating diagnostic performance and consistency
 # indices of classifications when using several cut-points:
-(output <- HB.CA.MC(rowSums(rawdata), cba(rawdata), c(20, 30), 50))
+(output <- HB.CA.MC(rowSums(rawdata), cba(rawdata), c(10, 15), 20))
 
 # The output for this function can get quite verbose as more categories are
 # included. The output from the function can be fed to the MC.out.tabular()

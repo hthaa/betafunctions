@@ -1340,7 +1340,7 @@ qGammaBinom <- function(p, size, prob, lower.tail = TRUE, precision = 1e-7) {
 #' dcBinom(x = 50, N = 100, k = 1, p = .5)
 dcBinom <- function(x, N, k, p) {
   sapply(x, function(x) {
-    dbinom(x, N, p) - k*p*(1 - p)*(dbinom(x, N - 2, p) - 2*dbinom(x - 1, N - 2, p) + dbinom(x - 2, N - 2, p))
+    stats::dbinom(x, N, p) - k*p*(1 - p)*(stats::dbinom(x, N - 2, p) - 2*stats::dbinom(x - 1, N - 2, p) + stats::dbinom(x - 2, N - 2, p))
   })
 }
 
@@ -1351,13 +1351,14 @@ dcBinom <- function(x, N, k, p) {
 #' @param N Total number of trials.
 #' @param k Lord's k (see documentation for the \code{Lords.k()} function).
 #' @param p Probability of success for each trial.
+#' @param lower.tail Logical. If TRUE (default), probabilities are P[X<x], otherwise, P[X >= x]. Note that this differs from base-R \code{binom()} functions.
 #' @export
 #' @examples
 #' # Assume some variable follows a compound Binomial distribution with 100
 #' # trials, a 50% probability of success on each trial, and Lord's k = 1. To
 #' # compute the cumulative probability at a specific point of the distribution
 #' # (e.g., 50):
-#' pcBinom(x = 50, N = 100, k = 1, p = .5)
+#' pcBinom(q = 50, N = 100, k = 1, p = .5)
 pcBinom <- function(q, N, k, p, lower.tail = TRUE) {
   if (lower.tail) {
     1 - sapply(q, function(x) {
@@ -1450,7 +1451,7 @@ dBetacBinom <- function(x, N, k, l, u, alpha, beta) {
 #' Random Number Generation under Lord's Beta Compound-Binomial Distribution.
 #'
 #' @description Random number generation under Lord's Beta Compound-Binomial distribution, where the Compound-Binomial distribution is Lord's two-term approximation.
-#' @param n Number of draws.
+#' @param x Number of draws.
 #' @param N Number of trials.
 #' @param k Lord's k (see documentation for the \code{Lords.k()} function).
 #' @param l The lower-bound location parameter of the four-parameter Beta distribution.
@@ -1465,7 +1466,7 @@ dBetacBinom <- function(x, N, k, l, u, alpha, beta) {
 #' # trials drawn from a four-parameter Beta distribution with location-
 #' # parameters l = .15 and u = .85, and shape parameters alpha = 6 and
 #' # beta = 4:
-#' rBetacBinom(n = 50, N = 100, k = 1, l = .15, u = .85, alpha = 6, beta = 4)
+#' rBetacBinom(x = 50, N = 100, k = 1, l = .15, u = .85, alpha = 6, beta = 4)
 rBetacBinom <- function(x, N, k, l, u, alpha, beta) {
   weights <- dBetacBinom(0:N, N, k, l, u, alpha, beta)
   if (any(weights < 0)) {

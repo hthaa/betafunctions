@@ -1080,8 +1080,6 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
 #' @param failsafe Logical. Whether to revert to a fail-safe two-parameter solution should the four-parameter solution contain invalid parameter estimates.
 #' @param l If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
 #' @param u If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).
-#' @param alpha If \code{failsafe = TRUE} or \code{true.model = "2P"}: The alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).
-#' @param beta If \code{failsafe = TRUE} or \code{true.model = "2P"}: The beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).
 #' @return A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter. Also includes Lord's k and the test length.
 #' @references Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf
 #' @references Lord, F. M. (1965). A strong true-score theory, with applications. Psychometrika. 30(3). pp. 239--270. doi: 10.1007/BF02289490
@@ -1096,22 +1094,22 @@ Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P",
 #'
 #' # To estimate the four-parameter Beta distribution parameters from this
 #' # sample of observations:
-#' HB.beta.tp.fit(testdata, 100, 2, 100)
+#' HB.beta.tp.fit(testdata, 100, 2)
 #' @export
 HB.beta.tp.fit <- function(x, N, k, true.model = "4P", failsafe = FALSE, l = 0, u = 1) {
-  rm <- HB.tsm(x, 4, N, k)
-  s2 <- rm[2] - rm[1]^2
-  g3 <- (rm[3] - 3 * rm[1] * rm[2] + 2 * rm[1]^3) / (sqrt(s2)^3)
-  g4 <- (rm[4] - 4 * rm[1] * rm[3] + 6 * rm[1]^2 * rm[2] - 3 * rm[1]^4) / (sqrt(s2)^4)
+  m <- HB.tsm(x, 4, N, k)
+  s2 <- m[2] - m[1]^2
+  g3 <- (m[3] - 3 * m[1] * m[2] + 2 * m[1]^3) / (sqrt(s2)^3)
+  g4 <- (m[4] - 4 * m[1] * m[3] + 6 * m[1]^2 * m[2] - 3 * m[1]^4) / (sqrt(s2)^4)
   if (startsWith(as.character(true.model), "4")) {
-    out <- Beta.4p.fit(mean = rm[1], variance = s2, skewness = g3, kurtosis = g4)
+    out <- Beta.4p.fit(mean = m[1], variance = s2, skewness = g3, kurtosis = g4)
   }
   if (startsWith(as.character(true.model), "2") | (failsafe & (any(is.na(out)) | any(out < 0)))) {
     if (failsafe & (any(is.na(out)) | any(out < 0))) {
       warning(paste("Fail-safe engaged: l = ", out$l, ", u = ", out$u, ", alpha = ", out$alpha, ", beta = ", out$beta,
                     ". \n  Finding permissible solution for the true-score distribution in accordance with specifications.", sep = ""))
     }
-    out <- list("alpha" = AMS(rm[1], s2, l, u), "beta" = BMS(rm[1], s2, l, u), "l" = l, "u" = u)
+    out <- list("alpha" = AMS(m[1], s2, l, u), "beta" = BMS(m[1], s2, l, u), "l" = l, "u" = u)
   }
   out[["k"]] <- k
   out[["N"]] <- N
@@ -1329,18 +1327,18 @@ MC.out.tabular <- function(x) {
 #' # Feed the object to the mdlfit.gfx() function:
 #' mdlfit.gfx(out)
 mdlfit.gfx <- function(x) {
-  yup <- max(x$modelfit$contingencytable) * 1.3
-  plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[2, ], type = "o", bg = "black", ylim = c(0, yup), ylab = "Frequency", xlab = "Bin number", main = "Observed vs Expected frequencies", lwd = 2, axes = FALSE)
-  par(new = TRUE)
-  plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[1, ], type = "o", col = "grey", ylim = c(0, yup), ylab = "", xlab = "", lwd = 2, lty = 2, axes = FALSE)
-  box()
-  axis(1, 0:ncol(x$modelfit$contingencytable))
-  axis(2)
-  legend("topright", legend = c("Observed", "Expected"), col = c("black", "darkgrey"), lty = c(1, 2), lwd = c(3, 3), pch = c(1, 1), bty = "n")
+  yup <- base::max(x$modelfit$contingencytable) * 1.3
+  base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[2, ], type = "o", bg = "black", ylim = c(0, yup), ylab = "Frequency", xlab = "Bin number", main = "Observed vs Expected frequencies", lwd = 2, axes = FALSE)
+  graphics::par(new = TRUE)
+  base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[1, ], type = "o", col = "grey", ylim = c(0, yup), ylab = "", xlab = "", lwd = 2, lty = 2, axes = FALSE)
+  graphics::box()
+  graphics::axis(1, 0:ncol(x$modelfit$contingencytable))
+  graphics::axis(2)
+  graphics::legend("topright", legend = c("Observed", "Expected"), col = c("black", "darkgrey"), lty = c(1, 2), lwd = c(3, 3), pch = c(1, 1), bty = "n")
   if (x$modelfit$p < .001) {
-    legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), "p < 0.001"), bty = "n")
+    graphics::legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), "p < 0.001"), bty = "n")
   } else {
-    legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), paste("p = ", round(x$modelfit$p, 3))), bty = "n")
+    graphics::legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), paste("p = ", round(x$modelfit$p, 3))), bty = "n")
   }
 }
 
@@ -1370,8 +1368,8 @@ mdlfit.gfx <- function(x) {
 #' # Estimate Lord's k using Lords.k():
 #' Lords.k(rowSums(rawdata), 50, reliability)
 Lords.k <- function(x, N, reliability) {
-  mu <- mean(x)
-  sigma2 <- var(x)
+  mu <- base::mean(x)
+  sigma2 <- stats::var(x)
   sigma2e <- sigma2*(1 - reliability)
   num <- N*((N-1) * (sigma2 - sigma2e) - N*sigma2 + mu*(N-mu))
   den <- 2*(mu*(N - mu) - (sigma2 - sigma2e))
@@ -1442,7 +1440,7 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
     mdlfit <- matrix(ncol = params$N + 1, nrow = 2)
     rownames(mdlfit) <- c("Expected", "Observed")
     for (i in 0:params$N) {
-      mdlfit[1, i + 1] <- integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) }, lower = 0, upper = 1)$value * length(x)
+      mdlfit[1, i + 1] <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) }, lower = 0, upper = 1)$value * length(x)
       mdlfit[2, i + 1] <- length(x[x == i])
       }
     for (i in 1:ncol(mdlfit)) {
@@ -1478,22 +1476,22 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
   if (any(startsWith(tolower(output), "a"))) {
     p.fp <- NULL
     for (i in 0:(cut - 1)) {
-      p.fp[i + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = truecut, upper = 1)$value
+      p.fp[i + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = truecut, upper = 1)$value
     }
     p.fp <- sum(p.fp)
     p.tp <- NULL
     for (i in 0:(cut - 1)) {
-      p.tp[i + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = 0, upper = truecut)$value
+      p.tp[i + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = 0, upper = truecut)$value
     }
     p.tp <- sum(p.tp)
     p.tn <- NULL
     for (i in cut:params$N) {
-      p.tn[i - cut + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = truecut, upper = 1)$value
+      p.tn[i - cut + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = truecut, upper = 1)$value
     }
     p.tn <- sum(p.tn)
     p.fn <- NULL
     for (i in cut:params$N) {
-      p.fn[i - cut + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = 0, upper = truecut)$value
+      p.fn[i - cut + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)}, lower = 0, upper = truecut)$value
     }
     p.fn <- sum(p.fn)
     camat <- confmat(p.tp, p.tn, p.fp, p.fn, "freq")
@@ -1504,7 +1502,7 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
     ccmat <- matrix(ncol = params$N + 1, nrow = params$N + 1)
     for (i in 0:params$N) {
       for (j in 0:params$N) {
-        ccmat[i + 1, j + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
+        ccmat[i + 1, j + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
       }
     }
     p.ii <- sum(ccmat[1:cut, 1:cut])
@@ -1670,7 +1668,6 @@ HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P"
 #' @param testlength The total number of test items (or maximum possible score). Must be an integer.
 #' @param cut The cutoff value for classifying observations into above/below categories.
 #' @param true.model The probability distribution to be fitted to the moments of the true-score distribution. Options are \code{"4P"} (default) and \code{"2P"}, referring to four- and two-parameter Beta distributions. The "4P" method produces a four-parameter Beta distribution with the same first four moments (mean, variance, skewness, and kurtosis) as the estimated true-score distribution, while the "2P" method produces a two-parameter Beta distribution with the first two moments (mean and variance) as the estimated true-score distribution.
-#' @param output Character vector indicating which types of statistics (i.e, accuracy and/or consistency) are to be computed and included in the output. Permissible values are \code{"accuracy"} and \code{"consistency"}.
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
@@ -1693,7 +1690,7 @@ HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P"
 #' # cba() function to estimate the reliability of this test, to use the
 #' # HB.CA.MC() function or estimating diagnostic performance and consistency
 #' # indices of classifications when using several cut-points:
-#' (output <- HB.CA.MC(rowSums(rawdata), cba(rawdata), c(20, 30), 50))
+#' (output <- HB.CA.MC(rowSums(rawdata), cba(rawdata), c(10, 15), 20))
 #'
 #' # The output for this function can get quite verbose as more categories are
 #' # included. The output from the function can be fed to the MC.out.tabular()
@@ -1728,7 +1725,7 @@ HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", 
     mdlfit <- matrix(ncol = params$N + 1, nrow = 2)
     rownames(mdlfit) <- c("Expected", "Observed")
     for (i in 0:params$N) {
-      mdlfit[1, i + 1] <- integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) }, lower = 0, upper = 1)$value * length(x)
+      mdlfit[1, i + 1] <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) }, lower = 0, upper = 1)$value * length(x)
       mdlfit[2, i + 1] <- length(x[x == i])
     }
     for (i in 1:ncol(mdlfit)) {
@@ -1789,7 +1786,7 @@ HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", 
   camat.bc <- matrix(ncol = (length(cut) - 1), nrow = params$N + 1)
   for(i in 0:(nrow(camat.bc) - 1)) {
     for (j in 1:ncol(camat.bc)) {
-      camat.bc[i + 1, j] <- integrate(function(x) {
+      camat.bc[i + 1, j] <- stats::integrate(function(x) {
         dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x)
       }, lower = truecut[j], upper = truecut[j + 1])$value
     }
@@ -1845,7 +1842,7 @@ HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", 
     ccmat.bc <- matrix(ncol = params$N + 1, nrow = params$N + 1)
     for (i in 0:params$N) {
       for (j in 0:params$N) {
-        ccmat.bc[i + 1, j + 1] <- integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
+        ccmat.bc[i + 1, j + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
       }
     }
     for (i in 1:ncol(ccmat)) {

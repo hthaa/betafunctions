@@ -20,10 +20,6 @@ HB.beta.tp.fit(x, N, k, true.model = "4P", failsafe = FALSE, l = 0, u = 1)
 \item{l}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).}
 
 \item{u}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).}
-
-\item{alpha}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).}
-
-\item{beta}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).}
 }
 \value{
 A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, and "beta" the second shape-parameter. Also includes Lord's k and the test length.
@@ -42,7 +38,7 @@ testdata <- rcBinom(1000, 100, 2, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 
 # To estimate the four-parameter Beta distribution parameters from this
 # sample of observations:
-HB.beta.tp.fit(testdata, 100, 2, 100)
+HB.beta.tp.fit(testdata, 100, 2)
 }
 \references{
 Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf

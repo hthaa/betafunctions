@@ -12,10 +12,10 @@ Description: Package providing a number of functions for working with Two- and
     Binomial distributions, Beta-Binomial distributions, and observed value
     distributions. 
     Includes functions for estimating classification accuracy, and consistency, 
-    making use of the Classical Test-Theory based 'Livingston and Lewis' and 
-    'Hanson and Brennan' approaches. A shiny app is available, providing a GUI 
-    for the L&L approach when used for binary classifications. For url to the 
-    app, see documentation for the LL.CA() function. 
+    making use of the Classical Test-Theory based 'Livingston and Lewis' (L&L) 
+    and 'Hanson and Brennan' approaches. A shiny app is available, providing a 
+    GUI for the L&L approach when used for binary classifications. For url to 
+    the app, see documentation for the LL.CA() function. 
     Livingston and Lewis (1995) <doi:10.1111/j.1745-3984.1995.tb00462.x>.
     Lord (1965) <doi:10.1007/BF02289490>.
     Hanson (1991) <https://files.eric.ed.gov/fulltext/ED344945.pdf>.

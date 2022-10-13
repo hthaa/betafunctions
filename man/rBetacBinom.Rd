@@ -7,6 +7,8 @@
 rBetacBinom(x, N, k, l, u, alpha, beta)
 }
 \arguments{
+\item{x}{Number of draws.}
+
 \item{N}{Number of trials.}
 
 \item{k}{Lord's k (see documentation for the \code{Lords.k()} function).}
@@ -18,8 +20,6 @@ rBetacBinom(x, N, k, l, u, alpha, beta)
 \item{alpha}{The first shape-parameter of the four-parameter Beta distribution.}
 
 \item{beta}{The second shape-parameter of the four-parameter Beta distribution.}
-
-\item{n}{Number of draws.}
 }
 \description{
 Random number generation under Lord's Beta Compound-Binomial distribution, where the Compound-Binomial distribution is Lord's two-term approximation.
@@ -33,5 +33,5 @@ For larger values of \code{k}, the distribution can yield negative probabilities
 # trials drawn from a four-parameter Beta distribution with location-
 # parameters l = .15 and u = .85, and shape parameters alpha = 6 and
 # beta = 4:
-rBetacBinom(n = 50, N = 100, k = 1, l = .15, u = .85, alpha = 6, beta = 4)
+rBetacBinom(x = 50, N = 100, k = 1, l = .15, u = .85, alpha = 6, beta = 4)
 }
