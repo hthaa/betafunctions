@@ -1,6 +1,6 @@
 #' Compute Moments of Two-to-Four Parameter Beta Probability Density Distributions.
 #'
-#' @description Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
+#' @description Computes Raw, Central, or Standardized moment properties of defined Beta probability density distributions.
 #' @param alpha The alpha shape parameter.
 #' @param beta The beta shape parameter.
 #' @param l The first (lower) location parameter.
@@ -605,7 +605,7 @@ rBetaMS <- function(n, mean, variance = NULL, sd = NULL) {
 
 #' Coordinate Generation for Marking an Area Under the Curve for the Beta Probability Density Distribution.
 #'
-#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
+#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Beta probability density functions.
 #' @param from The point of the \code{x}-axis from where to start producing \code{y}-density values.
 #' @param to The point of the x-axis to where y-density values are to be produced.
 #' @param by The resolution (or spacing) at which to produce y-density values.
@@ -638,7 +638,7 @@ Beta.gfx.poly.pdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 
 #' Coordinate Generation for Marking an Area Under the Curve for the Beta Quantile Density Distribution.
 #'
-#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability quantile function.
+#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Beta probability quantile functions.
 #' @param from The point of the \code{x}-axis from where to start producing \code{y}-quantile values.
 #' @param to The point of the \code{x}-axis to where \code{y}-quantile values are to be produced.
 #' @param by The resolution (or spacing) at which to produce \code{y}-density values.
@@ -671,7 +671,7 @@ Beta.gfx.poly.qdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 
 #' Coordinate Generation for Marking an Area Under the Curve for the Beta Cumulative Probability Density Distribution.
 #'
-#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta cumulative probability function.
+#' @description Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Beta cumulative probability functions.
 #' @param from The point of the \code{x}-axis from where to start producing \code{y}-density values.
 #' @param to The point of the \code{x}-axis to where \code{y}-density values are to be produced.
 #' @param by The resolution (or spacing) at which to produce \code{y}-density values.
