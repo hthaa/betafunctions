@@ -25,7 +25,7 @@ Beta.gfx.poly.qdf(from, to, by, alpha, beta, l = 0, u = 1)
 A two-column matrix with quantile-values of \code{y} to plot against corresponding location values of \code{x}.
 }
 \description{
-Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability quantile function.
+Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Beta probability quantile functions.
 }
 \examples{
 # To box in an area under a four-parameter Beta quantile distribution with

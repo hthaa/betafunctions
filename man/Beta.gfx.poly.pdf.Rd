@@ -25,7 +25,7 @@ Beta.gfx.poly.pdf(from, to, by, alpha, beta, l = 0, u = 1)
 A two-column matrix with density-values of y to plot against corresponding location values of x.
 }
 \description{
-Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Standard Beta probability density function.
+Plotting tool, producing a two-column matrix with values of \code{y} corresponding to locations on \code{x}. Useful for shading areas under the curve when tracing the line for the Beta probability density functions.
 }
 \examples{
 # To box in an area under a four-parameter Beta distribution with location

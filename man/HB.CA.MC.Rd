@@ -21,7 +21,7 @@ HB.CA.MC(
 
 \item{reliability}{The observed-score squared correlation (i.e., proportion of shared variance) with the true-score.}
 
-\item{cut}{The cutoff value for classifying observations into above/below categories.}
+\item{cut}{A vector of cut-off values for classifying observations into two or more categories.}
 
 \item{testlength}{The total number of test items (or maximum possible score). Must be an integer.}
 
@@ -33,7 +33,7 @@ HB.CA.MC(
 
 \item{u}{If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).}
 
-\item{modelfit}{Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. In accordance with standard recommendations for chi-square tests this is set to a default of 10. However, Lord suggested that this value should be set to 1 in order for the test to be sensitive to misfit in the tails of the distribution.}
+\item{modelfit}{Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. Can alternatively be set to \code{NULL} to forego model-fit testing (speeding up the function). In accordance with standard recommendations for chi-square tests the default input to this argument is 10.}
 }
 \value{
 A list containing the estimated parameters necessary for the approach (i.e., Lord's k, test-lenght, and the true-score Beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).

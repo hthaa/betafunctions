@@ -30,7 +30,7 @@ betamoments(
 A list of moment types, each a list of moment orders.
 }
 \description{
-Computes Raw, Central, or Standardized moment properties of defined Standard Beta probability density distributions.
+Computes Raw, Central, or Standardized moment properties of defined Beta probability density distributions.
 }
 \examples{
 # Assume some variable follows a four-parameter Beta distribution with

@@ -64,7 +64,7 @@ R.ETL <- function(mean, variance, min = 0, max = 1, ETL) {
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-square test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
+#' @param modelfit Allows for controlling the chi-square test for model fit. The argument takes either a vector of two values or \code{NULL} as input. If \code{NULL} is provided as input, the function does not execute model-fit testing. Otherwise, if a vector is provided,the first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to estimating classification consistency outlined by Hanson (1991).
 #' @note A shiny application providing a GUI for this method is available at https://hthaa.shinyapps.io/shinybeta/ .
@@ -143,10 +143,10 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
   truecut <- (truecut - min) / (max - min)
   params[["etl_rounded"]] <- N
   out[["parameters"]] <- params
-  tcut <- round(seq(0, N, N / modelfit[1]))
-  mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
-  rownames(mdlfit) <- c("Expected", "Observed")
-  if (!is.list(x)) {
+  if (!is.list(x) & !is.null(modelfit)) {
+    tcut <- round(seq(0, N, N / modelfit[1]))
+    mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
+    rownames(mdlfit) <- c("Expected", "Observed")
     x <- x * N
     for (j in 1:(length(tcut) - 1)) {
       mdlfit[1, j] <- stats::integrate(function(x) {
@@ -252,7 +252,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-square test for model fit. The argument takes a vector of two values. The first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
+#' @param modelfit Allows for controlling the chi-square test for model fit. The argument takes either a vector of two values or \code{NULL} as input. If \code{NULL} is provided as input, the function does not execute model-fit testing. Otherwise, if a vector is provided,the first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to estimating classification consistency outlined by Hanson (1991).
 #' @examples
@@ -323,12 +323,12 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
   out[["parameters"]] <- params
   pcut <- c(0, cut, 1)
   ocut <- round(pcut * N)
-  tcut <- round(seq(0, N, N / modelfit[1]))
-  mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
-  rownames(mdlfit) <- c("Expected", "Observed")
   camat <- matrix(ncol = length(cut) + 1, nrow = length(cut) + 1)
   ccmat <- camat
-  if (!is.list(x)) {
+  if (!is.list(x) & !is.null(modelfit)) {
+    tcut <- round(seq(0, N, N / modelfit[1]))
+    mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
+    rownames(mdlfit) <- c("Expected", "Observed")
     x <- x * N
     for (j in 1:(length(tcut) - 1)) {
       mdlfit[1, j] <- stats::integrate(function(x) {
@@ -702,7 +702,7 @@ LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model 
     }
     axval <- LL.CA(x = x, min = min, max = max, cut = cuts[i],
                    truecut = truecut, true.model = true.model,
-                   output = "a", l = l, u = u)$classification.accuracy
+                   output = "a", l = l, u = u, modelfit = NULL)$classification.accuracy
     outputmatrix[i, 1] <- 1 - axval$Specificity
     outputmatrix[i, 2] <- axval$Sensitivity
     outputmatrix[i, 3] <- axval$Youden.J
@@ -1390,7 +1390,7 @@ Lords.k <- function(x, N, reliability) {
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. In accordance with standard recommendations for chi-square tests this is set to a default of 10. However, Lord suggested that this value should be set to 1 in order for the test to be sensitive to misfit in the tails of the distribution.
+#' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. Can alternatively be set to \code{NULL} to forego model-fit testing (speeding up the function). In accordance with standard recommendations for chi-square tests the default input to this argument is 10.
 #' @note This implementation of the Hanson-Brennan approach is much slower than the implementation of the Livingston and Lewis approach, as there is no native implementation of Lord's two-term approximation to the Compound-Binomial distribution in R. This implementation uses a "brute-force" method of computing the cumulative probabilities from the compound-Binomial distribution, which will by necessity be more resource intensive.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @examples
@@ -1436,7 +1436,7 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
   }
   truecut <- truecut / params$N
   out[["parameters"]] <- params
-  if (!is.list(x)) {
+  if (!is.list(x) & !is.null(modelfit)) {
     mdlfit <- matrix(ncol = params$N + 1, nrow = 2)
     rownames(mdlfit) <- c("Expected", "Observed")
     for (i in 0:params$N) {
@@ -1578,7 +1578,7 @@ HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P"
     }
     axval <- HB.CA(x = x, cut = cuts[i],
                    truecut = truecut, true.model = true.model,
-                   output = "a", l = l, u = u)$classification.accuracy
+                   output = "a", l = l, u = u, modelfit = NULL)$classification.accuracy
     outputmatrix[i, 1] <- 1 - axval$Specificity
     outputmatrix[i, 2] <- axval$Sensitivity
     outputmatrix[i, 3] <- axval$Youden.J
@@ -1671,7 +1671,7 @@ HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P"
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. In accordance with standard recommendations for chi-square tests this is set to a default of 10. However, Lord suggested that this value should be set to 1 in order for the test to be sensitive to misfit in the tails of the distribution.
+#' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. Can alternatively be set to \code{NULL} to forego model-fit testing (speeding up the function). In accordance with standard recommendations for chi-square tests the default input to this argument is 10.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., Lord's k, test-lenght, and the true-score Beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note This implementation of the Hanson-Brennan approach is much slower than the implementation of the Livingston and Lewis approach, as there is no native implementation of Lord's two-term approximation to the Compound-Binomial distribution in R. This implementation uses a "brute-force" method of computing the cumulative probabilities from the compound-Binomial distribution, which will by necessity be more resource intensive.
 #' @examples
@@ -1721,7 +1721,7 @@ HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", 
   cut <- c(0, cut, params$N)
   camat <- matrix(ncol = length(cut) -1, nrow = length(cut) - 1)
   ccmat <- camat
-  if (!is.list(x)) {
+  if (!is.list(x) & !is.null(modelfit)) {
     mdlfit <- matrix(ncol = params$N + 1, nrow = 2)
     rownames(mdlfit) <- c("Expected", "Observed")
     for (i in 0:params$N) {
