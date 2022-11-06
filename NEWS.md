@@ -1,8 +1,10 @@
 # betafunctions v. 1.8.1
 
-- The classification functions `LL.CA()`, `LL.CA.MC()`, `HB.CA`, and `HB.CA.MC()` functions now allows for specifying not to perform model-fit testing by passing `NULL` to the `modelfit` argument. This can significantly speed up the functions. The `LL.ROC()` and `HB.ROC()` functions now do this by default. Fixed a small error in the model-fit testing procedure which could occur if there were extreme observations
+- Changes to model fit argument in the `LL.` and `HB.` functions.
 
-- 
+  - The classification functions `LL.CA()`, `LL.CA.MC()`, `HB.CA`, and `HB.CA.MC()` functions now allows for specifying not to perform model-fit testing by passing `NULL` to the `modelfit` argument.
+  
+  - Fixed a bug that affected the binning of of observed values. Due to some strange behavior in R that resulted from scaling and re-scaling values, observations would sometimes be assigned to the wrong bins. This should now be fixed.
 
 ---
 
