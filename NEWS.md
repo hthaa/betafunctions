@@ -1,6 +1,8 @@
 # betafunctions v. 1.8.1
 
-- The classification functions `LL.CA()`, `LL.CA.MC()`, `HB.CA`, and `HB.CA.MC()` functions now allows for specifying not to perform model-fit testing by passing `NULL` to the `modelfit` argument. This can significantly speed up the functions. The `LL.ROC()` and `HB.ROC()` functions now do this by default.
+- The classification functions `LL.CA()`, `LL.CA.MC()`, `HB.CA`, and `HB.CA.MC()` functions now allows for specifying not to perform model-fit testing by passing `NULL` to the `modelfit` argument. This can significantly speed up the functions. The `LL.ROC()` and `HB.ROC()` functions now do this by default. Fixed a small error in the model-fit testing procedure which could occur if there were extreme observations
+
+- 
 
 ---
 

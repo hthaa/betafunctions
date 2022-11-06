@@ -64,7 +64,7 @@ R.ETL <- function(mean, variance, min = 0, max = 1, ETL) {
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-square test for model fit. The argument takes either a vector of two values or \code{NULL} as input. If \code{NULL} is provided as input, the function does not execute model-fit testing. Otherwise, if a vector is provided,the first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
+#' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. Can alternatively be set to \code{NULL} to forego model-fit testing (speeding up the function). In accordance with standard recommendations for chi-square tests the default input to this argument is 10.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false pass/fail categorizations for a test, diagnostic performance statistics, and / or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to estimating classification consistency outlined by Hanson (1991).
 #' @note A shiny application providing a GUI for this method is available at https://hthaa.shinyapps.io/shinybeta/ .
@@ -144,29 +144,17 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
   params[["etl_rounded"]] <- N
   out[["parameters"]] <- params
   if (!is.list(x) & !is.null(modelfit)) {
-    tcut <- round(seq(0, N, N / modelfit[1]))
-    mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
+    x <- round(x * N)
+    mdlfit <- matrix(ncol = N + 1, nrow = 2)
     rownames(mdlfit) <- c("Expected", "Observed")
-    x <- x * N
-    for (j in 1:(length(tcut) - 1)) {
-      mdlfit[1, j] <- stats::integrate(function(x) {
-        if(j == 1) {
-          dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1] - 1, N, x))
-        } else {
-          if (j != 1 & j != (length(tcut) - 1)) {
-            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1] - 1, N, x) - stats::pbinom(tcut[j] - 1, N, x))
-          } else {
-            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1], N, x) - stats::pbinom(tcut[j] - 1, N, x))
-          }
-        }
-      }, lower = 0, upper = 1)$value
-      mdlfit[2, j] <- length(x[x < tcut[j + 1] & x >= tcut[j]])
+    for (i in 0:N) {
+      mdlfit[1, i + 1] <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dbinom(i, N, x) }, lower = 0, upper = 1)$value * length(x)
+      mdlfit[2, i + 1] <- length(x[x >= i & x < (i + 1)])
     }
-    mdlfit[1, ] <- (mdlfit[1, ] / sum(mdlfit[1, ])) * length(x)
     for (i in 1:ncol(mdlfit)) {
       if (i < ncol(mdlfit)) {
         if (any(mdlfit[1, i] < ncol(mdlfit))) {
-          if (any(mdlfit[1, i] < modelfit[2])) {
+          if (any(mdlfit[1, i] < modelfit)) {
             mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
             mdlfit[, i] <- NA
           }
@@ -174,13 +162,11 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
       }
     }
     mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
-    if (any(mdlfit[1, ncol(mdlfit)] < modelfit[2])) {
+    if (any(mdlfit[1, ncol(mdlfit)] < modelfit)) {
       mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
       mdlfit <- mdlfit[, -ncol(mdlfit)]
     }
-    chisquared <- sum(apply(mdlfit, 2, function(x) {
-      (x[2] - x[1])^2 / x[1]
-    }))
+    chisquared <- sum(apply(mdlfit, 2, function(x) {(x[2] - x[1])^2 / x[1]}))
     out[["modelfit"]] <- list()
     out[["modelfit"]][["contingencytable"]] <- mdlfit
     out[["modelfit"]][["chisquared"]] <- chisquared
@@ -252,7 +238,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' @param failsafe Logical value indicating whether to engage the automatic fail-safe defaulting to the two-parameter Beta true-score distribution if the four-parameter fitting procedure produces impermissible parameter estimates. Default is \code{TRUE} (i.e., the function will engage failsafe if the four-parameter Beta-distribution fitting-procedure produced impermissible estimates).
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
-#' @param modelfit Allows for controlling the chi-square test for model fit. The argument takes either a vector of two values or \code{NULL} as input. If \code{NULL} is provided as input, the function does not execute model-fit testing. Otherwise, if a vector is provided,the first value is to represent the initial number of bins the distribution of scores is to be divided in to. This value is set to a default of 100. If this default results in too few bins to conduct the chi-square test, this value can be made larger. The second value represents the minimum expected number of observations that the bins should consist of. In accordance with standard recommendations for chi-square tests, the default value is set to 10.
+#' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. Can alternatively be set to \code{NULL} to forego model-fit testing (speeding up the function). In accordance with standard recommendations for chi-square tests the default input to this argument is 10.
 #' @return A list containing the estimated parameters necessary for the approach (i.e., the effective test-length and the beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note It should be noted that this implementation differs from the original articulation of Livingston and Lewis (1995) in some respects. First, the procedure includes a number of diagnostic performance (accuracy) indices which the original procedure enables but that were not included. Second, the way consistency is calculated differs substantially from the original articulation of the procedure, which made use of a split-half approach. Rather, this implementation uses the approach to estimating classification consistency outlined by Hanson (1991).
 #' @examples
@@ -296,7 +282,7 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
 #' @references Lord. Frederic M. (1965). A Strong True-Score Theory, With Applications. Psychometrika, 30(3).
 #' @references Lewis, Don and Burke, C. J. (1949). The Use and Misuse of the Chi-Square Test. Psychological Bulletin, 46(6).
 #' @export
-LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", failsafe = TRUE, l = 0, u = 1, modelfit = c("nbins" = 100, "minbin" = 10)) {
+LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P", failsafe = TRUE, l = 0, u = 1, modelfit = 10) {
   out <- base::list()
   if (!is.list(x)) {
     if ((base::min(x) < min) | (base::max(x) > max)) {
@@ -326,29 +312,17 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
   camat <- matrix(ncol = length(cut) + 1, nrow = length(cut) + 1)
   ccmat <- camat
   if (!is.list(x) & !is.null(modelfit)) {
-    tcut <- round(seq(0, N, N / modelfit[1]))
-    mdlfit <- matrix(nrow = 2, ncol = length(tcut) - 1)
+    x <- round(x * N)
+    mdlfit <- matrix(ncol = N + 1, nrow = 2)
     rownames(mdlfit) <- c("Expected", "Observed")
-    x <- x * N
-    for (j in 1:(length(tcut) - 1)) {
-      mdlfit[1, j] <- stats::integrate(function(x) {
-        if(j == 1) {
-          dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1] - 1, N, x))
-        } else {
-          if (j != 1 & j != (length(tcut) - 1)) {
-            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1] - 1, N, x) - stats::pbinom(tcut[j] - 1, N, x))
-          } else {
-            dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * (stats::pbinom(tcut[j + 1], N, x) - stats::pbinom(tcut[j] - 1, N, x))
-          }
-        }
-      }, lower = 0, upper = 1)$value
-      mdlfit[2, j] <- length(x[x < tcut[j + 1] & x >= tcut[j]])
+    for (i in 0:N) {
+      mdlfit[1, i + 1] <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dbinom(i, N, x) }, lower = 0, upper = 1)$value * length(x)
+      mdlfit[2, i + 1] <- length(x[x >= i & x < (i + 1)])
     }
-    mdlfit[1, ] <- (mdlfit[1, ] / sum(mdlfit[1, ])) * length(x)
     for (i in 1:ncol(mdlfit)) {
       if (i < ncol(mdlfit)) {
         if (any(mdlfit[1, i] < ncol(mdlfit))) {
-          if (any(mdlfit[1, i] < modelfit[2])) {
+          if (any(mdlfit[1, i] < modelfit)) {
             mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
             mdlfit[, i] <- NA
           }
@@ -356,13 +330,11 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
       }
     }
     mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
-    if (any(mdlfit[1, ncol(mdlfit)] < modelfit[2])) {
+    if (any(mdlfit[1, ncol(mdlfit)] < modelfit)) {
       mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
       mdlfit <- mdlfit[, -ncol(mdlfit)]
     }
-    chisquared <- sum(apply(mdlfit, 2, function(x) {
-      (x[2] - x[1])^2 / x[1]
-    }))
+    chisquared <- sum(apply(mdlfit, 2, function(x) {(x[2] - x[1])^2 / x[1]}))
     out[["modelfit"]] <- list()
     out[["modelfit"]][["contingencytable"]] <- mdlfit
     out[["modelfit"]][["chisquared"]] <- chisquared
@@ -375,7 +347,7 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
         out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
       }
     }
-    out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - out[["modelfit"]][["df"]], lower.tail = FALSE)
+    out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
   }
   for (i in 1:(length(cut) + 1)) {
     if (i == 1) {
@@ -1341,6 +1313,43 @@ mdlfit.gfx <- function(x) {
     graphics::legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), paste("p = ", round(x$modelfit$p, 3))), bty = "n")
   }
 }
+
+
+mdlfit.gfx2 <- function (x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.lab = "",  x.lab = "", y.lab = "") {
+  if (is.null(x.tickat)) x.tickat <- 0:ncol(x$modelfit$contingencytable)
+  if (is.null(y.tickat)) y.tickat <- 0:roof(max(x$modelfit$contingencytable))
+  if (is.null(y.lim)) y.lim <- c(0, base::max(x$modelfit$contingencytable) * 1.3)
+  plot(NULL, xlim = c(1, ncol(x$modelfit$contingencytable)), ylim = y.lim, ylab = y.lab, xlab = x.lab, axes = FALSE)
+  abline(v = seq(1, ncol(x$modelfit$contingencytable), 1), col = "lightgrey", lty = 3)
+  abline(h = seq(0, roof(y.lim[2]), 1), col = "lightgrey", lty = 3)
+  par(new = TRUE)
+  base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[2, ],
+             type = "o", bg = "black", ylim = y.lim, ylab = "", xlab = x.lab,
+             main = main.lab, lwd = 2, axes = FALSE)
+  graphics::par(new = TRUE)
+  base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[1, ],
+             type = "o", col = "grey", ylim = y.lim, ylab = "", xlab = "", lwd = 2, lty = 1,
+             axes = FALSE)
+  graphics::box()
+  graphics::axis(1, at = x.tickat, labels = FALSE)
+  graphics::axis(2, at = y.tickat)
+  graphics::legend("topright", legend = c("Observed",
+                                          "Expected"), col = c("black", "darkgrey"),
+                   lty = c(1, 1), lwd = c(3, 3), pch = c(1, 1), bty = "n")
+  if (x$modelfit$p < 0.001) {
+    graphics::legend("topleft", legend = c(paste("chi-square = ",
+                                                 round(x$modelfit$chisquared, 2)), paste("df = ",
+                                                                                         x$modelfit$df), "p < 0.001"), bty = "n")
+  }
+  else {
+    graphics::legend("topleft", legend = c(paste("chi-square = ",
+                                                 round(x$modelfit$chisquared, 2)), paste("df = ",
+                                                                                         x$modelfit$df), paste("p = ", round(x$modelfit$p,
+                                                                                                                             3))), bty = "n")
+  }
+}
+
+
 
 #' Function for estimating "Lord's k" for Lord's two-term approximation to the compound binomial distribution.
 #'
