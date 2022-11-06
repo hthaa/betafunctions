@@ -386,7 +386,11 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
           }
         }
       }, lower = 0, upper = 1)$value
-      mdlfit[2, j] <- length(x[x < tcut[j + 1] & x >= tcut[j]])
+      if (j == ncol(mdlfit)) {
+        mdlfit[2, j] <- length(x[x >= tcut[j]])
+      } else {
+        mdlfit[2, j] <- length(x[x < tcut[j + 1] & x >= tcut[j]])
+      }
     }
     mdlfit[1, ] <- (mdlfit[1, ]/sum(mdlfit[1, ])) * length(x)
     for (i in 1:ncol(mdlfit)) {
