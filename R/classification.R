@@ -1350,7 +1350,7 @@ MC.out.tabular <- function(x) {
 #' # the grid-lines:
 #' mdlfit.gfx(out, y.tickat = seq(0, 250, 25), y.lim = c(0, 250),
 #' h.grid = seq(0, 250, 12.5))
-mdlfit.gfx <- function (x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.lab = "Observed vs. Expected Freqencies",  x.lab = "Bins", y.lab = "Frequency", x.grid = NULL, y.grid = NULL) {
+mdlfit.gfx <- function(x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.lab = "Observed vs. Expected Freqencies",  x.lab = "Bins", y.lab = "Frequency", x.grid = NULL, y.grid = NULL) {
   if (is.null(x.tickat)) x.tickat <- 0:ncol(x$modelfit$contingencytable)
   if (is.null(y.tickat)) y.tickat <- 0:ceiling(max(x$modelfit$contingencytable))
   if (is.null(y.lim)) y.lim <- c(0, base::max(x$modelfit$contingencytable) * 1.3)
