@@ -1356,7 +1356,7 @@ mdlfit.gfx <- function(x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.l
   if (is.null(y.lim)) y.lim <- c(0, base::max(x$modelfit$contingencytable) * 1.3)
   plot(NULL, xlim = c(1, ncol(x$modelfit$contingencytable)), ylim = y.lim, ylab = y.lab, xlab = x.lab, axes = FALSE)
     if (is.null(x.grid)) {
-      abline(v = seq(1:ncol(x$modelfit$contingencytable)), col = "lightgrey", lty = 3)
+      abline(v = seq(0:ncol(x$modelfit$contingencytable)), col = "lightgrey", lty = 3)
       } else {
         if (!is.na(x.grid[1])) {
           abline(v = x.grid, col = "lightgrey", lty = 3)
