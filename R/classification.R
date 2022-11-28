@@ -1324,8 +1324,8 @@ MC.out.tabular <- function(x) {
 #' @param main.lab The main label (title) of the plot.
 #' @param x.lab The label for the x-axis (the bins).
 #' @param y.lab The label for the y-axis (the frequencies).
-#' @param x.grid Control the vertical grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each bin. If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the x-axis.
-#' @param y.grid Control the horizontal grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each frequency (i.e., increments of 1). If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the y-axis.
+#' @param x.grid Control the vertical grid-lines of the plot. Takes \code{NA}, \code{NULL}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each bin. If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the x-axis.
+#' @param y.grid Control the horizontal grid-lines of the plot. Takes \code{NA}, \code{NULL}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each frequency (i.e., increments of 1). If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the y-axis.
 #' @export
 #' @examples
 #' # Generate some data. 1000 respondents taking 100 item test:
@@ -1345,25 +1345,25 @@ MC.out.tabular <- function(x) {
 #' # Feed the object to the mdlfit.gfx() function:
 #' mdlfit.gfx(out)
 #'
-#' # Given the number of observations, the y-axis ticks are a bit croweded. We
+#' # Given the number of observations, the y-axis ticks are a bit crowded. We
 #' # can make it look less crowded by changing the number of ticks, labels, and
 #' # the grid-lines:
 #' mdlfit.gfx(out, y.tickat = seq(0, 250, 25), y.lim = c(0, 250),
-#' h.grid = seq(0, 250, 12.5))
+#' y.grid = seq(0, 250, 12.5))
 mdlfit.gfx <- function(x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.lab = "Observed vs. Expected Freqencies",  x.lab = "Bins", y.lab = "Frequency", x.grid = NULL, y.grid = NULL) {
-  if (is.null(x.tickat)) x.tickat <- 0:ncol(x$modelfit$contingencytable)
-  if (is.null(y.tickat)) y.tickat <- 0:ceiling(max(x$modelfit$contingencytable))
   if (is.null(y.lim)) y.lim <- c(0, base::max(x$modelfit$contingencytable) * 1.3)
+  if (is.null(x.tickat)) x.tickat <- 0:ncol(x$modelfit$contingencytable)
+  if (is.null(y.tickat)) y.tickat <- seq(0, ceiling(y.lim[2]), ceiling(y.lim[2] / 10))#y.tickat <- 0:floor(y.lim[2])#0:ceiling(max(x$modelfit$contingencytable))
   plot(NULL, xlim = c(1, ncol(x$modelfit$contingencytable)), ylim = y.lim, ylab = y.lab, xlab = x.lab, axes = FALSE)
     if (is.null(x.grid)) {
-      abline(v = seq(0:ncol(x$modelfit$contingencytable)), col = "lightgrey", lty = 3)
+      abline(v = seq(1:ncol(x$modelfit$contingencytable)), col = "lightgrey", lty = 3)
       } else {
         if (!is.na(x.grid[1])) {
           abline(v = x.grid, col = "lightgrey", lty = 3)
         }
       }
   if (is.null(y.grid)) {
-    abline(h = seq(0:ceiling(y.lim[2])), col = "lightgrey", lty = 3)
+    abline(h = seq(0, ceiling(y.lim[2]), ceiling(y.lim[2] / 10)), col = "lightgrey", lty = 3)
     } else {
       if (!is.na(y.grid[1])) {
         abline(h = y.grid, col = "lightgrey", lty = 3)

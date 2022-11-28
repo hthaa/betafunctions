@@ -31,9 +31,9 @@ mdlfit.gfx(
 
 \item{y.lab}{The label for the y-axis (the frequencies).}
 
-\item{x.grid}{Control the vertical grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each bin. If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the x-axis.}
+\item{x.grid}{Control the vertical grid-lines of the plot. Takes \code{NA}, \code{NULL}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each bin. If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the x-axis.}
 
-\item{y.grid}{Control the horizontal grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each frequency (i.e., increments of 1). If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the y-axis.}
+\item{y.grid}{Control the horizontal grid-lines of the plot. Takes \code{NA}, \code{NULL}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each frequency (i.e., increments of 1). If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the y-axis.}
 }
 \description{
 Tool for visually gauging the discrepancy between the observed and model-implied frequencies of observed-scores.
@@ -56,9 +56,9 @@ min = 0, max = 100, modelfit = c(nbins = 20, minbin = 1))
 # Feed the object to the mdlfit.gfx() function:
 mdlfit.gfx(out)
 
-# Given the number of observations, the y-axis ticks are a bit croweded. We
+# Given the number of observations, the y-axis ticks are a bit crowded. We
 # can make it look less crowded by changing the number of ticks, labels, and
 # the grid-lines:
 mdlfit.gfx(out, y.tickat = seq(0, 250, 25), y.lim = c(0, 250),
-h.grid = seq(0, 250, 12.5))
+y.grid = seq(0, 250, 12.5))
 }
