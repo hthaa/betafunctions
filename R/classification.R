@@ -1324,8 +1324,8 @@ MC.out.tabular <- function(x) {
 #' @param main.lab The main label (title) of the plot.
 #' @param x.lab The label for the x-axis (the bins).
 #' @param y.lab The label for the y-axis (the frequencies).
-#' @param x.grid Control the vertical grid-lines of the plot. Takes \code{NA}, \code{NULL}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each bin. If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the x-axis.
-#' @param y.grid Control the horizontal grid-lines of the plot. Takes \code{NA}, \code{NULL}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each frequency (i.e., increments of 1). If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the y-axis.
+#' @param x.grid Control the vertical grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each bin. If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the x-axis.
+#' @param y.grid Control the horizontal grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each frequency (i.e., increments of 1). If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the y-axis.
 #' @export
 #' @examples
 #' # Generate some data. 1000 respondents taking 100 item test:
@@ -1370,30 +1370,30 @@ mdlfit.gfx <- function(x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.l
       }
     }
   par(new = TRUE)
-  base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[2, ],
+    base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[1, ],
+             type = "o", col = "grey", ylim = y.lim, ylab = "", xlab = "", lwd = 3, lty = 1,
+             axes = FALSE, pch = 16, cex = 1.5)
+    graphics::par(new = TRUE)
+    base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[2, ],
              type = "o", bg = "black", ylim = y.lim, ylab = "", xlab = x.lab,
-             main = main.lab, lwd = 2, axes = FALSE)
-  graphics::par(new = TRUE)
-  base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[1, ],
-             type = "o", col = "grey", ylim = y.lim, ylab = "", xlab = "", lwd = 2, lty = 1,
-             axes = FALSE)
+             main = main.lab, lwd = 3, axes = FALSE, pch = 1, cex = 1.5)
   graphics::box()
   graphics::axis(1, at = x.tickat, labels = FALSE)
   graphics::axis(2, at = y.tickat)
   graphics::legend("topright", legend = c("Observed",
                                           "Expected"), col = c("black", "darkgrey"),
-                   lty = c(1, 1), lwd = c(3, 3), pch = c(1, 1), bty = "n")
+                   lty = c(1, 1), lwd = c(3, 3), pch = c(1, 16), bty = "n", cex = 1.5)
   if (x$modelfit$p < 0.001) {
     graphics::legend("topleft",
                      legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)),
                                 paste("df = ", x$modelfit$df), "p < 0.001"),
-                     bty = "n")
+                     bty = "n", cex = 1.5)
     } else {
       graphics::legend("topleft",
                        legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)),
                                   paste("df = ", x$modelfit$df),
                                   paste("p = ", round(x$modelfit$p, 3))),
-                       bty = "n")
+                       bty = "n", cex = 1.5)
     }
 }
 
