@@ -200,58 +200,19 @@ LL.CA <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = "4P
       }
     out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
     }
-
-  #if (!is.list(x) & !is.null(modelfit)) {
-  #  x <- round(x * N)
-  #  mdlfit <- matrix(ncol = N + 1, nrow = 2)
-  #  rownames(mdlfit) <- c("Expected", "Observed")
-  #  for (i in 0:N) {
-  #    mdlfit[1, i + 1] <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dbinom(i, N, x) }, lower = 0, upper = 1)$value * length(x)
-  #    mdlfit[2, i + 1] <- length(x[x >= i & x < (i + 1)])
-  #  }
-  #  for (i in 1:ncol(mdlfit)) {
-  #    if (i < ncol(mdlfit)) {
-  #      if (any(mdlfit[1, i] < ncol(mdlfit))) {
-  #        if (any(mdlfit[1, i] < modelfit)) {
-  #          mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
-  #          mdlfit[, i] <- NA
-  #        }
-  #      }
-  #    }
-  #  }
-  #  mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
-  #  if (any(mdlfit[1, ncol(mdlfit)] < modelfit)) {
-  #    mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
-  #    mdlfit <- mdlfit[, -ncol(mdlfit)]
-  #  }
-  #  chisquared <- sum(apply(mdlfit, 2, function(x) {(x[2] - x[1])^2 / x[1]}))
-  #  out[["modelfit"]] <- list()
-  #  out[["modelfit"]][["contingencytable"]] <- mdlfit
-  #  out[["modelfit"]][["chisquared"]] <- chisquared
-  #  if (startsWith(as.character(true.model), "2")) {
-  #    out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
-  #  } else {
-  #    if ((startsWith(as.character(true.model), "4") & failsafe == TRUE) & (out[["parameters"]]$l == l & out[["parameters"]]$u == u)) {
-  #      out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
-  #    } else {
-  #      out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
-  #    }
-  #  }
-  #  out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
-  #}
   if (any(startsWith(tolower(output), "a"))) {
     p.tp <- stats::integrate(function(x) {
-        dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut)
-        }, lower = truecut, upper = 1)$value
-      p.fp <- stats::integrate(function(x) {
-        dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut)
-        }, lower = 0, upper = truecut)$value
-      p.ff <- stats::integrate(function(x) {
-        dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE)
-        }, lower = truecut, upper = 1)$value
-      p.tf <- stats::integrate(function(x) {
-        dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE)
-        }, lower = 0, upper = truecut)$value
+      dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut)
+      }, lower = truecut, upper = 1)$value
+    p.fp <- stats::integrate(function(x) {
+      dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut)
+      }, lower = 0, upper = truecut)$value
+    p.ff <- stats::integrate(function(x) {
+      dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE)
+      }, lower = truecut, upper = 1)$value
+    p.tf <- stats::integrate(function(x) {
+      dBeta.pBinom(x, params$l, params$u, params$alpha, params$beta, N, cut, lower.tail = TRUE)
+      }, lower = 0, upper = truecut)$value
     camat <- confmat(p.tf, p.tp, p.ff, p.fp, "prop")
     out[["confusionmatrix"]] <- camat
     out[["classification.accuracy"]] <- caStats(camat[1, 1], camat[1, 2], camat[2, 1], camat[2, 2])
@@ -426,44 +387,6 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
     }
     out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
   }
-  #if (!is.list(x) & !is.null(modelfit)) {
-  #  x <- round(x * N)
-  #  mdlfit <- matrix(ncol = N + 1, nrow = 2)
-  #  rownames(mdlfit) <- c("Expected", "Observed")
-  #  for (i in 0:N) {
-  #    mdlfit[1, i + 1] <- stats::integrate(function(x) { dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dbinom(i, N, x) }, lower = 0, upper = 1)$value * length(x)
-  #    mdlfit[2, i + 1] <- length(x[x >= i & x < (i + 1)])
-  #  }
-  #  for (i in 1:ncol(mdlfit)) {
-  #    if (i < ncol(mdlfit)) {
-  #      if (any(mdlfit[1, i] < ncol(mdlfit))) {
-  #        if (any(mdlfit[1, i] < modelfit)) {
-  #          mdlfit[, i + 1] <- mdlfit[, i + 1] + mdlfit[, i]
-  #          mdlfit[, i] <- NA
-  #        }
-  #      }
-  #    }
-  #  }
-  #  mdlfit <- mdlfit[, apply(mdlfit, 2, function(x) {any(!is.na(x))})]
-  #  if (any(mdlfit[1, ncol(mdlfit)] < modelfit)) {
-  #    mdlfit[, ncol(mdlfit) - 1] <- mdlfit[, ncol(mdlfit) - 1] + mdlfit[, ncol(mdlfit)]
-  #    mdlfit <- mdlfit[, -ncol(mdlfit)]
-  #  }
-  #  chisquared <- sum(apply(mdlfit, 2, function(x) {(x[2] - x[1])^2 / x[1]}))
-  #  out[["modelfit"]] <- list()
-  #  out[["modelfit"]][["contingencytable"]] <- mdlfit
-  #  out[["modelfit"]][["chisquared"]] <- chisquared
-  #  if (startsWith(as.character(true.model), "2")) {
-  #    out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
-  #  } else {
-  #    if ((startsWith(as.character(true.model), "4") & failsafe == TRUE) & (out[["parameters"]]$l == l & out[["parameters"]]$u == u)) {
-  #      out[["modelfit"]][["df"]] <- ncol(mdlfit) - 2
-  #    } else {
-  #      out[["modelfit"]][["df"]] <- ncol(mdlfit) - 4
-  #    }
-  #  }
-  #  out[["modelfit"]][["pvalue"]] <- stats::pchisq(chisquared, ncol(mdlfit) - 4, lower.tail = FALSE)
-  #}
   for (i in 1:(length(cut) + 1)) {
     if (i == 1) {
       for (j in 1:(length(cut) + 1)) {
@@ -1395,6 +1318,14 @@ MC.out.tabular <- function(x) {
 #'
 #' @description Tool for visually gauging the discrepancy between the observed and model-implied frequencies of observed-scores.
 #' @param x The output object from the \code{LL.CA()}, \code{LL.MC.CA()}, \code{HB.CA()}, or \code{HB.CA.MC()} functions.
+#' @param x.tickat The points along the x-axis that bins are to be labelled. Default is \code{NULL} (places a tick for each of the bins).
+#' @param y.tickat The points along the y-axis where frequencies are to be labelled. Default is \code{NULL}.
+#' @param y.lim The limits of the y-axis (freqencies). Useful for keeping the scale equal across several plots.
+#' @param main.lab The main label (title) of the plot.
+#' @param x.lab The label for the x-axis (the bins).
+#' @param y.lab The label for the y-axis (the frequencies).
+#' @param x.grid Control the vertical grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each bin. If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the x-axis.
+#' @param y.grid Control the horizontal grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each frequency (i.e., increments of 1). If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the y-axis.
 #' @export
 #' @examples
 #' # Generate some data. 1000 respondents taking 100 item test:
@@ -1413,30 +1344,31 @@ MC.out.tabular <- function(x) {
 #'
 #' # Feed the object to the mdlfit.gfx() function:
 #' mdlfit.gfx(out)
-mdlfit.gfx <- function(x) {
-  yup <- base::max(x$modelfit$contingencytable) * 1.3
-  base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[2, ], type = "o", bg = "black", ylim = c(0, yup), ylab = "Frequency", xlab = "Bin number", main = "Observed vs Expected frequencies", lwd = 2, axes = FALSE)
-  graphics::par(new = TRUE)
-  base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[1, ], type = "o", col = "grey", ylim = c(0, yup), ylab = "", xlab = "", lwd = 2, lty = 2, axes = FALSE)
-  graphics::box()
-  graphics::axis(1, 0:ncol(x$modelfit$contingencytable))
-  graphics::axis(2)
-  graphics::legend("topright", legend = c("Observed", "Expected"), col = c("black", "darkgrey"), lty = c(1, 2), lwd = c(3, 3), pch = c(1, 1), bty = "n")
-  if (x$modelfit$p < .001) {
-    graphics::legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), "p < 0.001"), bty = "n")
-  } else {
-    graphics::legend("topleft", legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)), paste("df = ", x$modelfit$df), paste("p = ", round(x$modelfit$p, 3))), bty = "n")
-  }
-}
-
-
-mdlfit.gfx2 <- function (x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.lab = "",  x.lab = "", y.lab = "") {
+#'
+#' # Given the number of observations, the y-axis ticks are a bit croweded. We
+#' # can make it look less crowded by changing the number of ticks, labels, and
+#' # the grid-lines:
+#' mdlfit.gfx(out, y.tickat = seq(0, 250, 25), y.lim = c(0, 250),
+#' h.grid = seq(0, 250, 12.5))
+mdlfit.gfx <- function (x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.lab = "Observed vs. Expected Freqencies",  x.lab = "Bins", y.lab = "Frequency", x.grid = NULL, y.grid = NULL) {
   if (is.null(x.tickat)) x.tickat <- 0:ncol(x$modelfit$contingencytable)
-  if (is.null(y.tickat)) y.tickat <- 0:roof(max(x$modelfit$contingencytable))
+  if (is.null(y.tickat)) y.tickat <- 0:ceiling(max(x$modelfit$contingencytable))
   if (is.null(y.lim)) y.lim <- c(0, base::max(x$modelfit$contingencytable) * 1.3)
   plot(NULL, xlim = c(1, ncol(x$modelfit$contingencytable)), ylim = y.lim, ylab = y.lab, xlab = x.lab, axes = FALSE)
-  abline(v = seq(1, ncol(x$modelfit$contingencytable), 1), col = "lightgrey", lty = 3)
-  abline(h = seq(0, roof(y.lim[2]), 1), col = "lightgrey", lty = 3)
+    if (is.null(x.grid)) {
+      abline(v = seq(1:ncol(x$modelfit$contingencytable)), col = "lightgrey", lty = 3)
+      } else {
+        if (!is.na(x.grid[1])) {
+          abline(v = x.grid, col = "lightgrey", lty = 3)
+        }
+      }
+  if (is.null(y.grid)) {
+    abline(h = seq(0:ceiling(y.lim[2])), col = "lightgrey", lty = 3)
+    } else {
+      if (!is.na(y.grid[1])) {
+        abline(h = y.grid, col = "lightgrey", lty = 3)
+      }
+    }
   par(new = TRUE)
   base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[2, ],
              type = "o", bg = "black", ylim = y.lim, ylab = "", xlab = x.lab,
@@ -1452,16 +1384,17 @@ mdlfit.gfx2 <- function (x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main
                                           "Expected"), col = c("black", "darkgrey"),
                    lty = c(1, 1), lwd = c(3, 3), pch = c(1, 1), bty = "n")
   if (x$modelfit$p < 0.001) {
-    graphics::legend("topleft", legend = c(paste("chi-square = ",
-                                                 round(x$modelfit$chisquared, 2)), paste("df = ",
-                                                                                         x$modelfit$df), "p < 0.001"), bty = "n")
-  }
-  else {
-    graphics::legend("topleft", legend = c(paste("chi-square = ",
-                                                 round(x$modelfit$chisquared, 2)), paste("df = ",
-                                                                                         x$modelfit$df), paste("p = ", round(x$modelfit$p,
-                                                                                                                             3))), bty = "n")
-  }
+    graphics::legend("topleft",
+                     legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)),
+                                paste("df = ", x$modelfit$df), "p < 0.001"),
+                     bty = "n")
+    } else {
+      graphics::legend("topleft",
+                       legend = c(paste("chi-square = ", round(x$modelfit$chisquared, 2)),
+                                  paste("df = ", x$modelfit$df),
+                                  paste("p = ", round(x$modelfit$p, 3))),
+                       bty = "n")
+    }
 }
 
 

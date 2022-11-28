@@ -4,10 +4,36 @@
 \alias{mdlfit.gfx}
 \title{Graphical presentation of model fit for the Beta-Binomial classification accuracy and consistency model.}
 \usage{
-mdlfit.gfx(x)
+mdlfit.gfx(
+  x,
+  x.tickat = NULL,
+  y.tickat = NULL,
+  y.lim = NULL,
+  main.lab = "Observed vs. Expected Freqencies",
+  x.lab = "Bins",
+  y.lab = "Frequency",
+  x.grid = NULL,
+  y.grid = NULL
+)
 }
 \arguments{
 \item{x}{The output object from the \code{LL.CA()}, \code{LL.MC.CA()}, \code{HB.CA()}, or \code{HB.CA.MC()} functions.}
+
+\item{x.tickat}{The points along the x-axis that bins are to be labelled. Default is \code{NULL} (places a tick for each of the bins).}
+
+\item{y.tickat}{The points along the y-axis where frequencies are to be labelled. Default is \code{NULL}.}
+
+\item{y.lim}{The limits of the y-axis (freqencies). Useful for keeping the scale equal across several plots.}
+
+\item{main.lab}{The main label (title) of the plot.}
+
+\item{x.lab}{The label for the x-axis (the bins).}
+
+\item{y.lab}{The label for the y-axis (the frequencies).}
+
+\item{x.grid}{Control the vertical grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each bin. If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the x-axis.}
+
+\item{y.grid}{Control the horizontal grid-lines of the plot. Takes \code{NULL}, \code{NA}, or a vector of values as input. If \code{NULL}, grid-lines are drawn automatically for each frequency (i.e., increments of 1). If \code{NA}, no grid-lines are drawn. If a vector of values are supplied, lines are drawn at each value provided along the y-axis.}
 }
 \description{
 Tool for visually gauging the discrepancy between the observed and model-implied frequencies of observed-scores.
@@ -29,4 +55,10 @@ min = 0, max = 100, modelfit = c(nbins = 20, minbin = 1))
 
 # Feed the object to the mdlfit.gfx() function:
 mdlfit.gfx(out)
+
+# Given the number of observations, the y-axis ticks are a bit croweded. We
+# can make it look less crowded by changing the number of ticks, labels, and
+# the grid-lines:
+mdlfit.gfx(out, y.tickat = seq(0, 250, 25), y.lim = c(0, 250),
+h.grid = seq(0, 250, 12.5))
 }
