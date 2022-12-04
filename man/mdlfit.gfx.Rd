@@ -9,7 +9,7 @@ mdlfit.gfx(
   x.tickat = NULL,
   y.tickat = NULL,
   y.lim = NULL,
-  main.lab = "Observed vs. Expected Freqencies",
+  main.lab = "Observed vs. Expected Frequencies",
   x.lab = "Bins",
   y.lab = "Frequency",
   x.grid = NULL,
@@ -19,7 +19,7 @@ mdlfit.gfx(
 \arguments{
 \item{x}{The output object from the \code{LL.CA()}, \code{LL.MC.CA()}, \code{HB.CA()}, or \code{HB.CA.MC()} functions.}
 
-\item{x.tickat}{The points along the x-axis that bins are to be labelled. Default is \code{NULL} (places a tick for each of the bins).}
+\item{x.tickat}{The points along the x-axis that bins are to be labeled. Default is \code{NULL} (places a tick for each of the bins).}
 
 \item{y.tickat}{The points along the y-axis where frequencies are to be labelled. Default is \code{NULL}.}
 

@@ -6,6 +6,8 @@
   
   - Fixed a bug that affected the binning of of observed values. Due to some strange behavior in R that resulted from scaling and re-scaling values, observations would sometimes be assigned to the wrong bins. This should now be fixed.
 
+- Added arguments to the `mdlfit.gfx()` function that allows for manually controlling a number of plot aesthetics.
+
 ---
 
 # betafunctions v. 1.8.0

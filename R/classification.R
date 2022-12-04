@@ -1318,7 +1318,7 @@ MC.out.tabular <- function(x) {
 #'
 #' @description Tool for visually gauging the discrepancy between the observed and model-implied frequencies of observed-scores.
 #' @param x The output object from the \code{LL.CA()}, \code{LL.MC.CA()}, \code{HB.CA()}, or \code{HB.CA.MC()} functions.
-#' @param x.tickat The points along the x-axis that bins are to be labelled. Default is \code{NULL} (places a tick for each of the bins).
+#' @param x.tickat The points along the x-axis that bins are to be labeled. Default is \code{NULL} (places a tick for each of the bins).
 #' @param y.tickat The points along the y-axis where frequencies are to be labelled. Default is \code{NULL}.
 #' @param y.lim The limits of the y-axis (freqencies). Useful for keeping the scale equal across several plots.
 #' @param main.lab The main label (title) of the plot.
@@ -1350,26 +1350,26 @@ MC.out.tabular <- function(x) {
 #' # the grid-lines:
 #' mdlfit.gfx(out, y.tickat = seq(0, 250, 25), y.lim = c(0, 250),
 #' y.grid = seq(0, 250, 12.5))
-mdlfit.gfx <- function(x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.lab = "Observed vs. Expected Freqencies",  x.lab = "Bins", y.lab = "Frequency", x.grid = NULL, y.grid = NULL) {
+mdlfit.gfx <- function(x, x.tickat = NULL, y.tickat = NULL, y.lim = NULL, main.lab = "Observed vs. Expected Frequencies",  x.lab = "Bins", y.lab = "Frequency", x.grid = NULL, y.grid = NULL) {
   if (is.null(y.lim)) y.lim <- c(0, base::max(x$modelfit$contingencytable) * 1.3)
-  if (is.null(x.tickat)) x.tickat <- 0:ncol(x$modelfit$contingencytable)
-  if (is.null(y.tickat)) y.tickat <- seq(0, ceiling(y.lim[2]), ceiling(y.lim[2] / 10))#y.tickat <- 0:floor(y.lim[2])#0:ceiling(max(x$modelfit$contingencytable))
+  if (is.null(x.tickat)) x.tickat <- 1:ncol(x$modelfit$contingencytable)
+  if (is.null(y.tickat)) y.tickat <- seq(0, ceiling(y.lim[2]), ceiling(y.lim[2] / 10))
   plot(NULL, xlim = c(1, ncol(x$modelfit$contingencytable)), ylim = y.lim, ylab = y.lab, xlab = x.lab, axes = FALSE)
     if (is.null(x.grid)) {
-      abline(v = seq(1:ncol(x$modelfit$contingencytable)), col = "lightgrey", lty = 3)
+      graphics::abline(v = seq(1:ncol(x$modelfit$contingencytable)), col = "lightgrey", lty = 3)
       } else {
         if (!is.na(x.grid[1])) {
-          abline(v = x.grid, col = "lightgrey", lty = 3)
+          graphics::abline(v = x.grid, col = "lightgrey", lty = 3)
         }
       }
   if (is.null(y.grid)) {
-    abline(h = seq(0, ceiling(y.lim[2]), ceiling(y.lim[2] / 10)), col = "lightgrey", lty = 3)
+    graphics::abline(h = seq(0, ceiling(y.lim[2]), ceiling(y.lim[2] / 10)), col = "lightgrey", lty = 3)
     } else {
       if (!is.na(y.grid[1])) {
-        abline(h = y.grid, col = "lightgrey", lty = 3)
+        graphics::abline(h = y.grid, col = "lightgrey", lty = 3)
       }
     }
-  par(new = TRUE)
+  graphics::par(new = TRUE)
     base::plot(1:ncol(x$modelfit$contingencytable), x$modelfit$contingencytable[1, ],
              type = "o", col = "grey", ylim = y.lim, ylab = "", xlab = "", lwd = 3, lty = 1,
              axes = FALSE, pch = 16, cex = 1.5)
@@ -1729,7 +1729,7 @@ HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P"
 #' @param l If \code{true.model = "2P"} or \code{failsafe = TRUE}, the lower-bound location parameter to be used in the two-parameter fitting procedure. Default is 0 (i.e., the lower-bound of the Standard Beta distribution).
 #' @param u If \code{true.model = "2P"} or \code{failsafe = TRUE}, the upper-bound location parameter to be used in the two-parameter fitting procedure. Default is 1 (i.e., the upper-bound of the Standard Beta distribution).
 #' @param modelfit Allows for controlling the chi-square test for model fit by setting the minimum bin-size for expected observations. Can alternatively be set to \code{NULL} to forego model-fit testing (speeding up the function). In accordance with standard recommendations for chi-square tests the default input to this argument is 10.
-#' @return A list containing the estimated parameters necessary for the approach (i.e., Lord's k, test-lenght, and the true-score Beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
+#' @return A list containing the estimated parameters necessary for the approach (i.e., Lord's k, test-length, and the true-score Beta distribution parameters), a chi-square test of model-fit, the confusion matrix containing estimated proportions of true/false positive/negative categorizations for a test, diagnostic performance statistics, and/or a classification consistency matrix and indices. Accuracy output includes a confusion matrix and diagnostic performance indices, and consistency output includes a consistency matrix and consistency indices \code{p} (expected proportion of agreement between two independent test administrations), \code{p_c} (proportion of agreement on two independent administrations expected by chance alone), and \code{Kappa} (Cohen's Kappa).
 #' @note This implementation of the Hanson-Brennan approach is much slower than the implementation of the Livingston and Lewis approach, as there is no native implementation of Lord's two-term approximation to the Compound-Binomial distribution in R. This implementation uses a "brute-force" method of computing the cumulative probabilities from the compound-Binomial distribution, which will by necessity be more resource intensive.
 #' @examples
 #' # Generate some fictional data. Say, 1000 individuals take a 20-item test.
