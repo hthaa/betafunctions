@@ -8,14 +8,12 @@ Beta.tp.fit(
   x,
   min,
   max,
-  etl,
+  etl = NULL,
   reliability = NULL,
   true.model = "4P",
   failsafe = FALSE,
   l = 0,
   u = 1,
-  alpha = NA,
-  beta = NA,
   output = "parameters"
 )
 }
@@ -37,10 +35,6 @@ Beta.tp.fit(
 \item{l}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).}
 
 \item{u}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).}
-
-\item{alpha}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).}
-
-\item{beta}{If \code{failsafe = TRUE} or \code{true.model = "2P"}: The beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).}
 
 \item{output}{Option to specify true-score distribution moments as output if the value of the output argument does not equal \code{"parameters"}.}
 }

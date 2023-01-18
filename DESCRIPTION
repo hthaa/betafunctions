@@ -25,4 +25,4 @@ Description: Package providing a number of functions for working with Two- and
 License: CC0
 Encoding: UTF-8
 LazyData: false
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3

@@ -1,3 +1,13 @@
+# betafunctions v. 1.8.2
+
+- Fixed a bug with fitting the two-parameter beta-distribution model in the `HB.CA()`, `HB.CA.MC()`, and `HB.ROC()` functions.
+
+- The `AMS()` and `BMS()` functions have had some arguments removed. Now only allows for specifying mean, variance, and location parameters.
+
+- The `Beta.tp.fit()` function is significantly simplified and some arguments are removed (the `alpha` and `beta` arguments, specifically).
+
+---
+
 # betafunctions v. 1.8.1
 
 - Changes to model fit argument in the `LL.` and `HB.` functions.

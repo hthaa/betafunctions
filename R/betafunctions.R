@@ -261,11 +261,6 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
 #' @description Calculates the Beta value required to produce a Beta probability density distribution with defined moments and parameters. Be advised that not all combinations of moments and parameters can be satisfied (e.g., specifying mean, variance, skewness and kurtosis uniquely determines both location-parameters, meaning that the value of the lower-location parameter will take on which ever value it must, and cannot be specified).
 #' @param mean The mean (first raw moment) of the target Standard Beta probability density distribution.
 #' @param variance The variance (second central moment) of the target Standard Beta probability density distribution.
-#' @param skewness The skewness (third standardized moment) of the target Beta probability density distribution.
-#' @param kurtosis The kurtosis (fourth standardized moment) of the target Beta probability density distribution.
-#' @param l The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
-#' @param u The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).
-#' @param beta Optional specification of the Beta shape-parameter of the target Beta distribution. Finds then the Alpha parameter necessary to produce a distribution with the specified mean, given specified Beta, l, and u parameters.
 #' @param sd Optional alternative to specifying \code{var}. The standard deviation of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Alpha shape-parameter in order to produce a  Beta probability density distribution with the target mean and variance, given specified lower- and upper bounds of the Beta distribution.
 #' @examples
@@ -281,45 +276,11 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
 #' # distribution using AMS():
 #' AMS(mean(testdata), var(testdata))
 #' @export
-AMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, l = 0, u = 1, beta = NULL, sd = NULL) {
-  alpha <- NULL
+AMS <- function(mean, variance, l, u, sd = NULL) {
   if (!is.null(sd)) {
     variance <- sd^2
   }
-  if (!is.null(beta) & !is.null(mean) & !is.null(skewness)) {
-    alpha <- ((beta * (l - mean) / (mean - u) + beta + 2) * sqrt(beta * (l - mean) / (mean - u)* beta) * skewness) /
-      (sqrt(beta * (l - mean) / (mean - u) + beta+ 1)) * - .5 + beta
-  }
-  if (is.null(mean) & !is.null(skewness) & !is.null(kurtosis)) {
-    r <- 6 * (kurtosis - skewness^2 - 1) / (6 + 3 * skewness^2 - 2 * kurtosis)
-    if (skewness < 0) {
-      alpha <- r / 2 * (1 + base::sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * kurtosis - 3 * (r - 6) * (r + 1)))))
-    } else {
-      alpha <- r / 2 * (1 - base::sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * kurtosis - 3 * (r - 6) * (r + 1)))))
-    }
-  }
-  if (!is.null(beta) & is.null(skewness)) {
-    alpha <- beta * (l - mean) / (mean - u)
-  }
-  if (!is.null(beta) & is.null(skewness) & !is.null(kurtosis) & !is.null(mean)) {
-    alpha <- ((beta * (l - mean) / (mean - u) * beta * (beta * (l - mean) /
-                                                          (mean - u) + beta + 2) * (beta * (l - mean) /
-                                                                                      (mean - u) + beta + 3) * kurtosis) /
-                (3 * (2 * (beta * (l - mean) / (mean - u) + beta)^2 + beta * (l - mean) /
-                        (mean - u) * beta * (beta * (l - mean) /
-                                               (mean - u) + beta - 6))) -  beta - 1)
-  }
-  if (!is.null(mean) & !is.null(variance) & !is.null(l) & !is.null(u)) {
-    alpha <- ((l - mean) * (l * (mean - u) - mean^2 + mean * u - variance)) / (variance * (l - u))
-  }
-  if(is.null(alpha)) {
-    warning("Insufficient information.")
-  } else {
-    if (alpha <= 0) {
-      warning("Parameter out of bounds (alpha <= 0).")
-    }
-  }
-  return(alpha)
+  return(((l - mean) * (l * (mean - u) - mean^2 + mean * u - variance)) / (variance * (l - u)))
 }
 
 #' Beta Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Alpha Shape-Parameter of a Four-Parameter Beta PDD.
@@ -328,10 +289,6 @@ AMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
 #' @param mean The mean (first raw moment) of the target Standard Beta probability density distribution.
 #' @param variance The variance (second central moment) of the target Standard Beta probability density distribution.
 #' @param skewness The skewness (third standardized moment) of the target Beta probability density distribution.
-#' @param kurtosis The kurtosis (fourth standardized moment) of the target Beta probability density distribution.
-#' @param l The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
-#' @param u The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).
-#' @param alpha Optional specification of the Alpha shape-parameter of the target Beta distribution. Finds then the Beta parameter necessary to produce a distribution with the specified mean, given specified Alpha, l, and u parameters.
 #' @param sd Optional alternative to specifying \code{var}. The standard deviation of the target Standard Beta probability density distribution.
 #' @return A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance, given specified lower- and upper bounds of the Beta distribution.
 #' @examples
@@ -352,45 +309,11 @@ AMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, 
 #' # u = 0.75 using BMS:
 #' BMS(mean(testdata), var(testdata), 0.25, 0.75)
 #' @export
-BMS <- function(mean = NULL, variance = NULL, skewness = NULL, kurtosis = NULL, l = 0, u = 1, alpha = NULL, sd = NULL) {
-  beta <- NULL
+BMS <- function(mean, variance, l, u, sd = NULL) {
   if (!is.null(sd)) {
-    var <- sd^2
+    variance <- sd^2
   }
-  if (!is.null(alpha) & !is.null(mean) & !is.null(skewness)) {
-    beta <- .5 * (((alpha + alpha * (mean - u) / (l - mean) + 2) * sqrt(alpha*alpha * (mean - u) / (l - mean)) * skewness) /
-                    (sqrt(alpha + alpha * (mean - u) / (l - mean) + 1))) + alpha
-  }
-  if (is.null(mean) & !is.null(skewness) & !is.null(kurtosis)) {
-    r <- 6 * (kurtosis - skewness^2 - 1) / (6 + 3 * skewness^2 - 2 * kurtosis)
-    if (skewness < 0) {
-      beta <- r / 2 * (1 - base::sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * kurtosis - 3 * (r - 6) * (r + 1)))))
-    } else {
-      beta <- r / 2 * (1 + base::sqrt(1 - ((24 * (r + 1)) / ((r + 2) * (r + 3) * kurtosis - 3 * (r - 6) * (r + 1)))))
-    }
-  }
-  if (!is.null(alpha) & is.null(skewness)) {
-    beta <- alpha * (mean - u) / (l - mean)
-  }
-  if (!is.null(alpha) & is.null(skewness) & !is.null(kurtosis) & !is.null(mean)) {
-    beta <- ((alpha * alpha * (mean - u) / (l - mean) * (alpha + alpha * (mean - u) /
-                                                           (l - mean) + 2) * (alpha + alpha * (mean - u) /
-                                                                                (l - mean) + 3) * kurtosis) /
-               (3 * (2 * (alpha + alpha * (mean - u) / (l - mean))^2 + alpha * alpha * (mean - u) /
-                       (l - mean) * (alpha + alpha * (mean - u) / (l - mean) - 6))) - alpha - 1)
-
-  }
-  if (!is.null(mean) & !is.null(variance) & !is.null(l) & !is.null(u)) {
-    beta <- (mean - u) * (l * (u - mean) + mean^2 - mean * u + variance) / (variance * (u - l))
-  }
-  if(is.null(beta)) {
-    warning("Insufficient information.")
-  } else {
-    if (beta <= 0) {
-      warning("Parameter out of bounds (beta <= 0).")
-    }
-  }
-  return(beta)
+  return(((mean - u) * (l * (u - mean) + mean^2 - mean * u + variance)) / (variance * (u - l)))
 }
 
 #' Lower Location Parameter Given Shape Parameters, Mean, Variance, and Upper Location Parameter of a Four-Parameter Beta PDD.
@@ -1020,16 +943,19 @@ Beta.4p.fit <- function(scores, mean = NULL, variance = NULL, skewness = NULL, k
 #' (params.2p <- Beta.2p.fit(testdata))
 #' curve(dbeta(x, params.2p$alpha, params.2p$beta), add = TRUE)
 #' @export
-Beta.2p.fit <- function(scores, mean = NULL, variance = NULL, l = 0, u = 1) {
-  if (base::max(scores) > u | base::min(scores) < l) {
-    warning(paste("Input values outside the range of the specified location parameters of the Beta distribution (i.e., there are values falling outside the [", l, ", ", u, "] interval).", sep = ""))
+Beta.2p.fit <- function(scores = NULL, mean = NULL, variance = NULL, l = 0, u = 1) {
+  if (!is.null(scores)) {
+    if (base::max(scores) > u | base::min(scores) < l) {
+      warning(paste("Input values outside the range of the specified location parameters of the Beta distribution (i.e., there are values falling outside the [", l, ", ", u, "] interval).", sep = ""))
+    }
+    m1 <- mean(scores)
+    s2 <- var(scores)
+  } else {
+    m1 <- mean
+    s2 <- variance
   }
-  if (base::is.null(mean) & base::is.null(variance)) {
-    mean <- base::mean(scores)
-    variance <- stats::var(scores)
-  }
-  a <- AMS(mean, variance, l, u)
-  b <- BMS(mean, variance, l, u)
+  a <- AMS(m1, s2, l, u)
+  b <- BMS(m1, s2, l, u)
   return(base::list("alpha" = a, "beta" = b, "l" = l, "u" = u))
 }
 

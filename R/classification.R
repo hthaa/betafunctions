@@ -528,7 +528,6 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
   base::return(out)
 }
 
-
 #' Confusion matrix
 #'
 #' @description Organizes supplied values of true and false positives and negatives into a confusion matrix.
@@ -956,8 +955,6 @@ mdo <- function(x, fit = FALSE) {
 #' @param failsafe Logical. Whether to revert to a fail-safe two-parameter solution should the four-parameter solution contain invalid parameter estimates.
 #' @param l If \code{failsafe = TRUE} or \code{true.model = "2P"}: The lower-bound of the Beta distribution. Default is 0 (i.e., the lower-bound of the Standard, two-parameter Beta distribution).
 #' @param u If \code{failsafe = TRUE} or \code{true.model = "2P"}: The upper-bound of the Beta distribution. Default is 1 (i.e., the upper-bound of the Standard, two-parameter Beta distribution).
-#' @param alpha If \code{failsafe = TRUE} or \code{true.model = "2P"}: The alpha shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).
-#' @param beta If \code{failsafe = TRUE} or \code{true.model = "2P"}: The beta shape-parameter of the Beta distribution. Default is NA (i.e., estimate the parameter).
 #' @param output Option to specify true-score distribution moments as output if the value of the output argument does not equal \code{"parameters"}.
 #' @return A list with the parameter values of a four-parameter Beta distribution. "l" is the lower location-parameter, "u" the upper location-parameter, "alpha" the first shape-parameter, "beta" the second shape-parameter, and "etl" the effective test length.
 #' @references Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf
@@ -997,88 +994,39 @@ mdo <- function(x, fit = FALSE) {
 #' # estimate above (u = 0.7256552) as such:
 #' Beta.tp.fit(testdata, 0, 50, 50, true.model = "2P", l = 0.25, u = 0.7256552)
 #' @export
-Beta.tp.fit <- function(x, min, max, etl, reliability = NULL, true.model = "4P", failsafe = FALSE, l = 0, u = 1, alpha = NA, beta = NA, output = "parameters") {
-  if(output != "parameters") {
-    moments <- base::list()
+Beta.tp.fit <- function(x, min, max, etl = NULL, reliability = NULL, true.model = "4P", failsafe = FALSE, l = 0, u = 1, output = "parameters") {
+  if (is.null(etl)) {
+    etl <- ETL(mean(x), var(x), min, max, reliability)
   }
-  true.model <- base::as.character(true.model)
-  l.save <- l
-  u.save <- u
-  alpha.save <- alpha
-  beta.save <- beta
-  if (!base::is.null(reliability)) {
-    etl <- ETL(base::mean(x), stats::var(x), min, max, reliability)
-  }
-  x <- (x - min) / (max - min) * etl
-  tp.m1 <- tsm(x, 1, etl)
-  tp.m2 <- tsm(x, 2, etl)
-  tp.m3 <- tsm(x, 3, etl)
-  tp.m4 <- tsm(x, 4, etl)
-  tp.s2 <- tp.m2 - tp.m1^2
-  if (output != "parameters") {
-    tp.s3 <- (tp.m3 - 3 * tp.m1 * tp.m2 + 2 * tp.m1^3)
-    tp.s4 <- (tp.m4 - 4 * tp.m1 * tp.m3 + 6 * tp.m1^2 * tp.m2 - 3 * tp.m1^4)
-  }
-  tp.g3 <- (tp.m3 - 3 * tp.m1 * tp.m2 + 2 * tp.m1^3) / (sqrt(tp.s2)^3)
-  tp.g4 <- (tp.m4 - 4 * tp.m1 * tp.m3 + 6 * tp.m1^2 * tp.m2 - 3 * tp.m1^4) / (sqrt(tp.s2)^4)
+  m <- HB.tsm(x, 4, etl, 0)
+  s2 <- m[2] - m[1]^2
+  s3 <- (m[3] - 3 * m[1] * m[2] + 2 * m[1]^3)
+  s4 <- (m[4] - 4 * m[1] * m[3] + 6 * m[1]^2 * m[2] - 3 * m[1]^4)
+  g3 <- (m[3] - 3 * m[1] * m[2] + 2 * m[1]^3) / (sqrt(s2)^3)
+  g4 <- (m[4] - 4 * m[1] * m[3] + 6 * m[1]^2 * m[2] - 3 * m[1]^4) / (sqrt(s2)^4)
   if (output == "parameters") {
-    if (base::startsWith(true.model, "4")) {
-      params <- Beta.4p.fit(mean = tp.m1, variance = tp.s2, skewness = tp.g3, kurtosis = tp.g4)
-      l <- params$l
-      u <- params$u
-      alpha <- params$alpha
-      beta <- params$beta
-    }
-    if (base::startsWith(true.model, "2") | (failsafe & (base::any(base::is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
-      if ((failsafe & (base::any(base::is.na(c(l, u, alpha, beta))) | (l < 0 | u > 1 | alpha <= 0 | beta <= 0)))) {
-        warning(paste("Fail-safe engaged: l = ", l, ", u = ", u, ", alpha = ", alpha, ", beta = ", beta,
+    if (startsWith(as.character(true.model), "4")) {
+      out <- Beta.4p.fit(mean = m[1], variance = s2, skewness = g3, kurtosis = g4)
+      if (failsafe == TRUE & (out$l < 0 | out$u > 1)) {
+        warning(paste("Fail-safe engaged: l = ", out$l, ", u = ", out$u, ", alpha = ", out$alpha, ", beta = ", out$beta,
                       ". \n  Finding permissible solution for the true-score distribution in accordance with specifications.", sep = ""))
-      }
-      if (!base::startsWith(true.model, "2") & base::is.na(l.save)) {
-        l <- 0
-        } else {
-          l <- l.save
-        }
-      if (!base::startsWith(true.model, "2") & base::is.na(u.save)) {
-        u <- 1
-        } else {
-          u <- u.save
-        }
-      alpha <- alpha.save
-      beta <- beta.save
-      if (!base::is.na(alpha) & !base::is.na(beta) & base::is.na(l) & base::is.na(u)) {
-        l <- LABMSU(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2)
-        u <- UABMSL(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2)
-      }
-      if (!base::is.na(alpha) & !base::is.na(beta) & base::is.na(l) & !base::is.na(u)) {
-        l <- LABMSU(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2, u = u)
-      }
-      if (!base::is.na(alpha) & !base::is.na(beta) & !base::is.na(l) & base::is.na(u)) {
-        u <- UABMSL(alpha = alpha, beta = beta, mean = tp.m1, variance = tp.s2, l = l)
-      }
-      if (!base::is.na(alpha) & base::is.na(beta) & !base::is.na(l) & !base::is.na(u)) {
-        beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = alpha)
-      }
-      if (base::is.na(alpha) & !base::is.na(beta) & !base::is.na(l) & !base::is.na(u)) {
-        alpha <- AMS(mean = tp.m1, variance = tp.s2, l = l,u = u, beta = beta)
-      }
-      if (!base::is.na(alpha) & base::is.na(beta) & !base::is.na(l) & !base::is.na(u)) {
-        beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = alpha)
-      }
-      if (base::is.na(alpha) & base::is.na(beta) & !base::is.na(l) & !base::is.na(u)) {
-        alpha <- AMS(mean = tp.m1, variance = tp.s2, l = l, u = u, beta = NULL)
-        beta <- BMS(mean = tp.m1, variance = tp.s2, l = l, u = u, alpha = NULL)
+        out <- Beta.2p.fit(mean = m[1], variance = s2, l = l, u = u)
       }
     }
-    base::return(base::list("l" = l, "u" = u, "alpha" = alpha, "beta" = beta, "etl" = etl))
+    if (startsWith(as.character(true.model), "2")) {
+      out <- Beta.2p.fit(mean = m[1], variance = s2, l = l, u = u)
+    }
+    out[["etl"]] <- etl
+    return(out)
   } else {
-    moments[["Raw"]] <- base::list(tp.m1, tp.m2, tp.m3, tp.m4)
-    moments[["Central"]] <- base::list(0, tp.s2, tp.s3, tp.s4)
-    moments[["Standardized"]] <- base::list(0, 1, tp.g3, tp.g4)
+    moments <- list()
+    moments[["Raw"]] <- base::list(m[1], m[2], m[3], m[4])
+    moments[["Central"]] <- base::list(0, s2, s3, s4)
+    moments[["Standardized"]] <- base::list(0, 1, g3, g4)
     base::return(moments)
   }
-}
 
+}
 
 #' Estimate Beta True-Score Distribution Based on Observed-Score Raw-Moments and Lord's k.
 #'
@@ -1113,13 +1061,14 @@ HB.beta.tp.fit <- function(x, N, k, true.model = "4P", failsafe = FALSE, l = 0, 
   g4 <- (m[4] - 4 * m[1] * m[3] + 6 * m[1]^2 * m[2] - 3 * m[1]^4) / (sqrt(s2)^4)
   if (startsWith(as.character(true.model), "4")) {
     out <- Beta.4p.fit(mean = m[1], variance = s2, skewness = g3, kurtosis = g4)
-  }
-  if (startsWith(as.character(true.model), "2") | (failsafe & (any(is.na(out)) | any(out < 0)))) {
-    if (failsafe & (any(is.na(out)) | any(out < 0))) {
+    if (failsafe == TRUE & (out$l < 0 | out$u > 1)) {
       warning(paste("Fail-safe engaged: l = ", out$l, ", u = ", out$u, ", alpha = ", out$alpha, ", beta = ", out$beta,
                     ". \n  Finding permissible solution for the true-score distribution in accordance with specifications.", sep = ""))
+      out <- Beta.2p.fit(mean = m[1], variance = s2, l = l, u = u)
     }
-    out <- list("alpha" = AMS(m[1], s2, l, u), "beta" = BMS(m[1], s2, l, u), "l" = l, "u" = u)
+  }
+  if (startsWith(as.character(true.model), "2")) {
+    out <- Beta.2p.fit(mean = m[1], variance = s2, l = l, u = u)
   }
   out[["k"]] <- k
   out[["N"]] <- N
@@ -1266,7 +1215,6 @@ HB.tsm <- function(x, r, N, k) {
     }
   m
 }
-
 
 #' Tabular organization of accuracy and consistency output from the \code{LL.CA.MC()} function.
 #'
@@ -1480,7 +1428,7 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
     if (startsWith(as.character(true.model), "2")) {
       failsafe <- FALSE
     }
-    params <- HB.beta.tp.fit(x, testlength, k)
+    params <- HB.beta.tp.fit(x, testlength, k, true.model = true.model, failsafe = failsafe, l = l, u = u)
     if (params$l < 0 | params$u > 1) {
       warning(paste("Parameter out of bounds: l = ", round(params$l, 4), ", u = ", round(params$u, 4), ", alpha = ", round(params$alpha, 4), ", beta = ", round(params$beta, 4),
                     ". Consider constraining the fitting procedure further (e.g., set the location-parameters).", sep = ""))
@@ -1765,7 +1713,7 @@ HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", 
     if (startsWith(as.character(true.model), "2")) {
       failsafe <- FALSE
     }
-    params <- HB.beta.tp.fit(x, testlength, k)
+    params <- HB.beta.tp.fit(x, testlength, k, true.model = true.model, failsafe = failsafe, l = l, u = u)
     if (params$l < 0 | params$u > 1) {
       warning(paste("Parameter out of bounds: l = ", round(params$l, 4), ", u = ", round(params$u, 4), ", alpha = ", round(params$alpha, 4), ", beta = ", round(params$beta, 4),
                     ". Consider constraining the fitting procedure further (e.g., set the location-parameters).", sep = ""))

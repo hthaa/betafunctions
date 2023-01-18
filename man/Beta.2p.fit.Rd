@@ -4,7 +4,7 @@
 \alias{Beta.2p.fit}
 \title{Method of Moment Estimates of Shape-Parameters of the Two-Parameter (Standard) Beta Distribution.}
 \usage{
-Beta.2p.fit(scores, mean = NULL, variance = NULL, l = 0, u = 1)
+Beta.2p.fit(scores = NULL, mean = NULL, variance = NULL, l = 0, u = 1)
 }
 \arguments{
 \item{scores}{A vector of values to which the two-parameter Beta distribution is to be fitted. The values ought to fall within the [0, 1] interval.}
