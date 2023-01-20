@@ -4,7 +4,7 @@
 \alias{qBetaMS}
 \title{Quantile Containing Specific Proportion of the Distribution, Given a Specific Probability of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.}
 \usage{
-qBetaMS(p, mean, variance = NULL, sd = NULL, lower.tail = TRUE)
+qBetaMS(p, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 0, u = 1)
 }
 \arguments{
 \item{p}{A value of probability marking the point of the Y-axis to correspond to the X-axis.}
@@ -16,6 +16,10 @@ qBetaMS(p, mean, variance = NULL, sd = NULL, lower.tail = TRUE)
 \item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
 
 \item{lower.tail}{Logical. Specifies which end of the tail for which to calculate quantile. Default is \code{TRUE} (meaning, find q for lower tail.)}
+
+\item{l}{The lower-bound location parameter. Default set to 0 (the standard Beta distribution).}
+
+\item{u}{The upper-bound location parameter. Default set to 1 (the standard Beta distribution).}
 }
 \value{
 A numeric value representing the quantile for which the specified proportion of observations fall within.
@@ -27,4 +31,9 @@ Calculates the quantile corresponding to a specific probability of some observat
 # To compute the quantile at a specific point (e.g., 0.5) along the Standard
 # (two-parameter) PDD with mean of 0.6 and variance of 0.04:
 qBetaMS(p = 0.5, mean = 0.6, variance = 0.04)
+
+# To compute the quantile at a specific points(e.g., 0.5) along the four-
+# parameter Beta distribution with a mean of 60, variance of 400, and lower-
+# bound of 0 and upper-bound of 100:
+qBetaMS(p = 0.5, mean = 60, variance = 400, l = 0, u = 100)
 }

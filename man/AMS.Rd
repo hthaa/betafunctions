@@ -4,12 +4,16 @@
 \alias{AMS}
 \title{Alpha Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Beta Shape-Parameter of a Four-Parameter Beta PDD.}
 \usage{
-AMS(mean, variance, l, u, sd = NULL)
+AMS(mean, variance, l = 0, u = 1, sd = NULL)
 }
 \arguments{
 \item{mean}{The mean (first raw moment) of the target Standard Beta probability density distribution.}
 
 \item{variance}{The variance (second central moment) of the target Standard Beta probability density distribution.}
+
+\item{l}{The lower-bound location parameter of the Beta distribution. Default is 0 (as it is for the Standard Beta distribution).}
+
+\item{u}{The upper-bound location parameter of the Beta distribution. Default is 1 (as it is for the Standard Beta distribution).}
 
 \item{sd}{Optional alternative to specifying \code{var}. The standard deviation of the target Standard Beta probability density distribution.}
 }

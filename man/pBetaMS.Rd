@@ -4,7 +4,7 @@
 \alias{pBetaMS}
 \title{Probability of Some Specific Observation under the Standard Beta PDD with Specific Mean and Variance.}
 \usage{
-pBetaMS(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE)
+pBetaMS(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 0, u = 1)
 }
 \arguments{
 \item{q}{A specific point on the x-axis of the Standard Beta probability density distribution with a defined mean and variance.}
@@ -16,6 +16,10 @@ pBetaMS(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE)
 \item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
 
 \item{lower.tail}{Whether the density that should be considered is between the lower-end (i.e., [0 -> x]) or the higher-end of the distribution (i.e., [x -> 1]).}
+
+\item{l}{The lower-bound location parameter. Default set to 0 (the standard Beta distribution).}
+
+\item{u}{The upper-bound location parameter. Default set to 1 (the standard Beta distribution).}
 }
 \value{
 A value representing the probability of a random draw from the Standard Beta probability density distribution with a defined mean and variance being from one of two defined intervals (i.e., [0 -> x] or [x -> 1]).
@@ -28,4 +32,9 @@ Calculates the probability of some specific observation falling under a specifie
 # point along the Standard (two-parameter) PDD (e.g., 0.5) with mean of 0.6
 # and variance of 0.04:
 pBetaMS(q = 0.5, mean = 0.6, variance = 0.04)
+
+# To compute the proportion of the density under the lower-end tail of a
+# point along the Four-Parameter Beta PDD (e.g., 50) with mean of 60 and
+# variance of 400, and lower-bound of 0 and upper-bound of 100:
+pBetaMS(q = 50, mean = 60, variance = 400, l = 0, u = 100)
 }

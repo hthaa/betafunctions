@@ -9,8 +9,6 @@ UABMSL(
   beta = NULL,
   mean = NULL,
   variance = NULL,
-  skewness = NULL,
-  kurtosis = NULL,
   l = NULL,
   sd = NULL
 )
@@ -23,10 +21,6 @@ UABMSL(
 \item{mean}{The mean (first raw moment) of the target Standard Beta probability density distribution.}
 
 \item{variance}{The variance (second central moment) of the target Standard Beta probability density distribution.}
-
-\item{skewness}{The skewness (third standardized moment) of the target Beta probability density distribution.}
-
-\item{kurtosis}{The kurtosis (fourth standardized moment) of the target Beta probability density distribution.}
 
 \item{l}{The lower-bound of the Beta distribution. Default is NULL (i.e., does not take a specified l-parameter into account).}
 

@@ -1,7 +1,7 @@
 Package: betafunctions
 Type: Package
 Title: Functions for Working with Two- And Four-Parameter Beta Probability Distributions and Psychometric Analysis of Classifications
-Version: 1.8.1
+Version: 1.8.2
 Author: Haakon Eidem Haakstad
 Maintainer: Haakon Eidem Haakstad <h.e.haakstad@gmail.com>
 Description: Package providing a number of functions for working with Two- and 
@@ -11,6 +11,9 @@ Description: Package providing a number of functions for working with Two- and
     - d/p/q/r functions for Four-Parameter Beta distributions and Generalized
     "Binomial" (continuous) distributions, and d/p/r- functions for Beta-
     Binomial distributions.
+    - d/p/q/r functions for Two- and Four-Parameter Beta distributions
+    parameterized in terms of their means and variances rather than their
+    shape-parameters.
     - Moment generating functions for Binomial distributions, Beta-Binomial 
     distributions, and observed value distributions.
     - Functions for estimating classification accuracy and consistency, 

@@ -4,16 +4,18 @@
 \alias{BMS}
 \title{Beta Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Alpha Shape-Parameter of a Four-Parameter Beta PDD.}
 \usage{
-BMS(mean, variance, l, u, sd = NULL)
+BMS(mean, variance, l = 0, u = 1, sd = NULL)
 }
 \arguments{
 \item{mean}{The mean (first raw moment) of the target Standard Beta probability density distribution.}
 
 \item{variance}{The variance (second central moment) of the target Standard Beta probability density distribution.}
 
-\item{sd}{Optional alternative to specifying \code{var}. The standard deviation of the target Standard Beta probability density distribution.}
+\item{l}{The lower-bound location parameter of the Beta distribution. Default is 0 (as it is for the Standard Beta distribution).}
 
-\item{skewness}{The skewness (third standardized moment) of the target Beta probability density distribution.}
+\item{u}{The upper-bound location parameter of the Beta distribution. Default is 1 (as it is for the Standard Beta distribution).}
+
+\item{sd}{Optional alternative to specifying \code{var}. The standard deviation of the target Standard Beta probability density distribution.}
 }
 \value{
 A numeric value representing the required value for the Beta shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance, given specified lower- and upper bounds of the Beta distribution.

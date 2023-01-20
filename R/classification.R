@@ -579,10 +579,10 @@ confmat <- function(tp, tn, fp, fn, output = "freq") {
 #' @param fn The frequency or rate of false-negative classifications.
 #' @return A list of diagnostic performance statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio (LR.pos), negative likelihood ratio (LR.neg), positive predictive value (PPV), negative predictive value (NPV), Youden's J. (Youden.J), and Accuracy.
 #' @examples
-#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # Generate some fictional data. Say, 1000 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
 #' set.seed(1234)
-#' testdata <- rbinom(100, 100, rBeta.4P(100, 0.25, 0.75, 5, 3))
+#' testdata <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
 #' # Suppose the cutoff value for attaining a pass is 50 items correct, and
@@ -621,10 +621,10 @@ caStats <- function(tp, tn, fp, fn) {
 #' @param jj The frequency or rate of consistent classifications into category "j".
 #' @return A list of classification consistency statistics. Specifically, the coefficient of consistent classification (p), the coefficient of consistent classification by chance (p_c), the proportion of positive classifications due to chance (p_c_pos), the proportion of negative classifications due to chance (p_c_neg), and Cohen's Kappa coefficient.
 #' @examples
-#' # Generate some fictional data. Say, 100 individuals take a test with a
+#' # Generate some fictional data. Say, 1000 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
 #' set.seed(1234)
-#' testdata <- rbinom(100, 100, rBeta.4P(100, .25, .75, 5, 3))
+#' testdata <- rbinom(1000, 100, rBeta.4P(1000, .25, .75, 5, 3))
 #' hist(testdata, xlim = c(0, 100))
 #'
 #' # Suppose the cutoff value for attaining a pass is 50 items correct, and
@@ -996,7 +996,7 @@ mdo <- function(x, fit = FALSE) {
 #' @export
 Beta.tp.fit <- function(x, min, max, etl = NULL, reliability = NULL, true.model = "4P", failsafe = FALSE, l = 0, u = 1, output = "parameters") {
   if (is.null(etl)) {
-    etl <- ETL(mean(x), var(x), min, max, reliability)
+    etl <- ETL(base::mean(x), stats::var(x), min, max, reliability)
   }
   m <- HB.tsm(x, 4, etl, 0)
   s2 <- m[2] - m[1]^2
@@ -1025,7 +1025,6 @@ Beta.tp.fit <- function(x, min, max, etl = NULL, reliability = NULL, true.model 
     moments[["Standardized"]] <- base::list(0, 1, g3, g4)
     base::return(moments)
   }
-
 }
 
 #' Estimate Beta True-Score Distribution Based on Observed-Score Raw-Moments and Lord's k.

@@ -4,7 +4,7 @@
 \alias{dBetaMS}
 \title{Density Under a Specific Point of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.}
 \usage{
-dBetaMS(x, mean, variance = NULL, sd = NULL)
+dBetaMS(x, mean, variance = NULL, sd = NULL, l = 0, u = 1)
 }
 \arguments{
 \item{x}{A specific point on the x-axis of the Standard Beta PDD.}
@@ -14,6 +14,10 @@ dBetaMS(x, mean, variance = NULL, sd = NULL)
 \item{variance}{The variance of the target Standard Beta probability density distribution.}
 
 \item{sd}{The standard deviation of the target Standard Beta probability density distribution.}
+
+\item{l}{The lower-bound location parameter. Default set to 0 (the standard Beta distribution).}
+
+\item{u}{The upper-bound location parameter. Default set to 1 (the standard Beta distribution).}
 }
 \value{
 A numeric value representing the required value for the beta Shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
@@ -25,4 +29,9 @@ Calculates the density under specific points of the Standard Beta probability de
 # To compute the density at a specific point (e.g., 0.5) along the Standard
 # (two-parameter) PDD with mean of 0.6 and variance of 0.04:
 dBetaMS(x = 0.5, mean = 0.6, variance = 0.04)
+
+# To compute the density at a specific point (e.g., 50) along the four-
+# parameter Beta distribution with a mean of 60, variance of 400, and lower-
+# bound of 0 and upper-bound of 100:
+dBetaMS(x = 50, mean = 60, variance = 400, l = 0, u = 100)
 }
