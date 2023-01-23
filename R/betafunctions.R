@@ -441,7 +441,7 @@ pBetaMS <- function(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 
     }
   }
   if (base::is.null(variance) & !base::is.null(sd)) variance <- sd^2
-  pBeta.4P(q, l, u, AMS(mean, variance, l, u), BMS(mean, variance, l, u))
+  pBeta.4P(q, l, u, AMS(mean, variance, l, u), BMS(mean, variance, l, u), lower.tail = lower.tail)
 }
 
 #' Density Under a Specific Point of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.
@@ -502,7 +502,7 @@ qBetaMS <- function(p, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 
     }
   }
   if (base::is.null(variance) & !base::is.null(sd)) variance <- sd^2
-  qBeta.4P(p, l, u, AMS(mean, variance, l, u), BMS(mean, variance, l, u))
+  qBeta.4P(p, l, u, AMS(mean, variance, l, u), BMS(mean, variance, l, u), lower.tail = lower.tail)
 }
 
 #' Random Draw from the Standard Beta PDD With Specific Mean and Variance.
