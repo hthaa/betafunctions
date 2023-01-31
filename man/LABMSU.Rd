@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{LABMSU}
 \alias{LABMSU}
-\title{Lower Location Parameter Given Shape Parameters, Mean, Variance, and Upper Location Parameter of a Four-Parameter Beta PDD.}
+\title{Lower Location Parameter Given Shape Parameters, Mean, Variance, and Upper Location Parameter of a Four-Parameter Beta Probability Density Distribution.}
 \usage{
 LABMSU(
   alpha = NULL,

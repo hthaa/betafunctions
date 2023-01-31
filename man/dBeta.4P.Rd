@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{dBeta.4P}
 \alias{dBeta.4P}
-\title{Probability Density under the Four-Parameter Beta PDD.}
+\title{Probability Density under the Four-Parameter Beta Probability Density Distribution.}
 \usage{
 dBeta.4P(x, l, u, alpha, beta)
 }
@@ -21,7 +21,7 @@ dBeta.4P(x, l, u, alpha, beta)
 The value for the probability density at specified values of \code{x}.
 }
 \description{
-Gives the density at desired values of \code{x} under the Four-Parameter Beta PDD.
+Gives the density at desired values of \code{x} under the Four-Parameter Beta Probability Density Distribution.
 }
 \examples{
 # Assume some variable follows a four-parameter Beta distribution with

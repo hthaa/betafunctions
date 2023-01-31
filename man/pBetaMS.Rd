@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{pBetaMS}
 \alias{pBetaMS}
-\title{Probability of Some Specific Observation under the Standard Beta PDD with Specific Mean and Variance.}
+\title{Probability of Some Specific Observation under the Beta Probability Density Distribution with Specific Location Parameters, Mean, and Variance.}
 \usage{
 pBetaMS(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 0, u = 1)
 }
@@ -29,12 +29,13 @@ Calculates the probability of some specific observation falling under a specifie
 }
 \examples{
 # To compute the proportion of the density under the lower-end tail of a
-# point along the Standard (two-parameter) PDD (e.g., 0.5) with mean of 0.6
-# and variance of 0.04:
+# point along the Standard (two-parameter) Probability Density Distribution
+# (e.g., 0.5) with mean of 0.6 and variance of 0.04:
 pBetaMS(q = 0.5, mean = 0.6, variance = 0.04)
 
 # To compute the proportion of the density under the lower-end tail of a
-# point along the Four-Parameter Beta PDD (e.g., 50) with mean of 60 and
-# variance of 400, and lower-bound of 0 and upper-bound of 100:
+# point along the Four-Parameter Beta Probability Density Distribution
+# (e.g., 50) with mean of 60 and variance of 400, and lower-bound of 0 and
+# upper-bound of 100:
 pBetaMS(q = 50, mean = 60, variance = 400, l = 0, u = 100)
 }

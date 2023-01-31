@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{BMS}
 \alias{BMS}
-\title{Beta Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Alpha Shape-Parameter of a Four-Parameter Beta PDD.}
+\title{Beta Shape-Parameter Given Location-Parameters, Mean, and Variance of a Four-Parameter Beta Probability Density Distribution.}
 \usage{
 BMS(mean, variance, l = 0, u = 1, sd = NULL)
 }

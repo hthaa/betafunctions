@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{qBetaMS}
 \alias{qBetaMS}
-\title{Quantile Containing Specific Proportion of the Distribution, Given a Specific Probability of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.}
+\title{Quantile Containing Specific Proportion of the Distribution, Given a Specific Probability of the Beta Probability Density Distribution with Specific Mean and Variance.}
 \usage{
 qBetaMS(p, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 0, u = 1)
 }
@@ -29,7 +29,7 @@ Calculates the quantile corresponding to a specific probability of some observat
 }
 \examples{
 # To compute the quantile at a specific point (e.g., 0.5) along the Standard
-# (two-parameter) PDD with mean of 0.6 and variance of 0.04:
+# (two-parameter) Probability Density Distribution with mean of 0.6 and variance of 0.04:
 qBetaMS(p = 0.5, mean = 0.6, variance = 0.04)
 
 # To compute the quantile at a specific points(e.g., 0.5) along the four-

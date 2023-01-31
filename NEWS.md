@@ -4,11 +4,11 @@
 
 - The `AMS()` and `BMS()` functions have had some arguments removed. Now only allows for specifying mean, variance (or standard deviation), and location parameters.
 
-- The `LABMSU()` and `UABMSL()` functions have had arguments removed due to arguments being removed from `AMS()` and `BMS()` (the `skewness` and `kurtosis` arguments in particular.
+- The `LABMSU()` and `UABMSL()` functions have had arguments removed due to arguments (`skewness` and `kurtosis`) being removed from `AMS()` and `BMS()`.
 
-- The `Beta.tp.fit()` function is significantly simplified and some arguments are removed (the `alpha` and `beta` arguments, specifically).
+- The `Beta.tp.fit()` function is significantly simplified and some arguments (`alpha` and`beta`) are removed.
 
-- The `d/p/q/rBetaMS()` functions now includes arguments for specifying lower- and upper-bound location parameters. This allows the mean to be specified outside the [0, 1] interval (provided the specified mean is located within the lower and upper bounds).
+- The `d/p/q/rBetaMS()` functions now includes arguments for specifying lower- and upper-bound location parameters. This allows the mean to be specified outside the [0, 1] interval (provided the mean is located within the specified lower and upper bounds).
 
 ---
 

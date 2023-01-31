@@ -7,9 +7,9 @@
 betamode(alpha, beta, l = 0, u = 1)
 }
 \arguments{
-\item{alpha}{The alpha shape parameter of the PDD.}
+\item{alpha}{The alpha shape parameter of the Probability Density Distribution.}
 
-\item{beta}{The beta shape parameter of the PDD.}
+\item{beta}{The beta shape parameter of the Probability Density Distribution.}
 
 \item{l}{The first (lower) location parameter of a four-parameter distribution. Default set to \code{0}.}
 

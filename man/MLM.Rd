@@ -2,14 +2,14 @@
 % Please edit documentation in R/betafunctions.R
 \name{MLM}
 \alias{MLM}
-\title{Most Likely Mean of the Standard Beta PDD, Given that the Observation is Considered the Most Likely Observation of the Standard Beta PDD (i.e., the mode).}
+\title{Most Likely Mean of the Standard Beta Probability Density Distribution, Given that the Observation is Considered the Most Likely Observation of the Standard Beta Probability Density Distribution (i.e., the mode).}
 \usage{
 MLM(alpha, beta, x = NULL, n = NULL)
 }
 \arguments{
-\item{alpha}{Observed alpha value for fitted Standard Beta PDD.}
+\item{alpha}{Observed alpha value for fitted Standard Beta Probability Density Distribution.}
 
-\item{beta}{Observed beta value for fitted Standard Beta PDD.}
+\item{beta}{Observed beta value for fitted Standard Beta Probability Density Distribution.}
 
 \item{x}{Observed proportion-correct outcome.}
 

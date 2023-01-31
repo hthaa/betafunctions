@@ -2,12 +2,12 @@
 % Please edit documentation in R/betafunctions.R
 \name{rBetaMS}
 \alias{rBetaMS}
-\title{Random Draw from the Standard Beta PDD With Specific Mean and Variance.}
+\title{Random Draw from the Beta Probability Density Distribution With Specific Mean and Variance.}
 \usage{
 rBetaMS(n, mean, variance = NULL, sd = NULL, l = 0, u = 1)
 }
 \arguments{
-\item{n}{Number of observations to be drawn from under the Standard Beta PDD.}
+\item{n}{Number of observations to be drawn from under the Standard Beta Probability Density Distribution.}
 
 \item{mean}{The mean of the target Standard Beta probability density distribution.}
 

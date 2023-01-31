@@ -2,12 +2,12 @@
 % Please edit documentation in R/betafunctions.R
 \name{dBetaMS}
 \alias{dBetaMS}
-\title{Density Under a Specific Point of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.}
+\title{Density Under a Specific Point of the Beta Probability Density Distribution with Specific Location Parameters, Mean, and Variance.}
 \usage{
 dBetaMS(x, mean, variance = NULL, sd = NULL, l = 0, u = 1)
 }
 \arguments{
-\item{x}{A specific point on the x-axis of the Standard Beta PDD.}
+\item{x}{A specific point on the x-axis of the Standard Beta Probability Density Distribution.}
 
 \item{mean}{The mean of the target Standard Beta probability density distribution.}
 
@@ -27,7 +27,7 @@ Calculates the density under specific points of the Standard Beta probability de
 }
 \examples{
 # To compute the density at a specific point (e.g., 0.5) along the Standard
-# (two-parameter) PDD with mean of 0.6 and variance of 0.04:
+# (two-parameter) Probability Density Distribution with mean of 0.6 and variance of 0.04:
 dBetaMS(x = 0.5, mean = 0.6, variance = 0.04)
 
 # To compute the density at a specific point (e.g., 50) along the four-

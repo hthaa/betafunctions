@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{AMS}
 \alias{AMS}
-\title{Alpha Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Beta Shape-Parameter of a Four-Parameter Beta PDD.}
+\title{Alpha Shape-Parameter Given Location-Parameters, Mean, and Variance a Four-Parameter Beta Probability Density Distribution.}
 \usage{
 AMS(mean, variance, l = 0, u = 1, sd = NULL)
 }

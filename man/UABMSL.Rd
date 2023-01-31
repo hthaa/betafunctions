@@ -2,7 +2,7 @@
 % Please edit documentation in R/betafunctions.R
 \name{UABMSL}
 \alias{UABMSL}
-\title{Upper Location Parameter Given Shape Parameters, Mean, Variance, and Lower Location Parameter of a Four-Parameter Beta PDD.}
+\title{Upper Location Parameter Given Shape Parameters, Mean, Variance, and Lower Location Parameter of a Four-Parameter Beta Probability Density Distribution.}
 \usage{
 UABMSL(
   alpha = NULL,

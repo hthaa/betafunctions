@@ -55,8 +55,8 @@ betamoments <- function(alpha, beta, l = 0, u = 1, types = c("raw", "central", "
 #' Compute Mode of Two- and Four-Parameter Beta Probability Density distribution.
 #'
 #' @description Computes the mode of a Beta distribution with specified shape- and location parameters.
-#' @param alpha The alpha shape parameter of the PDD.
-#' @param beta The beta shape parameter of the PDD.
+#' @param alpha The alpha shape parameter of the Probability Density Distribution.
+#' @param beta The beta shape parameter of the Probability Density Distribution.
 #' @param l The first (lower) location parameter of a four-parameter distribution. Default set to \code{0}.
 #' @param u The second (upper) location parameter of a four-parameter distribution. Default set to \code{1}.
 #' @examples
@@ -254,7 +254,7 @@ observedmoments <- function(x, type = c("raw", "central", "standardized"),  orde
   return(momentorders)
 }
 
-#' Alpha Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Beta Shape-Parameter of a Four-Parameter Beta PDD.
+#' Alpha Shape-Parameter Given Location-Parameters, Mean, and Variance a Four-Parameter Beta Probability Density Distribution.
 #'
 #' @description Calculates the Beta value required to produce a Beta probability density distribution with defined moments and parameters. Be advised that not all combinations of moments and parameters can be satisfied (e.g., specifying mean, variance, skewness and kurtosis uniquely determines both location-parameters, meaning that the value of the lower-location parameter will take on which ever value it must, and cannot be specified).
 #' @param mean The mean (first raw moment) of the target Standard Beta probability density distribution.
@@ -283,7 +283,7 @@ AMS <- function(mean, variance, l = 0, u = 1, sd = NULL) {
   return(((l - mean) * (l * (mean - u) - mean^2 + mean * u - variance)) / (variance * (l - u)))
 }
 
-#' Beta Shape-Parameter Given Location-Parameters, Mean, Variance, Skewness, Kurtosis and Alpha Shape-Parameter of a Four-Parameter Beta PDD.
+#' Beta Shape-Parameter Given Location-Parameters, Mean, and Variance of a Four-Parameter Beta Probability Density Distribution.
 #'
 #' @description Calculates the Beta value required to produce a Beta probability density distribution with defined moments and parameters. Be advised that not all combinations of moments and parameters can be satisfied (e.g., specifying mean, variance, skewness and kurtosis uniquely determines both location-parameters, meaning that the value of the lower-location parameter will take on which ever value it must, and cannot be specified).
 #' @param mean The mean (first raw moment) of the target Standard Beta probability density distribution.
@@ -317,7 +317,7 @@ BMS <- function(mean, variance, l = 0, u = 1, sd = NULL) {
   return(((mean - u) * (l * (u - mean) + mean^2 - mean * u + variance)) / (variance * (u - l)))
 }
 
-#' Lower Location Parameter Given Shape Parameters, Mean, Variance, and Upper Location Parameter of a Four-Parameter Beta PDD.
+#' Lower Location Parameter Given Shape Parameters, Mean, Variance, and Upper Location Parameter of a Four-Parameter Beta Probability Density Distribution.
 #'
 #' @description Calculates the lower-bound value required to produce a Beta probability density distribution with defined moments and parameters. Be advised that not all combinations of moments and parameters can be satisfied (e.g., specifying mean, variance, skewness and kurtosis uniquely determines both location-parameters, meaning that the value of the lower-location parameter will take on which ever value it must, and cannot be specified).
 #' @param alpha The alpha (first) shape-parameter of the target Beta probability density distribution.
@@ -363,7 +363,7 @@ LABMSU <- function(alpha = NULL, beta = NULL, u = NULL, mean = NULL, variance = 
   return(l)
 }
 
-#' Upper Location Parameter Given Shape Parameters, Mean, Variance, and Lower Location Parameter of a Four-Parameter Beta PDD.
+#' Upper Location Parameter Given Shape Parameters, Mean, Variance, and Lower Location Parameter of a Four-Parameter Beta Probability Density Distribution.
 #'
 #' @description Calculates the upper-bound value required to produce a Beta probability density distribution with defined moments and parameters. Be advised that not all combinations of moments and parameters can be satisfied (e.g., specifying mean, variance, skewness and kurtosis uniquely determines both location-parameters, meaning that the value of the upper-location parameter will take on which ever value it must, and cannot be specified).
 #' @param alpha The alpha shape-parameter of the target Beta probability density distribution.
@@ -412,7 +412,7 @@ UABMSL <- function(alpha = NULL, beta = NULL, mean = NULL, variance = NULL, l = 
   return(u)
 }
 
-#' Probability of Some Specific Observation under the Standard Beta PDD with Specific Mean and Variance.
+#' Probability of Some Specific Observation under the Beta Probability Density Distribution with Specific Location Parameters, Mean, and Variance.
 #'
 #' @description Calculates the probability of some specific observation falling under a specified interval  ([0, x] or [x, 1]) under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param q A specific point on the x-axis of the Standard Beta probability density distribution with a defined mean and variance.
@@ -425,13 +425,14 @@ UABMSL <- function(alpha = NULL, beta = NULL, mean = NULL, variance = NULL, l = 
 #' @return A value representing the probability of a random draw from the Standard Beta probability density distribution with a defined mean and variance being from one of two defined intervals (i.e., [0 -> x] or [x -> 1]).
 #' @examples
 #' # To compute the proportion of the density under the lower-end tail of a
-#' # point along the Standard (two-parameter) PDD (e.g., 0.5) with mean of 0.6
-#' # and variance of 0.04:
+#' # point along the Standard (two-parameter) Probability Density Distribution
+#' # (e.g., 0.5) with mean of 0.6 and variance of 0.04:
 #' pBetaMS(q = 0.5, mean = 0.6, variance = 0.04)
 #'
 #' # To compute the proportion of the density under the lower-end tail of a
-#' # point along the Four-Parameter Beta PDD (e.g., 50) with mean of 60 and
-#' # variance of 400, and lower-bound of 0 and upper-bound of 100:
+#' # point along the Four-Parameter Beta Probability Density Distribution
+#' # (e.g., 50) with mean of 60 and variance of 400, and lower-bound of 0 and
+#' # upper-bound of 100:
 #' pBetaMS(q = 50, mean = 60, variance = 400, l = 0, u = 100)
 #' @export
 pBetaMS <- function(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 0, u = 1) {
@@ -444,10 +445,10 @@ pBetaMS <- function(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 
   pBeta.4P(q, l, u, AMS(mean, variance, l, u), BMS(mean, variance, l, u), lower.tail = lower.tail)
 }
 
-#' Density Under a Specific Point of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.
+#' Density Under a Specific Point of the Beta Probability Density Distribution with Specific Location Parameters, Mean, and Variance.
 #'
 #' @description Calculates the density under specific points of the Standard Beta probability density distribution with defined mean and variance or standard deviation.
-#' @param x A specific point on the x-axis of the Standard Beta PDD.
+#' @param x A specific point on the x-axis of the Standard Beta Probability Density Distribution.
 #' @param mean The mean of the target Standard Beta probability density distribution.
 #' @param variance The variance of the target Standard Beta probability density distribution.
 #' @param sd The standard deviation of the target Standard Beta probability density distribution.
@@ -456,7 +457,7 @@ pBetaMS <- function(q, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 
 #' @return A numeric value representing the required value for the beta Shape-parameter in order to produce a Standard Beta probability density distribution with the target mean and variance.
 #' @examples
 #' # To compute the density at a specific point (e.g., 0.5) along the Standard
-#' # (two-parameter) PDD with mean of 0.6 and variance of 0.04:
+#' # (two-parameter) Probability Density Distribution with mean of 0.6 and variance of 0.04:
 #' dBetaMS(x = 0.5, mean = 0.6, variance = 0.04)
 #'
 #' # To compute the density at a specific point (e.g., 50) along the four-
@@ -474,7 +475,7 @@ dBetaMS <- function(x, mean, variance = NULL, sd = NULL, l = 0, u = 1) {
   dBeta.4P(x, l, u, AMS(mean, variance, l, u), BMS(mean, variance, l, u))
 }
 
-#' Quantile Containing Specific Proportion of the Distribution, Given a Specific Probability of the Standard Beta PDD with Specific Mean and Variance or Standard Deviation.
+#' Quantile Containing Specific Proportion of the Distribution, Given a Specific Probability of the Beta Probability Density Distribution with Specific Mean and Variance.
 #'
 #' @description Calculates the quantile corresponding to a specific probability of some observation falling within the [0, x] (\code{lt = TRUE}) or [x, 1] (\code{lt = FALSE}) interval under the Standard Beta probability density distribution with defined mean and variance or standard deviation.
 #' @param p A value of probability marking the point of the Y-axis to correspond to the X-axis.
@@ -487,7 +488,7 @@ dBetaMS <- function(x, mean, variance = NULL, sd = NULL, l = 0, u = 1) {
 #' @return A numeric value representing the quantile for which the specified proportion of observations fall within.
 #' @examples
 #' # To compute the quantile at a specific point (e.g., 0.5) along the Standard
-#' # (two-parameter) PDD with mean of 0.6 and variance of 0.04:
+#' # (two-parameter) Probability Density Distribution with mean of 0.6 and variance of 0.04:
 #' qBetaMS(p = 0.5, mean = 0.6, variance = 0.04)
 #'
 #' # To compute the quantile at a specific points(e.g., 0.5) along the four-
@@ -505,10 +506,10 @@ qBetaMS <- function(p, mean, variance = NULL, sd = NULL, lower.tail = TRUE, l = 
   qBeta.4P(p, l, u, AMS(mean, variance, l, u), BMS(mean, variance, l, u), lower.tail = lower.tail)
 }
 
-#' Random Draw from the Standard Beta PDD With Specific Mean and Variance.
+#' Random Draw from the Beta Probability Density Distribution With Specific Mean and Variance.
 #'
 #' @description Draws random samples of observations from the Standard Beta probability density distribution with defined mean and variance.
-#' @param n Number of observations to be drawn from under the Standard Beta PDD.
+#' @param n Number of observations to be drawn from under the Standard Beta Probability Density Distribution.
 #' @param mean The mean of the target Standard Beta probability density distribution.
 #' @param variance The variance of the target Standard Beta probability density distribution.
 #' @param sd The standard deviation of the target Standard probability density distribution.
@@ -637,8 +638,8 @@ Beta.gfx.poly.cdf <- function(from, to, by, alpha, beta, l = 0, u = 1) {
 #' Most Likely True Alpha Value Given Observed Outcome.
 #'
 #' @description Given a fitted Standard (two-parameter) Beta Distribution, return the alpha shape-parameter value where the observed mean becomes the mode.
-#' @param alpha Observed alpha-parameter value for fitted Standard Beta PDD.
-#' @param beta Observed beta-parameter value for fitted Standard Beta PDD.
+#' @param alpha Observed alpha-parameter value for fitted Standard Beta Probability Density Distribution.
+#' @param beta Observed beta-parameter value for fitted Standard Beta Probability Density Distribution.
 #' @param x Observed proportion-correct outcome.
 #' @param n Test-length.
 #' @return The Alpha shape-parameter value for the Standard Beta probability density distribution where the observed mean is the expected mode.
@@ -661,8 +662,8 @@ MLA <- function(alpha, beta, x = NULL, n = NULL) {
 #' Most Likely True Beta Value Given Observed Outcome.
 #'
 #' @description Assuming a prior standard (two-parameter) Beta Distribution, return the beta shape-parameter value where the observed mean becomes the mode.
-#' @param alpha Observed alpha-parameter value for fitted Standard Beta PDD.
-#' @param beta Observed beta-parameter value for fitted Standard Beta PDD.
+#' @param alpha Observed alpha-parameter value for fitted Standard Beta Probability Density Distribution.
+#' @param beta Observed beta-parameter value for fitted Standard Beta Probability Density Distribution.
 #' @param x Observed proportion-correct outcome.
 #' @param n Test-length.
 #' @examples
@@ -683,11 +684,11 @@ MLB <- function(alpha, beta, x = NULL, n = NULL) {
   }
 }
 
-#' Most Likely Mean of the Standard Beta PDD, Given that the Observation is Considered the Most Likely Observation of the Standard Beta PDD (i.e., the mode).
+#' Most Likely Mean of the Standard Beta Probability Density Distribution, Given that the Observation is Considered the Most Likely Observation of the Standard Beta Probability Density Distribution (i.e., the mode).
 #'
 #' @description Assuming a prior Standard (two-parameter) Beta Distribution, returns the expected mean of the distribution under the assumption that the observed value is the most likely value of the distribution.
-#' @param alpha Observed alpha value for fitted Standard Beta PDD.
-#' @param beta Observed beta value for fitted Standard Beta PDD.
+#' @param alpha Observed alpha value for fitted Standard Beta Probability Density Distribution.
+#' @param beta Observed beta value for fitted Standard Beta Probability Density Distribution.
 #' @param x Observed proportion-correct outcome.
 #' @param n Test-length.
 #' @examples
@@ -708,9 +709,9 @@ MLM <- function(alpha, beta, x = NULL, n = NULL) {
   }
 }
 
-#' Probability Density under the Four-Parameter Beta PDD.
+#' Probability Density under the Four-Parameter Beta Probability Density Distribution.
 #'
-#' @description Gives the density at desired values of \code{x} under the Four-Parameter Beta PDD.
+#' @description Gives the density at desired values of \code{x} under the Four-Parameter Beta Probability Density Distribution.
 #' @param x Value of \code{x}.
 #' @param l The first (lower) location parameter.
 #' @param u The second (upper) location parameter.

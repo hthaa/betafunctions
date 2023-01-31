@@ -7,9 +7,9 @@
 MLB(alpha, beta, x = NULL, n = NULL)
 }
 \arguments{
-\item{alpha}{Observed alpha-parameter value for fitted Standard Beta PDD.}
+\item{alpha}{Observed alpha-parameter value for fitted Standard Beta Probability Density Distribution.}
 
-\item{beta}{Observed beta-parameter value for fitted Standard Beta PDD.}
+\item{beta}{Observed beta-parameter value for fitted Standard Beta Probability Density Distribution.}
 
 \item{x}{Observed proportion-correct outcome.}
 
