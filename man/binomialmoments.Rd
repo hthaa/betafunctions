@@ -22,13 +22,16 @@ A list of moment types, each a list of moment orders.
 Computes Raw, Central, or Standardized moment properties of defined Binomial probability mass functions.
 }
 \examples{
-# Assume some variable follows a four-parameter Beta distribution with
-# location parameters l = 0.25 and u = .75, and shape parameters a = 5
-# and b = 3. To compute the first four raw, central, and standardized
-# moments of this distrubution using betamoments():
-betamoments(a = 5, b = 3, l = .25, u = .75,
-types = c("raw", "central", "standardized"), orders = 4)
-}
-\references{
-Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
+# Assume some variable follows a Binomial distribution with number of trials
+# equal to 100 and a probability of success on each trial of 0.75. To compute
+# the first four raw, central, and standardized moments of this distriubution
+# using binomialmoments():
+binomialmoments(n = 100, p = 0.75, types = c("raw", "central",
+"standardized"), orders = 4)
+
+# To only compute the (e.g.) standardized moments:
+binomialmoments(n = 100, p = 0.75, types = "standardized")
+
+# To compute moments beyond the fourth order (e.g., the sixth):
+binomialmoments(n = 100, p = 0.75, orders = 6)
 }

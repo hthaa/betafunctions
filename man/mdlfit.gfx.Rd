@@ -23,7 +23,7 @@ mdlfit.gfx(
 
 \item{y.tickat}{The points along the y-axis where frequencies are to be labelled. Default is \code{NULL}.}
 
-\item{y.lim}{The limits of the y-axis (freqencies). Useful for keeping the scale equal across several plots.}
+\item{y.lim}{The limits of the y-axis (frequencies). Useful for keeping the scale equal across several plots.}
 
 \item{main.lab}{The main label (title) of the plot.}
 

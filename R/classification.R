@@ -1267,7 +1267,7 @@ MC.out.tabular <- function(x) {
 #' @param x The output object from the \code{LL.CA()}, \code{LL.MC.CA()}, \code{HB.CA()}, or \code{HB.CA.MC()} functions.
 #' @param x.tickat The points along the x-axis that bins are to be labeled. Default is \code{NULL} (places a tick for each of the bins).
 #' @param y.tickat The points along the y-axis where frequencies are to be labelled. Default is \code{NULL}.
-#' @param y.lim The limits of the y-axis (freqencies). Useful for keeping the scale equal across several plots.
+#' @param y.lim The limits of the y-axis (frequencies). Useful for keeping the scale equal across several plots.
 #' @param main.lab The main label (title) of the plot.
 #' @param x.lab The label for the x-axis (the bins).
 #' @param y.lab The label for the y-axis (the frequencies).

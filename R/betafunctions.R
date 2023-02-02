@@ -18,36 +18,28 @@
 #' @return A list of moment types, each a list of moment orders.
 #' @export
 betamoments <- function(alpha, beta, l = 0, u = 1, types = c("raw", "central", "standardized"), orders = 4) {
-  a <- alpha
-  b <- beta
-  moments <- base::rep(base::list(base::rep(base::list(NULL), orders)), base::length(types))
-  type <- 1
+  moments <- base::list()
   if (any(types == "raw")) {
     for (i in 1:orders) {
-      moments[[type]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^i },
+      moments[["raw"]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, alpha, beta) * x^i },
                                             lower = l, upper = u)$value
     }
-    base::names(moments)[type] <- "raw"
-    type <- type + 1
   }
   if (any(types == "central")) {
-    Mu <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
+    Mu <- stats::integrate(function(x) { dBeta.4P(x, l, u, alpha, beta) * x^1 }, lower = l, upper = u)$value
     for (i in 1:orders) {
-      moments[[type]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^i },
+      moments[["central"]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, alpha, beta) * (x - Mu)^i },
                                             lower = l, upper = u)$value
     }
-    base::names(moments)[type] <- "central"
-    type <- type + 1
   }
   if (base::any(types == "standardized")) {
-    Mu <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * x^1 }, lower = l, upper = u)$value
-    SigmaSquared <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * (x - Mu)^2 },
+    Mu <- stats::integrate(function(x) { dBeta.4P(x, l, u, alpha, beta) * x^1 }, lower = l, upper = u)$value
+    SigmaSquared <- stats::integrate(function(x) { dBeta.4P(x, l, u, alpha, beta) * (x - Mu)^2 },
                        lower = l, upper = u)$value
     for (i in 1:orders) {
-      moments[[type]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, a, b) * ((x - Mu)^i / sqrt(SigmaSquared)^i) },
+      moments[["standardized"]][[i]] <- stats::integrate(function(x) { dBeta.4P(x, l, u, alpha, beta) * ((x - Mu)^i / sqrt(SigmaSquared)^i) },
                                             lower = l, upper = u)$value
     }
-    base::names(moments)[type] <- "standardized"
   }
   return(moments)
 }
@@ -102,40 +94,39 @@ betamedian <- function(alpha, beta, l = 0, u = 1) {
 #' @param types A character vector determining which moment-types are to be calculated. Permissible values are "raw", "central", and "standardized".
 #' @param orders The number of moment-orders to be calculated for each of the moment-types.
 #' @examples
-#' # Assume some variable follows a four-parameter Beta distribution with
-#' # location parameters l = 0.25 and u = .75, and shape parameters a = 5
-#' # and b = 3. To compute the first four raw, central, and standardized
-#' # moments of this distrubution using betamoments():
-#' betamoments(a = 5, b = 3, l = .25, u = .75,
-#' types = c("raw", "central", "standardized"), orders = 4)
-#' @references Hanson, B. A (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series.
+#' # Assume some variable follows a Binomial distribution with number of trials
+#' # equal to 100 and a probability of success on each trial of 0.75. To compute
+#' # the first four raw, central, and standardized moments of this distriubution
+#' # using binomialmoments():
+#' binomialmoments(n = 100, p = 0.75, types = c("raw", "central",
+#' "standardized"), orders = 4)
+#'
+#' # To only compute the (e.g.) standardized moments:
+#' binomialmoments(n = 100, p = 0.75, types = "standardized")
+#'
+#' # To compute moments beyond the fourth order (e.g., the sixth):
+#' binomialmoments(n = 100, p = 0.75, orders = 6)
 #' @return A list of moment types, each a list of moment orders.
 #' @export
 binomialmoments <- function(n, p, types = c("raw", "central", "standardized"), orders = 4) {
-  moments <- base::rep(base::list(base::rep(base::list(NULL), orders)), base::length(types))
-  type <- 1
+  moments <- base::list()
   if (any(types == "raw")) {
     for (i in 1:orders) {
-      moments[[type]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * (0:n)^i)
+      moments[["raw"]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * (0:n)^i)
     }
-    base::names(moments)[type] <- "raw"
-    type <- type + 1
   }
   if (any(types == "central")) {
     Mu <- base::sum(stats::dbinom(0:n, n, p) * (0:n))
     for (i in 1:orders) {
-      moments[[type]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * ((0:n - Mu)^i))
+      moments[["central"]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * ((0:n - Mu)^i))
     }
-    base::names(moments)[type] <- "central"
-    type <- type + 1
   }
   if (base::any(types == "standardized")) {
     Mu <- base::sum(stats::dbinom(0:n, n, p) * (0:n))
     SigmaSquared <- base::sum(stats::dbinom(0:n, n, p) * ((0:n - Mu)^2))
     for (i in 1:orders) {
-      moments[[type]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * ((0:n - Mu)^i / sqrt(SigmaSquared)^i))
+      moments[["standardized"]][[i]] <- base::sum(stats::dbinom(0:n, n, p) * ((0:n - Mu)^i / sqrt(SigmaSquared)^i))
     }
-    base::names(moments)[type] <- "standardized"
   }
   return(moments)
 }
@@ -213,46 +204,35 @@ betabinomialmoments <- function(N, l, u, alpha, beta, types = c("raw", "central"
 #' @export
 observedmoments <- function(x, type = c("raw", "central", "standardized"),  orders = 4, correct = TRUE) {
   x <- stats::na.omit(x)
-  types <- 1
-  momentorders <- base::list()
+  moments <- base::list()
   if (base::any(type == "raw")) {
-    mu <- list(rep(vector(length = 1), orders))
     for (i in 1:orders) {
-      mu[i] <- base::sum(x^i)/base::length(x)
+      moments[["raw"]][[i]] <- base::sum(x^i)/base::length(x)
     }
-    momentorders[[base::length(momentorders) + 1]] <- mu
-    base::names(momentorders)[types] <- "raw"
-    types <- types + 1
   }
   if (base::any(type == "central")) {
-    sigma <- base::list(base::rep(base::vector(length = 1), orders))
     for (i in 1:orders) {
       if (correct) {
-        sigma[i] <- base::sum((x - base::mean(x))^i)/(base::length(x) - 1)
+        moments[["central"]][[i]] <- base::sum((x - base::mean(x))^i)/(base::length(x) - 1)
       }
       else {
-        sigma[i] <- base::sum((x - base::mean(x))^i)/(base::length(x))
+        moments[["central"]][[i]] <- base::sum((x - base::mean(x))^i)/(base::length(x))
       }
     }
-    momentorders[[base::length(momentorders) + 1]] <- sigma
-    base::names(momentorders)[types] <- "central"
-    types <- types + 1
   }
   if (base::any(type == "standardized")) {
-    gamma <- base::list(base::rep(base::vector(length = 1), orders))
     for (i in 1:orders) {
       if (correct) {
-        gamma[i] <- 1 / base::length(x) * base::sum(((x - base::mean(x))^i)/sqrt(stats::var(x))^i)
+        moments[["standardized"]][[i]] <- 1 / base::length(x) * base::sum(((x - base::mean(x))^i)/sqrt(stats::var(x))^i)
       }
       else {
-        gamma[i] <- 1 / base::length(x) * base::sum(((x - base::mean(x))^i)/sqrt(stats::var(x))^i)
+        moments[["standardized"]][[i]] <- 1 / base::length(x) * base::sum(((x - base::mean(x))^i)/sqrt(stats::var(x))^i)
       }
     }
-    momentorders[[base::length(momentorders) + 1]] <- gamma
-    names(momentorders)[types] <- "standardized"
   }
-  return(momentorders)
+  return(moments)
 }
+
 
 #' Alpha Shape-Parameter Given Location-Parameters, Mean, and Variance a Four-Parameter Beta Probability Density Distribution.
 #'
