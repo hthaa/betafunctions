@@ -96,7 +96,7 @@ betamedian <- function(alpha, beta, l = 0, u = 1) {
 #' @examples
 #' # Assume some variable follows a Binomial distribution with number of trials
 #' # equal to 100 and a probability of success on each trial of 0.75. To compute
-#' # the first four raw, central, and standardized moments of this distriubution
+#' # the first four raw, central, and standardized moments of this distribution
 #' # using binomialmoments():
 #' binomialmoments(n = 100, p = 0.75, types = c("raw", "central",
 #' "standardized"), orders = 4)
