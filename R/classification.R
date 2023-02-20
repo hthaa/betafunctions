@@ -698,8 +698,10 @@ ccStats <- function(ii, ij, ji, jj) {
 #' # Value.
 #' @export
 LL.ROC <- function(x = NULL, reliability, min = 0, max = 1, truecut, true.model = "4P", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = 100) {
-  oldpar <- graphics::par(no.readonly = TRUE)
-  base::on.exit(graphics::par(oldpar))
+  if (!raw.out) {
+    oldpar <- graphics::par(no.readonly = TRUE)
+    base::on.exit(graphics::par(oldpar))
+  }
   if (!is.list(x)) {
     x <- Beta.tp.fit(x, min, max, reliability = reliability, true.model = true.model, failsafe = failsafe, l = l, u = u)
   }
@@ -998,6 +1000,7 @@ Beta.tp.fit <- function(x, min, max, etl = NULL, reliability = NULL, true.model 
   if (is.null(etl)) {
     etl <- ETL(base::mean(x), stats::var(x), min, max, reliability)
   }
+  x <- (x - min)/(max - min) * etl
   m <- HB.tsm(x, 4, etl, 0)
   s2 <- m[2] - m[1]^2
   s3 <- (m[3] - 3 * m[1] * m[2] + 2 * m[1]^3)
@@ -1568,8 +1571,10 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
 #' # LL.ROC() function.
 #' @export
 HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P", failsafe = TRUE, l = 0, u = 1, AUC = FALSE, maxJ = FALSE, maxAcc = FALSE, locate = NULL, raw.out = FALSE, grainsize = testlength) {
-  oldpar <- graphics::par(no.readonly = TRUE)
-  base::on.exit(graphics::par(oldpar))
+  if (!raw.out) {
+    oldpar <- graphics::par(no.readonly = TRUE)
+    base::on.exit(graphics::par(oldpar))
+  }
   if (!is.list(x)) {
     k <- Lords.k(x, testlength, reliability)
     x <- HB.beta.tp.fit(x, testlength, k, true.model = true.model, failsafe = failsafe, l = l, u = u)
