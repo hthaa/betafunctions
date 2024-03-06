@@ -518,7 +518,7 @@ LL.CA.MC <- function(x = NULL, reliability, cut, min = 0, max = 1, true.model = 
   out[["consistency"]][["overall"]][["statistics"]] <- list("p" = p, "p_c" = p_c, "Kappa" = Kappa)
   ccout <- list()
   for(i in 1:ncol(ccmat)) {
-    p <- diag(ccmat)[i]
+    p <- ccmat[i, i]
     p_c <- sum(ccmat[i, ])^2
     Kappa <- (p - p_c) / (1 - p_c)
     ccout[[paste("Category.", i, sep = "")]] <- list()
@@ -577,7 +577,7 @@ confmat <- function(tp, tn, fp, fn, output = "freq") {
 #' @param tn The frequency or rate of true-negative classifications.
 #' @param fp The frequency or rate of false-positive classifications.
 #' @param fn The frequency or rate of false-negative classifications.
-#' @return A list of diagnostic performance statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive likelihood ratio (LR.pos), negative likelihood ratio (LR.neg), positive predictive value (PPV), negative predictive value (NPV), Youden's J. (Youden.J), and Accuracy.
+#' @return A list of diagnostic performance statistics based on true/false positive/negative statistics. Specifically, the sensitivity, specificity, positive predictive value (PPV), negative predictive value (NPV), Youden's J. (Youden.J), and Accuracy.
 #' @examples
 #' # Generate some fictional data. Say, 1000 individuals take a test with a
 #' # maximum score of 100 and a minimum score of 0.
@@ -595,21 +595,17 @@ confmat <- function(tp, tn, fp, fn, output = "freq") {
 #' # feed it the appropriate entries of the confusion matrix.
 #' caStats(tp = cmat["True", "Positive"], tn = cmat["True", "Negative"],
 #' fp = cmat["False", "Positive"], fn = cmat["False", "Negative"])
-#' @references Glas et al. (2003). The Diagnostic Odds Ratio: A Single Indicator of Test Performance, Journal of Clinical Epidemiology, 1129-1135, 56(11). doi: 10.1016/S0895-4356(03)00177-X
 #' @export
 caStats <- function(tp, tn, fp, fn) {
-  sensitivity <-  tp / (tp + fn)
-  specificity <-  tn / (tn + fp)
-  plr <-          sensitivity / (1 - specificity)
-  nlr <-          (1 - sensitivity) / specificity
-  ppv <-          tp / (tp + fp)
-  npv <-          tn / (tn + fn)
-  accuracy <-     (tp + tn) / (tp + tn + fp + fn)
-  J <-            (sensitivity + specificity) - 1
-  base::list("Sensitivity" = sensitivity, "Specificity" = specificity,
-             "LR.pos" = plr, "LR.neg" = nlr,
-             "PPV" = ppv, "NPV" = npv,
-             "Youden.J" = J, "Accuracy" = accuracy)
+sensitivity <-  tp / (tp + fn)
+specificity <-  tn / (tn + fp)
+ppv <-          tp / (tp + fp)
+npv <-          tn / (tn + fn)
+accuracy <-     (tp + tn) / (tp + tn + fp + fn)
+J <-            (sensitivity + specificity) - 1
+base::list("Sensitivity" = sensitivity, "Specificity" = specificity,
+           "PPV" = ppv, "NPV" = npv,
+           "Youden.J" = J, "Accuracy" = accuracy)
 }
 
 #' Classification Consistency Statistics.
@@ -1047,14 +1043,14 @@ Beta.tp.fit <- function(x, min, max, etl = NULL, reliability = NULL, true.model 
 #' # Generate some fictional data. Say 1000 individuals take a 100-item test
 #' # where all items are equally difficult, and the true-score distribution
 #' # is a four-parameter Beta distribution with location parameters l = 0.25,
-#' # u = 0.75, alpha = 5, and beta = 3, and the error distribution is a
-#' # compound Binomial with Lord's k = 2:
+#' # u = 0.75, alpha = 5, and beta = 3, and the error distribution is Binomial
+#' # with Lord's k = 0:
 #' set.seed(12)
-#' testdata <- rcBinom(1000, 100, 2, rBeta.4P(1000, 0.25, 0.75, 5, 3))
+#' testdata <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 #'
 #' # To estimate the four-parameter Beta distribution parameters from this
 #' # sample of observations:
-#' HB.beta.tp.fit(testdata, 100, 2)
+#' HB.beta.tp.fit(testdata, 100, 0)
 #' @export
 HB.beta.tp.fit <- function(x, N, k, true.model = "4P", failsafe = FALSE, l = 0, u = 1) {
   m <- HB.tsm(x, 4, N, k)
@@ -1247,7 +1243,7 @@ HB.tsm <- function(x, r, N, k) {
 #' # concisely in a tabular format.
 #' MC.out.tabular(output)
 MC.out.tabular <- function(x) {
-  tab.out <- base::matrix(nrow = length(x$accuracy$specific), ncol = 15)
+  tab.out <- base::matrix(nrow = length(x$accuracy$specific), ncol = 13)
   base::colnames(tab.out) <- base::c("TP", "FP", "TN", "FN", base::names(x$accuracy[[2]][[2]][[2]]), "p", "p_c", "Kappa")
   nams <- NULL
   for (i in 1:base::length((x$accuracy$specific))) {
@@ -1257,7 +1253,7 @@ MC.out.tabular <- function(x) {
       tab.out[i, j + 4] <- x$accuracy[[2]][[i]][[2]][[j]]
     }
     for (k in 1:base::length(x$consistency[[2]][[i]][[1]])) {
-      tab.out[i, k + 12] <- x$consistency[[2]][[i]][[1]][[k]]
+      tab.out[i, k + 10] <- x$consistency[[2]][[i]][[1]][[k]]
     }
   }
   base::rownames(tab.out) <- nams
@@ -1509,9 +1505,12 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
     ccmat <- matrix(ncol = params$N + 1, nrow = params$N + 1)
     for (i in 0:params$N) {
       for (j in 0:params$N) {
-        ccmat[i + 1, j + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
+        if (i <= j) {
+          ccmat[i + 1, j + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
+        }
       }
     }
+    ccmat[lower.tri(ccmat)] <- t(ccmat)[lower.tri(ccmat)]
     p.ii <- sum(ccmat[1:cut, 1:cut])
     p.jj <- sum(ccmat[(cut + 1):(params$N + 1), (cut + 1):(params$N + 1)])
     p.ij <- sum(ccmat[1:cut, (cut + 1):(params$N + 1)])
@@ -1527,7 +1526,6 @@ HB.CA <- function(x = NULL, reliability, cut, testlength, true.model = "4P", tru
   }
   base::return(out)
 }
-
 #' ROC curves for the Hanson and Brennan approach.
 #'
 #' @description Generate a ROC curve plotting the false-positive rate against the true-positive rate at different cut-off values across the observed-score scale.
@@ -1694,12 +1692,12 @@ HB.ROC <- function(x = NULL, reliability, testlength, truecut, true.model = "4P"
 #'    rawdata[, i] <- rbinom(1000, 1, p.success)
 #'  }
 #'
-#' # Suppose the cutoff value for being placed in the lower category is a score
-#' # below 10, middle category 15, and the upper category 15 or above. Using the
-#' # cba() function to estimate the reliability of this test, to use the
-#' # HB.CA.MC() function or estimating diagnostic performance and consistency
-#' # indices of classifications when using several cut-points:
-#' (output <- HB.CA.MC(rowSums(rawdata), cba(rawdata), c(10, 15), 20))
+#' # Suppose the cutoff value for attaining a pass is 10 items correct, and
+#' # that the reliability of this test was estimated using the Cronbach's Alpha
+#' # estimator. To estimate and retrieve the estimated parameters, confusion and
+#' # consistency matrices, and accuracy and consistency indices using HB.CA():
+#' (output <- HB.CA.MC(x = rowSums(rawdata), reliability = cba(rawdata),
+#' cut = c(8, 12), testlength = 20))
 #'
 #' # The output for this function can get quite verbose as more categories are
 #' # included. The output from the function can be fed to the MC.out.tabular()
@@ -1851,9 +1849,12 @@ HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", 
     ccmat.bc <- matrix(ncol = params$N + 1, nrow = params$N + 1)
     for (i in 0:params$N) {
       for (j in 0:params$N) {
-        ccmat.bc[i + 1, j + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
+        if (i <= j) {
+          ccmat.bc[i + 1, j + 1] <- stats::integrate(function(x) {dBeta.4P(x, params$l, params$u, params$alpha, params$beta) * dcBinom(i, params$N, params$k, x) * dcBinom(j, params$N, params$k, x)}, lower = 0, upper = 1)$value
+        }
       }
     }
+    ccmat.bc[lower.tri(ccmat.bc)] <- t(ccmat.bc)[lower.tri(ccmat.bc)]
     for (i in 1:ncol(ccmat)) {
       for (j in 1:ncol(ccmat)) {
         if (i == 1 & j == 1) {
@@ -1897,7 +1898,7 @@ HB.CA.MC <- function(x = NULL, reliability, cut, testlength, true.model = "4P", 
   out[["consistency"]][["overall"]][["statistics"]] <- list("p" = p, "p_c" = p_c, "Kappa" = Kappa)
   ccout <- list()
   for(i in 1:ncol(ccmat)) {
-    p <- diag(ccmat)[i]
+    p <- ccmat[i, i]
     p_c <- sum(ccmat[i, ])^2
     Kappa <- (p - p_c) / (1 - p_c)
     ccout[[paste("Category.", i, sep = "")]] <- list()

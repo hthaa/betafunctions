@@ -1,6 +1,10 @@
 # betafunctions v. 1.9.0
 
-- Fixed a bug with fitting the two-parameter beta-distribution model in the `HB.CA()`, `HB.CA.MC()`, and `HB.ROC()` functions.
+- Fixed a bug with fitting the two-parameter beta-distribution model in the `HB.CA()`, `HB.CA.MC()`, and `HB.ROC()` functions. 
+
+- Significantly improved computation time for consistency in the `HB.CA()` and `HB.CA.MC()` functions.
+
+- To reduce the verbosity of the output, the `LL.`and `HB.` functions no longer include the positive and negative likelihood ratios as part of their output.
 
 - The `AMS()` and `BMS()` functions have had some arguments removed. Now only allows for specifying mean, variance (or standard deviation), and location parameters.
 
@@ -8,7 +12,7 @@
 
 - The `Beta.tp.fit()` function is significantly simplified and some arguments (`alpha` and`beta`) are removed.
  
-- The `d/p/q/rBetaMS()` functions now includes arguments for specifying lower- and upper-bound location parameters. This allows the mean to be specified outside the [0, 1] interval (provided the mean is located within the specified lower and upper bounds).
+- The `d/p/q/rBetaMS()` functions now includes arguments for specifying lower- and upper-bound location parameters. This allows the mean to be specified outside the [0, 1] interval.
 
 ---
 

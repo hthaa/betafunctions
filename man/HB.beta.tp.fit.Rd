@@ -31,14 +31,14 @@ Estimator for the Beta true-score distribution shape-parameters from the observe
 # Generate some fictional data. Say 1000 individuals take a 100-item test
 # where all items are equally difficult, and the true-score distribution
 # is a four-parameter Beta distribution with location parameters l = 0.25,
-# u = 0.75, alpha = 5, and beta = 3, and the error distribution is a
-# compound Binomial with Lord's k = 2:
+# u = 0.75, alpha = 5, and beta = 3, and the error distribution is Binomial
+# with Lord's k = 0:
 set.seed(12)
-testdata <- rcBinom(1000, 100, 2, rBeta.4P(1000, 0.25, 0.75, 5, 3))
+testdata <- rbinom(1000, 100, rBeta.4P(1000, 0.25, 0.75, 5, 3))
 
 # To estimate the four-parameter Beta distribution parameters from this
 # sample of observations:
-HB.beta.tp.fit(testdata, 100, 2)
+HB.beta.tp.fit(testdata, 100, 0)
 }
 \references{
 Hanson, B. A. (1991). Method of Moments Estimates for the Four-Parameter Beta Compound Binomial Model and the Calculation of Classification Consistency Indexes. American College Testing Research Report Series. Retrieved from https://files.eric.ed.gov/fulltext/ED344945.pdf

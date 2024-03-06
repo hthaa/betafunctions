@@ -55,12 +55,12 @@ p.success <- rBeta.4P(1000, 0.15, 0.85, 6, 4)
    rawdata[, i] <- rbinom(1000, 1, p.success)
  }
 
-# Suppose the cutoff value for being placed in the lower category is a score
-# below 10, middle category 15, and the upper category 15 or above. Using the
-# cba() function to estimate the reliability of this test, to use the
-# HB.CA.MC() function or estimating diagnostic performance and consistency
-# indices of classifications when using several cut-points:
-(output <- HB.CA.MC(rowSums(rawdata), cba(rawdata), c(10, 15), 20))
+# Suppose the cutoff value for attaining a pass is 10 items correct, and
+# that the reliability of this test was estimated using the Cronbach's Alpha
+# estimator. To estimate and retrieve the estimated parameters, confusion and
+# consistency matrices, and accuracy and consistency indices using HB.CA():
+(output <- HB.CA.MC(x = rowSums(rawdata), reliability = cba(rawdata),
+cut = c(8, 12), testlength = 20))
 
 # The output for this function can get quite verbose as more categories are
 # included. The output from the function can be fed to the MC.out.tabular()
